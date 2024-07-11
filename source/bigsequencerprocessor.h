@@ -21,7 +21,7 @@ public:
     // Create function
 	static Steinberg::FUnknown* createInstance (void* /*context*/) 
 	{ 
-		return (Steinberg::Vst::IAudioProcessor*)new BigSequencerProcessor; 
+		return (Steinberg::Vst::IAudioProcessor*)new BigSequencerProcessor;
 	}
 
 	//--- ---------------------------------------------------------------------
@@ -44,7 +44,7 @@ public:
 
 	/** Here we go...the process call */
 	Steinberg::tresult PLUGIN_API process (Steinberg::Vst::ProcessData& data) SMTG_OVERRIDE;
-		
+
 	/** For persistence */
 	Steinberg::tresult PLUGIN_API setState (Steinberg::IBStream* state) SMTG_OVERRIDE;
 	Steinberg::tresult PLUGIN_API getState (Steinberg::IBStream* state) SMTG_OVERRIDE;
@@ -52,6 +52,10 @@ public:
 //------------------------------------------------------------------------
 protected:
 	vargason::bigsequencer::Sequencer* sequencer;
+	bool wasPreviouslyPlaying;
+
+	void sendMidiNoteOn(Steinberg::Vst::IEventList* eventList, uint16_t pitch, float velocity);
+	void sendMidiNoteOff(Steinberg::Vst::IEventList* eventList, uint16_t pitch, float velocity);
 };
 
 //------------------------------------------------------------------------

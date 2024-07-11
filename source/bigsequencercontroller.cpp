@@ -5,6 +5,7 @@
 #include "bigsequencercontroller.h"
 #include "bigsequencercids.h"
 #include "vstgui/plugin-bindings/vst3editor.h"
+#include "plugids.h"
 
 using namespace Steinberg;
 
@@ -25,6 +26,7 @@ tresult PLUGIN_API BigSequencerController::initialize (FUnknown* context)
 	}
 
 	// Here you could register some parameters
+	parameters.addParameter(STR16("Note Length"), STR16("Quarter Notes"), 0, .5, Vst::ParameterInfo::kCanAutomate, kParamNoteLengthId);
 
 	return result;
 }
