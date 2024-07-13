@@ -4,6 +4,7 @@
 
 namespace vargason::bigsequencer {
 	enum SequencerParams : Steinberg::Vst::ParamID {
-		kParamNoteLengthId = 100
+		kParamHostSyncId = 102,
+		kParamNoteLengthId = 103
 	};
 }
