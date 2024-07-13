@@ -39,8 +39,11 @@ namespace vargason::bigsequencer {
 			return result;
 		}
 		addEventOutput(STR16("Event Out"), 1);
+
 		this->sequencer = new Sequencer();
-		this->wasPreviouslyPlaying = false;
+
+		this->timerThread = new std::thread();
+
 		return kResultOk;
 	}
 
@@ -49,6 +52,7 @@ namespace vargason::bigsequencer {
 	{
 		// Here the Plug-in will be de-instantiated, last possibility to remove some memory!
 		delete sequencer;
+		delete timerThread;
 		//---do not forget to call parent ------
 		return AudioEffect::terminate();
 	}
@@ -74,9 +78,15 @@ namespace vargason::bigsequencer {
 					int32 sampleOffset;
 					int32 numPoints = paramQueue->getPointCount();
 					switch (paramQueue->getParameterId()) {
+					case SequencerParams::kParamHostSyncId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							// bool hostSynced = (value > 0.5);
+						}
+						break;
 					case SequencerParams::kParamNoteLengthId:
-						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue)
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							sequencer->setNoteLength(value);
+						}
 						break;
 					}
 				}
@@ -90,32 +100,54 @@ namespace vargason::bigsequencer {
 
 		// handle host being start & stopped
 		bool playing = data.processContext->state & data.processContext->kPlaying;
-		if (playing && !wasPreviouslyPlaying) {  // started
-			sendMidiNoteOn(data.outputEvents, 60, 0.40);
-			sequencer->setCursor(0);
-			sequencer->setNotePlaying(true);
+		if (playing && !wasPreviouslyPlaying) {  // started from paused or stopped state.
+			if (data.processContext->projectTimeMusic == lastProjectMusicTime) {  // paused state
+				// idk who knows just don't send a note cuz fuck em
+			}
+			else {  // stopped state
+				lastNoteTime = 0;
+				sendMidiNoteOn(data.outputEvents, sequencer->getNote(0).pitch, 0.40);
+				sequencer->setNotePlaying(true);
+				sequencer->setCursor(0);
+			}
+
 		}
-		else if (!playing && wasPreviouslyPlaying) {  // stopped
+		else if (!playing && wasPreviouslyPlaying) {  // stopped or paused
 			if (sequencer->isNotePlaying()) {
-				sendMidiNoteOff(data.outputEvents, 60, 0);
+				sendMidiNoteOff(data.outputEvents, sequencer->getCurrentNote().pitch, 0);
 				sequencer->setNotePlaying(false);
 			}
 		}
+
 		wasPreviouslyPlaying = playing;
 
-		double quarterNotes = data.processContext->projectTimeMusic;  // can also get this by dividing projectTimeSamples by sampleRate
-		double cursor = sequencer->getCursor();
-
-		if (quarterNotes >= cursor + 1.0) {
-			sendMidiNoteOn(data.outputEvents, 60, 0.40);
-			sequencer->setNotePlaying(true);
-			sequencer->setCursor(quarterNotes);
-		}
-		else if (sequencer->isNotePlaying() && quarterNotes >= cursor + sequencer->getNoteLength()) {
-			sendMidiNoteOff(data.outputEvents, 60, 0);
-			sequencer->setNotePlaying(false);
+		if (hostSynced && playing) {
+			updateSequencer(data);
 		}
 		return kResultOk;
+	}
+
+	void BigSequencerProcessor::updateSequencer(Vst::ProcessData& data) {
+		double cycleLength = data.processContext->cycleEndMusic - data.processContext->cycleStartMusic;
+		double quarterNotes = data.processContext->projectTimeMusic;  // can also get this by dividing projectTimeSamples by sampleRate
+
+		if (lastProjectMusicTime > quarterNotes) {  // the measure/song ended and we are back at 0
+			lastNoteTime -= cycleLength;
+		}
+
+		double cursor = sequencer->getCursor();
+		if (quarterNotes >= lastNoteTime + 1.0) {
+			NoteData noteData = sequencer->getCurrentNote();
+			sendMidiNoteOn(data.outputEvents, noteData.pitch, noteData.velocity);
+			sequencer->setNotePlaying(true);
+			sequencer->setCursor(cursor + 1);
+			lastNoteTime = quarterNotes;
+		}
+		else if (sequencer->isNotePlaying() && quarterNotes >= lastNoteTime + sequencer->getNoteLength()) { // need to take interval into account for note length??? actual note length is a fraction of the interval (note length * interval)
+			sendMidiNoteOff(data.outputEvents, sequencer->getCurrentNote().pitch, 0);
+			sequencer->setNotePlaying(false);
+		}
+		lastProjectMusicTime = data.processContext->projectTimeMusic;
 	}
 
 	//------------------------------------------------------------------------
@@ -237,7 +269,7 @@ namespace vargason::bigsequencer {
 			midiEvent.noteOn.channel = 0;
 			midiEvent.noteOn.pitch = pitch;
 			midiEvent.noteOn.velocity = velocity;
-			midiEvent.noteOn.noteId = pitch;
+			midiEvent.noteOn.noteId = 1;
 			eventList->addEvent(midiEvent);
 		}
 	}
@@ -249,7 +281,7 @@ namespace vargason::bigsequencer {
 			midiEvent.noteOff.channel = 0;
 			midiEvent.noteOff.pitch = pitch;
 			midiEvent.noteOff.velocity = velocity;
-			midiEvent.noteOff.noteId = pitch;
+			midiEvent.noteOff.noteId = 1;
 			eventList->addEvent(midiEvent);
 		}
 	}

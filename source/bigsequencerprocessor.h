@@ -3,6 +3,7 @@
 //------------------------------------------------------------------------
 
 #pragma once
+#include <thread>
 
 #include "public.sdk/source/vst/vstaudioeffect.h"
 #include "sequencer.h"
@@ -52,10 +53,18 @@ public:
 //------------------------------------------------------------------------
 protected:
 	vargason::bigsequencer::Sequencer* sequencer;
-	bool wasPreviouslyPlaying;
+	bool wasPreviouslyPlaying = false;
+	float lastProjectMusicTime = 0;
+	float lastNoteTime = 0;
+
+	bool hostSynced = true;  // whether sequencer starts when host playback starts
+	bool retrigger = true;  // whether the sequencer starts from 0 when playback is restarted
+
+	std::thread* timerThread;
 
 	void sendMidiNoteOn(Steinberg::Vst::IEventList* eventList, uint16_t pitch, float velocity);
 	void sendMidiNoteOff(Steinberg::Vst::IEventList* eventList, uint16_t pitch, float velocity);
+	void updateSequencer(Steinberg::Vst::ProcessData& data);
 };
 
 //------------------------------------------------------------------------

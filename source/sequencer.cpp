@@ -24,6 +24,10 @@ namespace vargason::bigsequencer {
 		return notes[y * width + x];
 	}
 
+	NoteData Sequencer::getCurrentNote() {
+		return this->notes[(int)this->cursor];
+	}
+
 	int Sequencer::totalNotes() {
 		return width * height;
 	}
@@ -62,6 +66,9 @@ namespace vargason::bigsequencer {
 	}
 
 	void Sequencer::setCursor(double cursor) {
+		if (cursor > this->totalNotes()) {
+			cursor -= this->totalNotes();
+		}
 		this->cursor = cursor;
 	}
 

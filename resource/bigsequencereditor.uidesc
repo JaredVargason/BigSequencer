@@ -27,7 +27,8 @@
 			]
 		},
 		"control-tags": {
-			"NoteLength": "100"
+			"HostSync": "102",
+			"NoteLength": "103"
 		},
 		"custom": {
 			"FocusDrawing": {},
