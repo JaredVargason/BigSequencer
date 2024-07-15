@@ -26,7 +26,9 @@ tresult PLUGIN_API BigSequencerController::initialize (FUnknown* context)
 	}
 
 	// Here you could register some parameters
-	parameters.addParameter(STR16("Note Length"), STR16("Quarter Notes"), 0, 0.5, Vst::ParameterInfo::kCanAutomate, kParamNoteLengthId);
+	parameters.addParameter(STR16("Sequencer Width"), nullptr, 0, 0.25, 0, kParamWidthId);
+	parameters.addParameter(STR16("Sequencer Height"), nullptr, 0, 0.25, 0, kParamHeightId);
+	parameters.addParameter(STR16("Note Length"), nullptr, 0, 0.5, Vst::ParameterInfo::kCanAutomate, kParamNoteLengthId);
 	parameters.addParameter(STR16("Host Sync"), nullptr, 0, 1.0, Vst::ParameterInfo::kCanAutomate, kParamHostSyncId);
 
 	return result;

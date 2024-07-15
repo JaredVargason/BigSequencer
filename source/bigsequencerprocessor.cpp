@@ -5,6 +5,8 @@
 #include "bigsequencerprocessor.h"
 #include "bigsequencercids.h"
 #include "plugids.h"
+#include "notedatagenerator.h";
+#include "scales.h";
 
 #include "base/source/fstreamer.h"
 #include "pluginterfaces/vst/ivstparameterchanges.h"
@@ -40,8 +42,11 @@ namespace vargason::bigsequencer {
 		}
 		addEventOutput(STR16("Event Out"), 1);
 
+		RandomNoteDataGenerator noteDataGenerator;
 		this->sequencer = new Sequencer();
 
+		NoteData* noteData = noteDataGenerator.generateNoteData(a, major, 55, 70, sequencer->getWidth(), sequencer->getHeight());
+		sequencer->setNotes(sequencer->getWidth(), sequencer->getHeight(), noteData);
 		this->timerThread = new std::thread();
 
 		return kResultOk;
@@ -87,6 +92,22 @@ namespace vargason::bigsequencer {
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							sequencer->setNoteLength(value);
 						}
+						break;
+					case SequencerParams::kParamWidthId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							int width = value * sequencer->maxWidth;
+							if (width < 0) {
+								width = 1;
+							}
+							sequencer->setSize(width, sequencer->getHeight()); // cursor could be out of bounds if we do this wrong
+						}
+						break;
+					case SequencerParams::kParamHeightId:
+						int height = value * sequencer->maxWidth;
+						if (height < 0) {
+							height = 1;
+						}
+						sequencer->setSize(sequencer->getWidth(), sequencer->getHeight());
 						break;
 					}
 				}
@@ -141,10 +162,11 @@ namespace vargason::bigsequencer {
 			sendMidiNoteOn(data.outputEvents, noteData.pitch, noteData.velocity);
 			sequencer->setNotePlaying(true);
 			sequencer->setCursor(cursor + 1);
+			sequencer->currentlyPlayingNote = noteData.pitch;
 			lastNoteTime = quarterNotes;
 		}
 		else if (sequencer->isNotePlaying() && quarterNotes >= lastNoteTime + sequencer->getNoteLength()) { // need to take interval into account for note length??? actual note length is a fraction of the interval (note length * interval)
-			sendMidiNoteOff(data.outputEvents, sequencer->getCurrentNote().pitch, 0);
+			sendMidiNoteOff(data.outputEvents, sequencer->currentlyPlayingNote, 0);
 			sequencer->setNotePlaying(false);
 		}
 		lastProjectMusicTime = data.processContext->projectTimeMusic;
@@ -261,7 +283,7 @@ namespace vargason::bigsequencer {
 	//------------------------------------------------------------------------
 
 
-	void BigSequencerProcessor::sendMidiNoteOn(Vst::IEventList* eventList, uint16_t pitch, float velocity) {
+	void BigSequencerProcessor::sendMidiNoteOn(Vst::IEventList* eventList, uint8_t pitch, float velocity) {
 		if (eventList) {
 			Vst::Event midiEvent = { 0 };
 			midiEvent.type = Vst::Event::kNoteOnEvent;
@@ -269,19 +291,19 @@ namespace vargason::bigsequencer {
 			midiEvent.noteOn.channel = 0;
 			midiEvent.noteOn.pitch = pitch;
 			midiEvent.noteOn.velocity = velocity;
-			midiEvent.noteOn.noteId = 1;
+			midiEvent.noteOn.noteId = pitch;
 			eventList->addEvent(midiEvent);
 		}
 	}
 
-	void BigSequencerProcessor::sendMidiNoteOff(Vst::IEventList* eventList, uint16_t pitch, float velocity) {
+	void BigSequencerProcessor::sendMidiNoteOff(Vst::IEventList* eventList, uint8_t pitch, float velocity) {
 		if (eventList) {
 			Vst::Event midiEvent = { 0 };
 			midiEvent.type = Vst::Event::kNoteOffEvent;
 			midiEvent.noteOff.channel = 0;
 			midiEvent.noteOff.pitch = pitch;
 			midiEvent.noteOff.velocity = velocity;
-			midiEvent.noteOff.noteId = 1;
+			midiEvent.noteOff.noteId = pitch;
 			eventList->addEvent(midiEvent);
 		}
 	}
