@@ -62,8 +62,8 @@ protected:
 
 	std::thread* timerThread;
 
-	void sendMidiNoteOn(Steinberg::Vst::IEventList* eventList, uint16_t pitch, float velocity);
-	void sendMidiNoteOff(Steinberg::Vst::IEventList* eventList, uint16_t pitch, float velocity);
+	void sendMidiNoteOn(Steinberg::Vst::IEventList* eventList, uint8_t pitch, float velocity);
+	void sendMidiNoteOff(Steinberg::Vst::IEventList* eventList, uint8_t pitch, float velocity);
 	void updateSequencer(Steinberg::Vst::ProcessData& data);
 };
 

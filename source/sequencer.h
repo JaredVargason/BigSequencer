@@ -12,7 +12,7 @@ namespace vargason::bigsequencer {
 		float noteLength;  // between 0 and 1
 		uint8_t startPosition;  // what index the cursor starts at
 		float offset;  // between 0 and 1, offsets from the main beat
-		uint8_t octave;
+		uint8_t octave = 5; // by default go to middle c
 	};
 
 	struct NoteData {
@@ -48,10 +48,14 @@ namespace vargason::bigsequencer {
 		void setNoteLength(float noteLength);
 		float getNoteLength();
 
+		uint8_t currentlyPlayingNote;
+
+		const int maxWidth = 32;
+		const int maxHeight = 32;
+
 	private:
 		double cursor;
 		bool notePlaying;
-		uint8_t currentlyPlayingNote;
 
 		uint16_t width;
 		uint16_t height;

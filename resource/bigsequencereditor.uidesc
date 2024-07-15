@@ -28,7 +28,9 @@
 		},
 		"control-tags": {
 			"HostSync": "102",
-			"NoteLength": "103"
+			"NoteLength": "103",
+			"SequencerHeight": "101",
+			"SequencerWidth": "100"
 		},
 		"custom": {
 			"FocusDrawing": {},
@@ -36,7 +38,8 @@
 				"Path": "C:\\Users\\jared\\Projects\\BigSequencer\\resource\\bigsequencereditor.uidesc"
 			},
 			"UIGridController": {
-				"Grids": "1x 1,5x 5,10x 10,12x 12,15x 15"
+				"Grids": "1x 1,5x 5,10x 10,12x 12,15x 15",
+				"Size": "10, 10"
 			},
 			"UITemplateController": {
 				"SelectedTemplate": "view"
@@ -56,7 +59,7 @@
 			},
 			"UIAttributesController": {},
 			"UIViewCreatorDataSource": {
-				"SelectedRow": "26"
+				"SelectedRow": "8"
 			},
 			"UITagsDataSource": {
 				"SelectedRow": "-1"
@@ -86,9 +89,9 @@
 							"control-tag": "NoteLength",
 							"default-value": "0.5",
 							"draw-back": "true",
-							"draw-back-color": "~ CyanCColor",
+							"draw-back-color": "~ WhiteCColor",
 							"draw-frame": "true",
-							"draw-frame-color": "~ GreenCColor",
+							"draw-frame-color": "~ GreyCColor",
 							"draw-value": "true",
 							"draw-value-color": "~ RedCColor",
 							"draw-value-from-center": "false",
@@ -101,13 +104,83 @@
 							"mouse-enabled": "true",
 							"opacity": "1",
 							"orientation": "horizontal",
-							"origin": "40, 80",
+							"origin": "50, 150",
 							"reverse-orientation": "false",
 							"size": "210, 20",
 							"transparent": "false",
 							"wants-focus": "true",
 							"wheel-inc-value": "0.1",
 							"zoom-factor": "10"
+						}
+					},
+					"CKnob": {
+						"attributes": {
+							"angle-range": "270",
+							"angle-start": "135",
+							"circle-drawing": "false",
+							"class": "CKnob",
+							"control-tag": "SequencerWidth",
+							"corona-color": "~ RedCColor",
+							"corona-dash-dot": "true",
+							"corona-dash-dot-lengths": "1.26,0.1",
+							"corona-drawing": "true",
+							"corona-from-center": "false",
+							"corona-inset": "12",
+							"corona-inverted": "false",
+							"corona-line-cap-butt": "true",
+							"corona-outline": "true",
+							"corona-outline-width-add": "2",
+							"default-value": "0.25",
+							"handle-color": "~ WhiteCColor",
+							"handle-line-width": "8",
+							"handle-shadow-color": "~ WhiteCColor",
+							"max-value": "1",
+							"min-value": "0",
+							"mouse-enabled": "true",
+							"opacity": "1",
+							"origin": "0, 0",
+							"size": "70, 70",
+							"skip-handle-drawing": "true",
+							"transparent": "false",
+							"value-inset": "3",
+							"wants-focus": "true",
+							"wheel-inc-value": "0.1",
+							"zoom-factor": "1.5"
+						}
+					},
+					"CKnob": {
+						"attributes": {
+							"angle-range": "270",
+							"angle-start": "135",
+							"circle-drawing": "false",
+							"class": "CKnob",
+							"control-tag": "SequencerHeight",
+							"corona-color": "~ RedCColor",
+							"corona-dash-dot": "true",
+							"corona-dash-dot-lengths": "1.26,0.1",
+							"corona-drawing": "true",
+							"corona-from-center": "false",
+							"corona-inset": "12",
+							"corona-inverted": "false",
+							"corona-line-cap-butt": "true",
+							"corona-outline": "true",
+							"corona-outline-width-add": "2",
+							"default-value": "0.25",
+							"handle-color": "~ WhiteCColor",
+							"handle-line-width": "8",
+							"handle-shadow-color": "~ WhiteCColor",
+							"max-value": "1",
+							"min-value": "0",
+							"mouse-enabled": "true",
+							"opacity": "1",
+							"origin": "80, 0",
+							"size": "70, 70",
+							"skip-handle-drawing": "true",
+							"transparent": "false",
+							"value-inset": "3",
+							"wants-focus": "true",
+							"wheel-inc-value": "0.1",
+							"zoom-factor": "1.5"
 						}
 					}
 				}
