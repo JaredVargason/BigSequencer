@@ -4,15 +4,19 @@
 namespace vargason::bigsequencer {
 
 	struct Cursor {
+		bool active;
+
 		double position;
 		bool notePlaying;
 		uint8_t currentlyPlayingNote;
 
 		float interval;  // thirty-second notes, sixteenth notes, eighth notes, quarter notes, half notes, whole notes, double whole notes, quad whole notes
-		float noteLength;  // between 0 and 1
+		float noteLength = 0.4;  // between 0 and 1
+		int8_t octaveOffset = 0; // by default go to middle c
+
 		uint8_t startPosition;  // what index the cursor starts at
 		float offset;  // between 0 and 1, offsets from the main beat
-		uint8_t octave = 5; // by default go to middle c
+		double lastNoteTime;
 	};
 
 	struct NoteData {
@@ -30,10 +34,7 @@ namespace vargason::bigsequencer {
 		Sequencer(int width, int height);
 		~Sequencer();
 
-		double getCursor();
-		void setCursor(double cursor);
-		bool isNotePlaying();
-		void setNotePlaying(bool state);
+		Cursor& getCursor(int index);
 
 		uint16_t getWidth();
 		uint16_t getHeight();
@@ -41,27 +42,19 @@ namespace vargason::bigsequencer {
 
 		NoteData getNote(int index);
 		NoteData getNote(int x, int y);
-		NoteData getCurrentNote();
 		void setNotes(int width, int height, NoteData* notes);
 		int totalNotes();
-
-		void setNoteLength(float noteLength);
-		float getNoteLength();
 
 		uint8_t currentlyPlayingNote;
 
 		const int maxWidth = 32;
 		const int maxHeight = 32;
+		const int maxNumCursors = 2;
 
 	private:
-		double cursor;
-		bool notePlaying;
+		Cursor* cursors = new Cursor[maxNumCursors];
 
 		uint16_t width;
 		uint16_t height;
-		float noteLength;
-
-		// scale
-		uint8_t rootNote;
 	};
 }

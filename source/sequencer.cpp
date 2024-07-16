@@ -5,10 +5,6 @@ namespace vargason::bigsequencer {
 	}
 
 	Sequencer::Sequencer(int width, int height) {
-		this->cursor = 0;
-		this->currentlyPlayingNote = 60;
-		this->notePlaying = false;
-		this->noteLength = 0.5f;
 		setSize(width, height);
 	}
 
@@ -24,20 +20,8 @@ namespace vargason::bigsequencer {
 		return notes[y * width + x];
 	}
 
-	NoteData Sequencer::getCurrentNote() {
-		return this->notes[(int)this->cursor];
-	}
-
 	int Sequencer::totalNotes() {
 		return width * height;
-	}
-
-	void Sequencer::setNoteLength(float noteLength) {
-		this->noteLength = noteLength;
-	}
-
-	float Sequencer::getNoteLength() {
-		return this->noteLength;
 	}
 
 	// right now we are just setting the notes explicity, but we could validate and copy.
@@ -61,26 +45,16 @@ namespace vargason::bigsequencer {
 		notes = new NoteData[width * height];
 	}
 
-	double Sequencer::getCursor() {
-		return cursor;
+	Cursor& Sequencer::getCursor(int index) {
+		return this->cursors[index];
 	}
 
-	void Sequencer::setCursor(double cursor) {
+	/*void Sequencer::setCursor(double cursor) {
 		if (cursor > this->totalNotes()) {
 			cursor -= this->totalNotes();
 		}
 		this->cursor = cursor;
-	}
-
-	bool Sequencer::isNotePlaying()
-	{
-		return notePlaying;
-	}
-
-	void Sequencer::setNotePlaying(bool state)
-	{
-		notePlaying = state;
-	}
+	}*/
 
 	uint16_t Sequencer::getWidth() {
 		return width;
