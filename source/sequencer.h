@@ -1,22 +1,45 @@
 #pragma once
 #include <stdint.h>
+#include "scales.h"
 
 namespace vargason::bigsequencer {
 
 	struct Cursor {
-		bool active;
+		bool active = false;
 
 		double position;
 		bool notePlaying;
 		uint8_t currentlyPlayingNote;
 
-		float interval;  // thirty-second notes, sixteenth notes, eighth notes, quarter notes, half notes, whole notes, double whole notes, quad whole notes
+		Interval interval;
+
 		float noteLength = 0.4;  // between 0 and 1
-		int8_t octaveOffset = 0; // by default go to middle c
+		int8_t octaveOffset = 0;
 
 		uint8_t startPosition;  // what index the cursor starts at
-		float offset;  // between 0 and 1, offsets from the main beat
+		double offset;  // between 0 and 1, offsets from the main beat
 		double lastNoteTime;
+
+		const int octaveMin = -2;
+		const int octaveMax = 2;
+
+		const double* numericIntervals = new double[7] {
+			0.125,
+				0.25,
+				0.5,
+				1.0,
+				2.0,
+				4.0,
+				8.0
+			};
+
+		double realNoteLength() {
+			return offset * numericInterval();
+		}
+
+		double numericInterval() {
+			return numericIntervals[(int)interval];
+		}
 	};
 
 	struct NoteData {

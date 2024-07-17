@@ -5,8 +5,8 @@
 #include "bigsequencerprocessor.h"
 #include "bigsequencercids.h"
 #include "plugids.h"
-#include "notedatagenerator.h";
-#include "scales.h";
+#include "notedatagenerator.h"
+#include "scales.h"
 
 #include "base/source/fstreamer.h"
 #include "pluginterfaces/vst/ivstparameterchanges.h"
@@ -73,85 +73,7 @@ namespace vargason::bigsequencer {
 	//------------------------------------------------------------------------
 	tresult PLUGIN_API BigSequencerProcessor::process(Vst::ProcessData& data)
 	{
-		// get parameter changes
-		if (data.inputParameterChanges) {
-			int32 numParamsChanged = data.inputParameterChanges->getParameterCount();
-			for (int32 index = 0; index < numParamsChanged; index++) {
-				Vst::IParamValueQueue* paramQueue = data.inputParameterChanges->getParameterData(index);
-				if (paramQueue) {
-					Vst::ParamValue value;
-					int32 sampleOffset;
-					int32 numPoints = paramQueue->getPointCount();
-					switch (paramQueue->getParameterId()) {
-					case SequencerParams::kParamSequencerWidthId:
-						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							int width = value * sequencer->maxWidth;
-							if (width < 0) {
-								width = 1;
-							}
-							sequencer->setSize(width, sequencer->getHeight()); // cursor could be out of bounds if we do this wrong
-						}
-						break;
-					case SequencerParams::kParamSequencerHeightId:
-						int height = value * sequencer->maxWidth;
-						if (height < 0) {
-							height = 1;
-						}
-						sequencer->setSize(sequencer->getWidth(), sequencer->getHeight());
-						break;
-					case SequencerParams::kParamHostSyncId:
-						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							// bool hostSynced = (value > 0.5);
-						}
-						break;
-
-						// Cursor 1
-					case SequencerParams::kParamCursor1ActiveId:
-						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer->getCursor(0).active = value;
-						}
-						break;
-					case SequencerParams::kParamCursor1NoteLengthId:
-						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer->getCursor(0).noteLength = value;
-						}
-						break;
-					case SequencerParams::kParamCursor1NoteIntervalId:
-						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							// sequencer->getCursor(0).interval = value;
-						}
-						break;
-					case SequencerParams::kParamCursor1OctaveOffsetId:
-						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							// sequencer->getCursor(0).noteLength = value;
-						}
-						break;
-
-						// Cursor 2
-					case SequencerParams::kParamCursor2ActiveId:
-						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer->getCursor(1).active = value;
-						}
-						break;
-					case SequencerParams::kParamCursor2NoteLengthId:
-						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer->getCursor(1).noteLength = value;
-						}
-						break;
-					case SequencerParams::kParamCursor2NoteIntervalId:
-						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							// sequencer->getCursor(0).interval = value;
-						}
-						break;
-					case SequencerParams::kParamCursor2OctaveOffsetId:
-						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							// sequencer->getCursor(0).noteLength = value;
-						}
-						break;
-					}
-				}
-			}
-		}
+		handleParameterChanges(data);
 
 		// if we don't have a process context, the plugin can't do anything
 		if (data.processContext == NULL) {
@@ -177,7 +99,6 @@ namespace vargason::bigsequencer {
 					}
 				}
 			}
-
 		}
 		else if (!playing && wasPreviouslyPlaying) {  // stopped or paused
 			for (int i = 0; i < sequencer->maxNumCursors; i++) {
@@ -198,6 +119,92 @@ namespace vargason::bigsequencer {
 		return kResultOk;
 	}
 
+	void BigSequencerProcessor::handleParameterChanges(Vst::ProcessData& data) {
+		// get parameter changes
+		if (data.inputParameterChanges) {
+			int32 numParamsChanged = data.inputParameterChanges->getParameterCount();
+			for (int32 index = 0; index < numParamsChanged; index++) {
+				Vst::IParamValueQueue* paramQueue = data.inputParameterChanges->getParameterData(index);
+				if (paramQueue) {
+					Vst::ParamValue value;
+					int32 sampleOffset;
+					int32 numPoints = paramQueue->getPointCount();
+					switch (paramQueue->getParameterId()) {
+					case SequencerParams::kParamSequencerWidthId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							int width = value * sequencer->maxWidth;
+							if (width < 0) {
+								width = 1;
+							}
+							sequencer->setSize(width, sequencer->getHeight()); // cursor could be out of bounds if we do this wrong
+						}
+						break;
+					case SequencerParams::kParamSequencerHeightId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							int height = value * sequencer->maxWidth;
+							if (height < 0) {
+								height = 1;
+							}
+							sequencer->setSize(sequencer->getWidth(), height);
+						}
+						break;
+					case SequencerParams::kParamHostSyncId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							// bool hostSynced = (value > 0.5);
+						}
+						break;
+
+						// Cursor 1
+					case SequencerParams::kParamCursor1ActiveId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							sequencer->getCursor(0).active = value;
+						}
+						break;
+					case SequencerParams::kParamCursor1NoteLengthId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							sequencer->getCursor(0).noteLength = value;
+						}
+						break;
+					case SequencerParams::kParamCursor1NoteIntervalId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							sequencer->getCursor(0).interval = (Interval) (Interval::thirtySecondNote + (Interval::doubleWholeNote - Interval::thirtySecondNote) * value);
+						}
+						break;
+					case SequencerParams::kParamCursor1OctaveOffsetId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							Cursor cursor = sequencer->getCursor(0);
+							cursor.octaveOffset = cursor.octaveMin + (cursor.octaveMax - cursor.octaveMin) * value;
+						}
+						break;
+
+						// Cursor 2
+					case SequencerParams::kParamCursor2ActiveId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							sequencer->getCursor(1).active = value;
+						}
+						break;
+					case SequencerParams::kParamCursor2NoteLengthId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							sequencer->getCursor(1).noteLength = value;
+						}
+						break;
+					case SequencerParams::kParamCursor2NoteIntervalId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							sequencer->getCursor(1).interval = (Interval) (Interval::thirtySecondNote + (Interval::doubleWholeNote - Interval::thirtySecondNote) * value);
+						}
+						break;
+					case SequencerParams::kParamCursor2OctaveOffsetId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							Cursor cursor = sequencer->getCursor(1);
+							cursor.octaveOffset = cursor.octaveMin + (cursor.octaveMax - cursor.octaveMin) * value;
+						}
+						break;
+					}
+				}
+			}
+		}
+	}
+
 	void BigSequencerProcessor::updateSequencer(Vst::ProcessData& data) {
 		double cycleLength = data.processContext->cycleEndMusic - data.processContext->cycleStartMusic;
 
@@ -206,6 +213,7 @@ namespace vargason::bigsequencer {
 			if (lastProjectMusicTime > data.processContext->projectTimeMusic) {  // the measure/song ended and we are back at 0
 				cursor.lastNoteTime -= cycleLength;
 			}
+			updateCursor(data, cursor);
 		}
 
 		lastProjectMusicTime = data.processContext->projectTimeMusic;
@@ -214,15 +222,15 @@ namespace vargason::bigsequencer {
 	void BigSequencerProcessor::updateCursor(Vst::ProcessData& data, Cursor& cursor) {
 		double position = cursor.position;
 		double quarterNotes = data.processContext->projectTimeMusic;
-		if (quarterNotes >= cursor.lastNoteTime + 1.0) {
+		if (quarterNotes >= cursor.lastNoteTime + cursor.numericInterval()) {
 			NoteData noteData = sequencer->getNote(cursor.position);
 			sendMidiNoteOn(data.outputEvents, noteData.pitch, noteData.velocity);
 			cursor.notePlaying = true;
-			cursor.position = position + 1;
+			cursor.position = position + cursor.numericInterval();
 			sequencer->currentlyPlayingNote = noteData.pitch;
 			cursor.lastNoteTime = quarterNotes;
 		}
-		else if (cursor.notePlaying && quarterNotes >= cursor.lastNoteTime + cursor.noteLength) { // need to take interval into account for note length??? actual note length is a fraction of the interval (note length * interval)
+		else if (cursor.notePlaying && quarterNotes >= cursor.lastNoteTime + cursor.realNoteLength()) { // need to take interval into account for note length??? actual note length is a fraction of the interval (note length * interval)
 			sendMidiNoteOff(data.outputEvents, sequencer->currentlyPlayingNote, 0);
 			cursor.notePlaying = false;
 		}

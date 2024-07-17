@@ -6,6 +6,11 @@ namespace vargason::bigsequencer {
 
 	Sequencer::Sequencer(int width, int height) {
 		setSize(width, height);
+		cursors[0].active = true;
+		cursors[0].interval = quarterNote;
+		cursors[1].active = true;
+		cursors[1].interval = halfNote;
+		cursors[1].octaveOffset = -1;
 	}
 
 	Sequencer::~Sequencer() {

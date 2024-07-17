@@ -65,6 +65,7 @@ protected:
 	void sendMidiNoteOff(Steinberg::Vst::IEventList* eventList, uint8_t pitch, float velocity);
 
 private:
+	void handleParameterChanges(Steinberg::Vst::ProcessData& data);
 	void updateSequencer(Steinberg::Vst::ProcessData& data);
 	void updateCursor(Steinberg::Vst::ProcessData& data, Cursor& cursor);
 };
