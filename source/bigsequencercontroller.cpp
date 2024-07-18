@@ -4,9 +4,12 @@
 
 #include "bigsequencercontroller.h"
 #include "bigsequencercids.h"
-#include "vstgui/plugin-bindings/vst3editor.h"
 #include "plugids.h"
 #include "scales.h"
+
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
 
 using namespace Steinberg;
 
@@ -153,13 +156,6 @@ tresult PLUGIN_API BigSequencerController::getState (IBStream* state)
 //------------------------------------------------------------------------
 IPlugView* PLUGIN_API BigSequencerController::createView (FIDString name)
 {
-	// Here the Host wants to open your editor (if you have one)
-	if (FIDStringsEqual (name, Vst::ViewType::kEditor))
-	{
-		// create your editor here and return a IPlugView ptr of it
-		auto* view = new VSTGUI::VST3Editor (this, "view", "bigsequencereditor.uidesc");
-		return view;
-	}
 	return nullptr;
 }
 

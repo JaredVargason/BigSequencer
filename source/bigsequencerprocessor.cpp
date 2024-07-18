@@ -5,6 +5,7 @@
 #include "bigsequencerprocessor.h"
 #include "bigsequencercids.h"
 #include "plugids.h"
+#include "notedatagenerator.h"
 #include "scales.h"
 
 #include "base/source/fstreamer.h"

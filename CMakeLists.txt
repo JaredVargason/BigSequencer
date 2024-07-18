@@ -6,6 +6,7 @@ option(SMTG_ENABLE_VST3_HOSTING_EXAMPLES "Enable VST 3 Hosting Examples" OFF)
 set(CMAKE_OSX_DEPLOYMENT_TARGET 10.13 CACHE STRING "")
 
 set(vst3sdk_SOURCE_DIR "C:/Users/jared/Downloads/vst-sdk_3.7.11_build-10_2024-04-22/VST_SDK/vst3sdk")
+
 if(NOT vst3sdk_SOURCE_DIR)
     message(FATAL_ERROR "Path to VST3 SDK is empty!")
 endif()
@@ -18,8 +19,31 @@ project(BigSequencer
     DESCRIPTION "BigSequencer VST 3 Plug-in"
 )
 
-set(SMTG_VSTGUI_ROOT "${vst3sdk_SOURCE_DIR}")
+# Include directories
+include_directories(
+    libs/glfw/include
+    libs/imgui
+    libs/imgui/backends
+)
 
+# Add imgui
+set(IMGUI_SOURCES
+    libs/imgui/imgui.cpp
+    libs/imgui/imgui_draw.cpp
+    libs/imgui/imgui_demo.cpp
+    libs/imgui/imgui_widgets.cpp
+    libs/imgui/backends/imgui_impl_glfw.cpp
+    libs/imgui/backends/imgui_impl_opengl3.cpp
+)
+add_library(imgui STATIC ${IMGUI_SOURCES})
+
+# Add GLFW
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+add_subdirectory(libs/glfw)
+
+# Add VST3 SDK
 add_subdirectory(${vst3sdk_SOURCE_DIR} ${PROJECT_BINARY_DIR}/vst3sdk)
 smtg_enable_vst3_sdk()
 
@@ -38,23 +62,6 @@ smtg_add_vst3plugin(BigSequencer
     source/bigsequencerentry.cpp
 )
 
-#- VSTGUI Wanted ----
-if(SMTG_ENABLE_VSTGUI_SUPPORT)
-    target_sources(BigSequencer
-        PRIVATE
-            resource/bigsequencereditor.uidesc
-    )
-    target_link_libraries(BigSequencer
-        PRIVATE
-            vstgui_support
-    )
-    smtg_target_add_plugin_resources(BigSequencer
-        RESOURCES
-            "resource/bigsequencereditor.uidesc"
-    )
-endif(SMTG_ENABLE_VSTGUI_SUPPORT)
-# -------------------
-
 smtg_target_add_plugin_snapshots (BigSequencer
     RESOURCES
         resource/28B960F2B70D5AE2BD663D5EEBAE6B26_snapshot.png
@@ -64,6 +71,8 @@ smtg_target_add_plugin_snapshots (BigSequencer
 target_link_libraries(BigSequencer
     PRIVATE
         sdk
+        imgui
+        glfw
 )
 
 smtg_target_configure_version_file(BigSequencer)
