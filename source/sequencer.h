@@ -7,34 +7,33 @@ namespace vargason::bigsequencer {
 	struct Cursor {
 		bool active = false;
 
-		double position;
-		bool notePlaying;
-		uint8_t currentlyPlayingNote;
+		bool notePlaying = false;
+		uint8_t currentlyPlayingNote = 60;
+		int position = 0;
 
-		Interval interval;
-
+		Interval interval = Interval::quarterNote;
 		float noteLength = 0.4;  // between 0 and 1
-		int8_t octaveOffset = 0;
+		int8_t pitchOffset = 0;
 
-		uint8_t startPosition;  // what index the cursor starts at
-		double offset;  // between 0 and 1, offsets from the main beat
-		double lastNoteTime;
+		uint8_t startPosition = 0;  // what index the cursor starts at
+		double offset = 0;  // between 0 and 1, offsets from the main beat, maybe allow -1 to 1
+		double lastNoteTime = 0;
 
-		const int octaveMin = -2;
-		const int octaveMax = 2;
+		const int pitchMin = -24;
+		const int pitchMax = 24;
 
 		const double* numericIntervals = new double[7] {
 			0.125,
-				0.25,
-				0.5,
-				1.0,
-				2.0,
-				4.0,
-				8.0
-			};
+			0.25,
+			0.5,
+			1.0,
+			2.0,
+			4.0,
+			8.0
+		};
 
 		double realNoteLength() {
-			return offset * numericInterval();
+			return noteLength * numericInterval();
 		}
 
 		double numericInterval() {
@@ -45,8 +44,8 @@ namespace vargason::bigsequencer {
 	struct NoteData {
 		float velocity = 0.40;
 		uint8_t pitch = 60;
-		uint8_t probability; // probability that individual note will hit
-		bool active;
+		uint8_t probability = 100; // probability that individual note will hit
+		bool active = true;
 	};
 
 	class Sequencer {
@@ -68,14 +67,12 @@ namespace vargason::bigsequencer {
 		void setNotes(int width, int height, NoteData* notes);
 		int totalNotes();
 
-		uint8_t currentlyPlayingNote;
-
 		const int maxWidth = 32;
 		const int maxHeight = 32;
-		const int maxNumCursors = 2;
+		const int maxNumCursors = 1;
 
 	private:
-		Cursor* cursors = new Cursor[maxNumCursors];
+		Cursor* cursors = nullptr;
 
 		uint16_t width;
 		uint16_t height;

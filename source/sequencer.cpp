@@ -6,15 +6,17 @@ namespace vargason::bigsequencer {
 
 	Sequencer::Sequencer(int width, int height) {
 		setSize(width, height);
+		cursors = new Cursor[maxNumCursors];
 		cursors[0].active = true;
 		cursors[0].interval = quarterNote;
-		cursors[1].active = true;
+		/*cursors[1].active = true;
 		cursors[1].interval = halfNote;
-		cursors[1].octaveOffset = -1;
+		cursors[1].pitchOffset = -12;*/
 	}
 
 	Sequencer::~Sequencer() {
 		delete notes;
+		delete cursors;
 	}
 
 	NoteData Sequencer::getNote(int index) {
@@ -53,13 +55,6 @@ namespace vargason::bigsequencer {
 	Cursor& Sequencer::getCursor(int index) {
 		return this->cursors[index];
 	}
-
-	/*void Sequencer::setCursor(double cursor) {
-		if (cursor > this->totalNotes()) {
-			cursor -= this->totalNotes();
-		}
-		this->cursor = cursor;
-	}*/
 
 	uint16_t Sequencer::getWidth() {
 		return width;

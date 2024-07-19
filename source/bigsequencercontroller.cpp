@@ -40,7 +40,7 @@ tresult PLUGIN_API BigSequencerController::initialize (FUnknown* context)
 	parameters.addParameter(STR16("Cursor 1 Active"), nullptr, 0, 1.0, Vst::ParameterInfo::kCanAutomate, kParamCursor1ActiveId);
 	parameters.addParameter(STR16("Cursor 1 Note Length"), nullptr, 0, 0.4, Vst::ParameterInfo::kCanAutomate, kParamCursor1NoteLengthId);
 
-	Vst::RangeParameter* cursor1OctaveOffsetParameter = new Vst::RangeParameter(STR16("Cursor 1 Octave Offset"), kParamCursor1OctaveOffsetId, nullptr, -2, 2, 0, 0, 0);
+	Vst::RangeParameter* cursor1OctaveOffsetParameter = new Vst::RangeParameter(STR16("Cursor 1 Octave Offset"), kParamCursor1PitchOffsetId, nullptr, -24, 24, 0, 0, 0);
 	parameters.addParameter(cursor1OctaveOffsetParameter);
 
 	Vst::RangeParameter* cursor1NoteIntervalParameter = new Vst::RangeParameter(STR16("Cursor 1 Note Interval"), kParamCursor1NoteIntervalId, nullptr, 0, Interval::doubleWholeNote, Interval::quarterNote, 0, 0);
@@ -50,10 +50,10 @@ tresult PLUGIN_API BigSequencerController::initialize (FUnknown* context)
 	parameters.addParameter(STR16("Cursor 2 Active"), nullptr, 0, 1.0, Vst::ParameterInfo::kCanAutomate, kParamCursor2ActiveId);
 	parameters.addParameter(STR16("Cursor 2 Note Length"), nullptr, 0, 0.4, Vst::ParameterInfo::kCanAutomate, kParamCursor2NoteLengthId);
 
-	Vst::RangeParameter* cursor2OctaveOffsetParameter = new Vst::RangeParameter(STR16("Cursor 2 Octave Offset"), kParamCursor2OctaveOffsetId, nullptr, -2, 2, 0, 0, 0);
+	Vst::RangeParameter* cursor2OctaveOffsetParameter = new Vst::RangeParameter(STR16("Cursor 2 Octave Offset"), kParamCursor2PitchOffsetId, nullptr, -24, 24, -12, 0, 0);
 	parameters.addParameter(cursor2OctaveOffsetParameter);
 
-	Vst::RangeParameter* cursor2NoteIntervalParameter = new Vst::RangeParameter(STR16("Cursor 2 Note Interval"), kParamCursor2NoteIntervalId, nullptr, 0, Interval::doubleWholeNote, Interval::quarterNote, 0, 0);
+	Vst::RangeParameter* cursor2NoteIntervalParameter = new Vst::RangeParameter(STR16("Cursor 2 Note Interval"), kParamCursor2NoteIntervalId, nullptr, 0, Interval::doubleWholeNote, Interval::halfNote, 0, 0);
 	parameters.addParameter(cursor2NoteIntervalParameter);
 
 	return result;

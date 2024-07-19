@@ -92,10 +92,10 @@ namespace vargason::bigsequencer {
 					if (cursor.active) {
 						cursor.lastNoteTime = 0;
 						cursor.notePlaying = true;
-						cursor.position = 0;
-						uint8_t pitch = sequencer->getNote(0).pitch;
+						cursor.position += 1;
+						uint8_t pitch = sequencer->getNote(0).pitch + cursor.pitchOffset;
 						cursor.currentlyPlayingNote = pitch;
-						sendMidiNoteOn(data.outputEvents, sequencer->getNote(0).pitch, 0.40);
+						sendMidiNoteOn(data.outputEvents, pitch, 0.40);
 					}
 				}
 			}
@@ -105,8 +105,8 @@ namespace vargason::bigsequencer {
 				Cursor cursor = sequencer->getCursor(i);
 				if (cursor.notePlaying) {
 					cursor.notePlaying = false;
-					uint8_t pitch = sequencer->getNote(0).pitch;
-					sendMidiNoteOff(data.outputEvents, pitch, 0);
+					uint8_t pitch = cursor.currentlyPlayingNote;
+					sendMidiNoteOff(data.outputEvents, pitch);
 				}
 			}
 		}
@@ -170,10 +170,10 @@ namespace vargason::bigsequencer {
 							sequencer->getCursor(0).interval = (Interval) (Interval::thirtySecondNote + (Interval::doubleWholeNote - Interval::thirtySecondNote) * value);
 						}
 						break;
-					case SequencerParams::kParamCursor1OctaveOffsetId:
+					case SequencerParams::kParamCursor1PitchOffsetId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							Cursor cursor = sequencer->getCursor(0);
-							cursor.octaveOffset = cursor.octaveMin + (cursor.octaveMax - cursor.octaveMin) * value;
+							cursor.pitchOffset = cursor.pitchMin + (cursor.pitchMax - cursor.pitchMin) * value;
 						}
 						break;
 
@@ -193,10 +193,10 @@ namespace vargason::bigsequencer {
 							sequencer->getCursor(1).interval = (Interval) (Interval::thirtySecondNote + (Interval::doubleWholeNote - Interval::thirtySecondNote) * value);
 						}
 						break;
-					case SequencerParams::kParamCursor2OctaveOffsetId:
+					case SequencerParams::kParamCursor2PitchOffsetId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							Cursor cursor = sequencer->getCursor(1);
-							cursor.octaveOffset = cursor.octaveMin + (cursor.octaveMax - cursor.octaveMin) * value;
+							cursor.pitchOffset = cursor.pitchMin + (cursor.pitchMax - cursor.pitchMin) * value;
 						}
 						break;
 					}
@@ -213,25 +213,31 @@ namespace vargason::bigsequencer {
 			if (lastProjectMusicTime > data.processContext->projectTimeMusic) {  // the measure/song ended and we are back at 0
 				cursor.lastNoteTime -= cycleLength;
 			}
-			updateCursor(data, cursor);
+ 			updateCursor(data, cursor);
 		}
 
 		lastProjectMusicTime = data.processContext->projectTimeMusic;
 	}
 
 	void BigSequencerProcessor::updateCursor(Vst::ProcessData& data, Cursor& cursor) {
-		double position = cursor.position;
+		
 		double quarterNotes = data.processContext->projectTimeMusic;
 		if (quarterNotes >= cursor.lastNoteTime + cursor.numericInterval()) {
 			NoteData noteData = sequencer->getNote(cursor.position);
-			sendMidiNoteOn(data.outputEvents, noteData.pitch, noteData.velocity);
+			uint8_t realPitch = noteData.pitch + cursor.pitchOffset;
+			sendMidiNoteOn(data.outputEvents, realPitch, noteData.velocity);
+
 			cursor.notePlaying = true;
-			cursor.position = position + cursor.numericInterval();
-			sequencer->currentlyPlayingNote = noteData.pitch;
+			int newPos = cursor.position + 1;
+			if (newPos > sequencer->totalNotes()) {
+				newPos = 0;
+			}
+			cursor.position = newPos;
+			cursor.currentlyPlayingNote = realPitch;
 			cursor.lastNoteTime = quarterNotes;
 		}
-		else if (cursor.notePlaying && quarterNotes >= cursor.lastNoteTime + cursor.realNoteLength()) { // need to take interval into account for note length??? actual note length is a fraction of the interval (note length * interval)
-			sendMidiNoteOff(data.outputEvents, sequencer->currentlyPlayingNote, 0);
+		else if (cursor.notePlaying && quarterNotes >= cursor.lastNoteTime + cursor.realNoteLength()) {
+			sendMidiNoteOff(data.outputEvents, cursor.currentlyPlayingNote);
 			cursor.notePlaying = false;
 		}
 	}
@@ -360,13 +366,14 @@ namespace vargason::bigsequencer {
 		}
 	}
 
-	void BigSequencerProcessor::sendMidiNoteOff(Vst::IEventList* eventList, uint8_t pitch, float velocity) {
+	void BigSequencerProcessor::sendMidiNoteOff(Vst::IEventList* eventList, uint8_t pitch) {
 		if (eventList) {
 			Vst::Event midiEvent = { 0 };
 			midiEvent.type = Vst::Event::kNoteOffEvent;
+			midiEvent.sampleOffset = 0;
 			midiEvent.noteOff.channel = 0;
 			midiEvent.noteOff.pitch = pitch;
-			midiEvent.noteOff.velocity = velocity;
+			midiEvent.noteOff.velocity = 0;
 			midiEvent.noteOff.noteId = pitch;
 			eventList->addEvent(midiEvent);
 		}

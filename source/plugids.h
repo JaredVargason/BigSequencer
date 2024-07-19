@@ -11,11 +11,11 @@ namespace vargason::bigsequencer {
 		kParamCursor1ActiveId,
 		kParamCursor1NoteLengthId,
 		kParamCursor1NoteIntervalId,
-		kParamCursor1OctaveOffsetId,
+		kParamCursor1PitchOffsetId,
 
 		kParamCursor2ActiveId,
 		kParamCursor2NoteLengthId,
 		kParamCursor2NoteIntervalId,
-		kParamCursor2OctaveOffsetId
+		kParamCursor2PitchOffsetId
 	};
 }
