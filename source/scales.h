@@ -3,17 +3,17 @@
 namespace vargason::bigsequencer {
 	enum Note {
 		a,
-		asharp,
+		aSharp,
 		b,
 		c,
-		csharp,
+		cSharp,
 		d,
-		dsharp,
+		dSharp,
 		e,
 		f,
-		fsharp,
+		fSharp,
 		g,
-		gsharp
+		gSharp
 	};
 
 	enum Scale {
@@ -21,5 +21,15 @@ namespace vargason::bigsequencer {
 		major,
 		minor,
 		dorian,
+	};
+
+	enum Interval {
+		thirtySecondNote = 0,
+		sixteenthNote,
+		eighthNote,
+		quarterNote,
+		halfNote,
+		wholeNote,
+		doubleWholeNote
 	};
 }

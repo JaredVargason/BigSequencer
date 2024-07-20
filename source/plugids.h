@@ -4,9 +4,18 @@
 
 namespace vargason::bigsequencer {
 	enum SequencerParams : Steinberg::Vst::ParamID {
-		kParamWidthId = 100,
-		kParamHeightId = 101,
-		kParamHostSyncId = 102,
-		kParamNoteLengthId = 103
+		kParamSequencerWidthId = 100,
+		kParamSequencerHeightId,
+		kParamHostSyncId,
+
+		kParamCursor1ActiveId,
+		kParamCursor1NoteLengthId,
+		kParamCursor1NoteIntervalId,
+		kParamCursor1PitchOffsetId,
+
+		kParamCursor2ActiveId,
+		kParamCursor2NoteLengthId,
+		kParamCursor2NoteIntervalId,
+		kParamCursor2PitchOffsetId
 	};
 }

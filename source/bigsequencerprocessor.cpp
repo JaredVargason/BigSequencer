@@ -5,8 +5,8 @@
 #include "bigsequencerprocessor.h"
 #include "bigsequencercids.h"
 #include "plugids.h"
-#include "notedatagenerator.h";
-#include "scales.h";
+#include "notedatagenerator.h"
+#include "scales.h"
 
 #include "base/source/fstreamer.h"
 #include "pluginterfaces/vst/ivstparameterchanges.h"
@@ -73,6 +73,54 @@ namespace vargason::bigsequencer {
 	//------------------------------------------------------------------------
 	tresult PLUGIN_API BigSequencerProcessor::process(Vst::ProcessData& data)
 	{
+		handleParameterChanges(data);
+
+		// if we don't have a process context, the plugin can't do anything
+		if (data.processContext == NULL) {
+			return kResultOk;
+		}
+
+		// handle host being start & stopped
+		bool playing = data.processContext->state & data.processContext->kPlaying;
+		if (playing && !wasPreviouslyPlaying) {  // started from paused or stopped state.
+			if (data.processContext->projectTimeMusic == data.processContext->cycleStartMusic) {  // started from paused state
+				// started from stopped state
+				for (int i = 0; i < sequencer->maxNumCursors; i++) {
+					Cursor& cursor = sequencer->getCursor(i);
+					if (cursor.active) {
+						cursor.lastNoteTime = 0;
+						cursor.notePlaying = true;
+						uint8_t pitch = sequencer->getNote(0).pitch + cursor.pitchOffset;
+						cursor.currentlyPlayingNote = pitch;
+						sendMidiNoteOn(data.outputEvents, pitch, 0.40);
+						cursor.position = 1;
+					}
+				}
+			}
+		}
+		else if (!playing && wasPreviouslyPlaying) {  // stopped or paused
+			for (int i = 0; i < sequencer->maxNumCursors; i++) {
+				Cursor& cursor = sequencer->getCursor(i);
+				if (cursor.notePlaying) {
+					cursor.notePlaying = false;
+					uint8_t pitch = cursor.currentlyPlayingNote;
+					sendMidiNoteOff(data.outputEvents, pitch);
+				}
+			}
+		}
+
+		wasPreviouslyPlaying = playing;
+
+		if (hostSynced && playing) {
+			updateSequencer(data);
+		}
+
+		lastProjectMusicTime = data.processContext->projectTimeMusic;
+
+		return kResultOk;
+	}
+
+	void BigSequencerProcessor::handleParameterChanges(Vst::ProcessData& data) {
 		// get parameter changes
 		if (data.inputParameterChanges) {
 			int32 numParamsChanged = data.inputParameterChanges->getParameterCount();
@@ -83,17 +131,7 @@ namespace vargason::bigsequencer {
 					int32 sampleOffset;
 					int32 numPoints = paramQueue->getPointCount();
 					switch (paramQueue->getParameterId()) {
-					case SequencerParams::kParamHostSyncId:
-						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							// bool hostSynced = (value > 0.5);
-						}
-						break;
-					case SequencerParams::kParamNoteLengthId:
-						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer->setNoteLength(value);
-						}
-						break;
-					case SequencerParams::kParamWidthId:
+					case SequencerParams::kParamSequencerWidthId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							int width = value * sequencer->maxWidth;
 							if (width < 0) {
@@ -102,74 +140,107 @@ namespace vargason::bigsequencer {
 							sequencer->setSize(width, sequencer->getHeight()); // cursor could be out of bounds if we do this wrong
 						}
 						break;
-					case SequencerParams::kParamHeightId:
-						int height = value * sequencer->maxWidth;
-						if (height < 0) {
-							height = 1;
+					case SequencerParams::kParamSequencerHeightId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							int height = value * sequencer->maxWidth;
+							if (height < 0) {
+								height = 1;
+							}
+							sequencer->setSize(sequencer->getWidth(), height);
 						}
-						sequencer->setSize(sequencer->getWidth(), sequencer->getHeight());
+						break;
+					case SequencerParams::kParamHostSyncId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							// bool hostSynced = (value > 0.5);
+						}
+						break;
+
+						// Cursor 1
+					case SequencerParams::kParamCursor1ActiveId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							sequencer->getCursor(0).active = value;
+						}
+						break;
+					case SequencerParams::kParamCursor1NoteLengthId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							sequencer->getCursor(0).noteLength = value;
+						}
+						break;
+					case SequencerParams::kParamCursor1NoteIntervalId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							sequencer->getCursor(0).interval = (Interval) (Interval::thirtySecondNote + (Interval::doubleWholeNote - Interval::thirtySecondNote) * value);
+						}
+						break;
+					case SequencerParams::kParamCursor1PitchOffsetId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							Cursor& cursor = sequencer->getCursor(0);
+							cursor.pitchOffset = cursor.pitchMin + (cursor.pitchMax - cursor.pitchMin) * value;
+						}
+						break;
+
+						// Cursor 2
+					case SequencerParams::kParamCursor2ActiveId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							sequencer->getCursor(1).active = value;
+						}
+						break;
+					case SequencerParams::kParamCursor2NoteLengthId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							sequencer->getCursor(1).noteLength = value;
+						}
+						break;
+					case SequencerParams::kParamCursor2NoteIntervalId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							sequencer->getCursor(1).interval = (Interval) (Interval::thirtySecondNote + (Interval::doubleWholeNote - Interval::thirtySecondNote) * value);
+						}
+						break;
+					case SequencerParams::kParamCursor2PitchOffsetId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							Cursor& cursor = sequencer->getCursor(1);
+							cursor.pitchOffset = cursor.pitchMin + (cursor.pitchMax - cursor.pitchMin) * value;
+						}
 						break;
 					}
 				}
 			}
 		}
-
-		// if we don't have a process context, the plugin can't do anything
-		if (data.processContext == NULL) {
-			return kResultOk;
-		}
-
-		// handle host being start & stopped
-		bool playing = data.processContext->state & data.processContext->kPlaying;
-		if (playing && !wasPreviouslyPlaying) {  // started from paused or stopped state.
-			if (data.processContext->projectTimeMusic == lastProjectMusicTime) {  // paused state
-				// idk who knows just don't send a note cuz fuck em
-			}
-			else {  // stopped state
-				lastNoteTime = 0;
-				sendMidiNoteOn(data.outputEvents, sequencer->getNote(0).pitch, 0.40);
-				sequencer->setNotePlaying(true);
-				sequencer->setCursor(0);
-			}
-
-		}
-		else if (!playing && wasPreviouslyPlaying) {  // stopped or paused
-			if (sequencer->isNotePlaying()) {
-				sendMidiNoteOff(data.outputEvents, sequencer->getCurrentNote().pitch, 0);
-				sequencer->setNotePlaying(false);
-			}
-		}
-
-		wasPreviouslyPlaying = playing;
-
-		if (hostSynced && playing) {
-			updateSequencer(data);
-		}
-		return kResultOk;
 	}
 
 	void BigSequencerProcessor::updateSequencer(Vst::ProcessData& data) {
 		double cycleLength = data.processContext->cycleEndMusic - data.processContext->cycleStartMusic;
-		double quarterNotes = data.processContext->projectTimeMusic;  // can also get this by dividing projectTimeSamples by sampleRate
 
-		if (lastProjectMusicTime > quarterNotes) {  // the measure/song ended and we are back at 0
-			lastNoteTime -= cycleLength;
+		for (int cursorIndex = 0; cursorIndex < sequencer->maxNumCursors; cursorIndex++) {
+			Cursor& cursor = sequencer->getCursor(cursorIndex);
+			if (lastProjectMusicTime > data.processContext->projectTimeMusic) {  // the measure/song ended and we are back at 0
+				cursor.lastNoteTime -= cycleLength;
+			}
+ 			updateCursor(data, cursor);
 		}
+	}
 
-		double cursor = sequencer->getCursor();
-		if (quarterNotes >= lastNoteTime + 1.0) {
-			NoteData noteData = sequencer->getCurrentNote();
-			sendMidiNoteOn(data.outputEvents, noteData.pitch, noteData.velocity);
-			sequencer->setNotePlaying(true);
-			sequencer->setCursor(cursor + 1);
-			sequencer->currentlyPlayingNote = noteData.pitch;
-			lastNoteTime = quarterNotes;
+	void BigSequencerProcessor::updateCursor(Vst::ProcessData& data, Cursor& cursor) {
+		
+		double quarterNotes = data.processContext->projectTimeMusic;
+		float numericInterval = cursor.numericInterval();
+		if (quarterNotes >= cursor.lastNoteTime + numericInterval) {
+			NoteData noteData = sequencer->getNote(cursor.position);
+			uint8_t realPitch = noteData.pitch + cursor.pitchOffset;
+			sendMidiNoteOn(data.outputEvents, realPitch, noteData.velocity);
+
+			cursor.notePlaying = true;
+			int newPos = cursor.position + 1;
+			int totalNotes = sequencer->totalNotes();
+			if (newPos > totalNotes) {
+				newPos = 0;
+			}
+			cursor.position = newPos;
+			cursor.currentlyPlayingNote = realPitch;
+			cursor.lastNoteTime = quarterNotes;
 		}
-		else if (sequencer->isNotePlaying() && quarterNotes >= lastNoteTime + sequencer->getNoteLength()) { // need to take interval into account for note length??? actual note length is a fraction of the interval (note length * interval)
-			sendMidiNoteOff(data.outputEvents, sequencer->currentlyPlayingNote, 0);
-			sequencer->setNotePlaying(false);
+		if (cursor.notePlaying && quarterNotes >= cursor.lastNoteTime + cursor.realNoteLength()) {
+			sendMidiNoteOff(data.outputEvents, cursor.currentlyPlayingNote);
+			cursor.notePlaying = false;
 		}
-		lastProjectMusicTime = data.processContext->projectTimeMusic;
 	}
 
 	//------------------------------------------------------------------------
@@ -296,13 +367,14 @@ namespace vargason::bigsequencer {
 		}
 	}
 
-	void BigSequencerProcessor::sendMidiNoteOff(Vst::IEventList* eventList, uint8_t pitch, float velocity) {
+	void BigSequencerProcessor::sendMidiNoteOff(Vst::IEventList* eventList, uint8_t pitch) {
 		if (eventList) {
 			Vst::Event midiEvent = { 0 };
 			midiEvent.type = Vst::Event::kNoteOffEvent;
+			midiEvent.sampleOffset = 0;
 			midiEvent.noteOff.channel = 0;
 			midiEvent.noteOff.pitch = pitch;
-			midiEvent.noteOff.velocity = velocity;
+			midiEvent.noteOff.velocity = 0;
 			midiEvent.noteOff.noteId = pitch;
 			eventList->addEvent(midiEvent);
 		}

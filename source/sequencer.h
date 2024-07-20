@@ -1,25 +1,51 @@
 #pragma once
 #include <stdint.h>
+#include "scales.h"
 
 namespace vargason::bigsequencer {
 
 	struct Cursor {
-		double position;
-		bool notePlaying;
-		uint8_t currentlyPlayingNote;
+		bool active = false;
 
-		float interval;  // thirty-second notes, sixteenth notes, eighth notes, quarter notes, half notes, whole notes, double whole notes, quad whole notes
-		float noteLength;  // between 0 and 1
-		uint8_t startPosition;  // what index the cursor starts at
-		float offset;  // between 0 and 1, offsets from the main beat
-		uint8_t octave = 5; // by default go to middle c
+		bool notePlaying = false;
+		uint8_t currentlyPlayingNote = 60;
+		int position = 0;
+
+		Interval interval = Interval::quarterNote;
+		float noteLength = 0.4;  // between 0 and 1
+		int8_t pitchOffset = 0;
+
+		uint8_t startPosition = 0;  // what index the cursor starts at
+		double offset = 0;  // between 0 and 1, offsets from the main beat, maybe allow -1 to 1
+		double lastNoteTime = 0;
+
+		const int pitchMin = -24;
+		const int pitchMax = 24;
+
+		const double* numericIntervals = new double[7] {
+			0.125,
+			0.25,
+			0.5,
+			1.0,
+			2.0,
+			4.0,
+			8.0
+		};
+
+		double realNoteLength() {
+			return noteLength * numericInterval();
+		}
+
+		double numericInterval() {
+			return numericIntervals[(int)interval];
+		}
 	};
 
 	struct NoteData {
 		float velocity = 0.40;
 		uint8_t pitch = 60;
-		uint8_t probability; // probability that individual note will hit
-		bool active;
+		uint8_t probability = 100; // probability that individual note will hit
+		bool active = true;
 	};
 
 	class Sequencer {
@@ -30,10 +56,7 @@ namespace vargason::bigsequencer {
 		Sequencer(int width, int height);
 		~Sequencer();
 
-		double getCursor();
-		void setCursor(double cursor);
-		bool isNotePlaying();
-		void setNotePlaying(bool state);
+		Cursor& getCursor(int index);
 
 		uint16_t getWidth();
 		uint16_t getHeight();
@@ -41,27 +64,17 @@ namespace vargason::bigsequencer {
 
 		NoteData getNote(int index);
 		NoteData getNote(int x, int y);
-		NoteData getCurrentNote();
 		void setNotes(int width, int height, NoteData* notes);
 		int totalNotes();
 
-		void setNoteLength(float noteLength);
-		float getNoteLength();
-
-		uint8_t currentlyPlayingNote;
-
 		const int maxWidth = 32;
 		const int maxHeight = 32;
+		const int maxNumCursors = 2;
 
 	private:
-		double cursor;
-		bool notePlaying;
+		Cursor* cursors = nullptr;
 
 		uint16_t width;
 		uint16_t height;
-		float noteLength;
-
-		// scale
-		uint8_t rootNote;
 	};
 }
