@@ -83,26 +83,24 @@ namespace vargason::bigsequencer {
 		// handle host being start & stopped
 		bool playing = data.processContext->state & data.processContext->kPlaying;
 		if (playing && !wasPreviouslyPlaying) {  // started from paused or stopped state.
-			if (data.processContext->projectTimeMusic == lastProjectMusicTime) {  // paused state
-				// idk who knows just don't send a note cuz fuck em
-			}
-			else {  // stopped state
+			if (data.processContext->projectTimeMusic == data.processContext->cycleStartMusic) {  // started from paused state
+				// started from stopped state
 				for (int i = 0; i < sequencer->maxNumCursors; i++) {
-					Cursor cursor = sequencer->getCursor(i);
+					Cursor& cursor = sequencer->getCursor(i);
 					if (cursor.active) {
 						cursor.lastNoteTime = 0;
 						cursor.notePlaying = true;
-						cursor.position += 1;
 						uint8_t pitch = sequencer->getNote(0).pitch + cursor.pitchOffset;
 						cursor.currentlyPlayingNote = pitch;
 						sendMidiNoteOn(data.outputEvents, pitch, 0.40);
+						cursor.position = 1;
 					}
 				}
 			}
 		}
 		else if (!playing && wasPreviouslyPlaying) {  // stopped or paused
 			for (int i = 0; i < sequencer->maxNumCursors; i++) {
-				Cursor cursor = sequencer->getCursor(i);
+				Cursor& cursor = sequencer->getCursor(i);
 				if (cursor.notePlaying) {
 					cursor.notePlaying = false;
 					uint8_t pitch = cursor.currentlyPlayingNote;
@@ -116,6 +114,9 @@ namespace vargason::bigsequencer {
 		if (hostSynced && playing) {
 			updateSequencer(data);
 		}
+
+		lastProjectMusicTime = data.processContext->projectTimeMusic;
+
 		return kResultOk;
 	}
 
@@ -172,7 +173,7 @@ namespace vargason::bigsequencer {
 						break;
 					case SequencerParams::kParamCursor1PitchOffsetId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							Cursor cursor = sequencer->getCursor(0);
+							Cursor& cursor = sequencer->getCursor(0);
 							cursor.pitchOffset = cursor.pitchMin + (cursor.pitchMax - cursor.pitchMin) * value;
 						}
 						break;
@@ -195,7 +196,7 @@ namespace vargason::bigsequencer {
 						break;
 					case SequencerParams::kParamCursor2PitchOffsetId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							Cursor cursor = sequencer->getCursor(1);
+							Cursor& cursor = sequencer->getCursor(1);
 							cursor.pitchOffset = cursor.pitchMin + (cursor.pitchMax - cursor.pitchMin) * value;
 						}
 						break;
@@ -209,34 +210,34 @@ namespace vargason::bigsequencer {
 		double cycleLength = data.processContext->cycleEndMusic - data.processContext->cycleStartMusic;
 
 		for (int cursorIndex = 0; cursorIndex < sequencer->maxNumCursors; cursorIndex++) {
-			Cursor cursor = sequencer->getCursor(cursorIndex);
+			Cursor& cursor = sequencer->getCursor(cursorIndex);
 			if (lastProjectMusicTime > data.processContext->projectTimeMusic) {  // the measure/song ended and we are back at 0
 				cursor.lastNoteTime -= cycleLength;
 			}
  			updateCursor(data, cursor);
 		}
-
-		lastProjectMusicTime = data.processContext->projectTimeMusic;
 	}
 
 	void BigSequencerProcessor::updateCursor(Vst::ProcessData& data, Cursor& cursor) {
 		
 		double quarterNotes = data.processContext->projectTimeMusic;
-		if (quarterNotes >= cursor.lastNoteTime + cursor.numericInterval()) {
+		float numericInterval = cursor.numericInterval();
+		if (quarterNotes >= cursor.lastNoteTime + numericInterval) {
 			NoteData noteData = sequencer->getNote(cursor.position);
 			uint8_t realPitch = noteData.pitch + cursor.pitchOffset;
 			sendMidiNoteOn(data.outputEvents, realPitch, noteData.velocity);
 
 			cursor.notePlaying = true;
 			int newPos = cursor.position + 1;
-			if (newPos > sequencer->totalNotes()) {
+			int totalNotes = sequencer->totalNotes();
+			if (newPos > totalNotes) {
 				newPos = 0;
 			}
 			cursor.position = newPos;
 			cursor.currentlyPlayingNote = realPitch;
 			cursor.lastNoteTime = quarterNotes;
 		}
-		else if (cursor.notePlaying && quarterNotes >= cursor.lastNoteTime + cursor.realNoteLength()) {
+		if (cursor.notePlaying && quarterNotes >= cursor.lastNoteTime + cursor.realNoteLength()) {
 			sendMidiNoteOff(data.outputEvents, cursor.currentlyPlayingNote);
 			cursor.notePlaying = false;
 		}

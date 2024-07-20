@@ -9,9 +9,6 @@ namespace vargason::bigsequencer {
 		cursors = new Cursor[maxNumCursors];
 		cursors[0].active = true;
 		cursors[0].interval = quarterNote;
-		/*cursors[1].active = true;
-		cursors[1].interval = halfNote;
-		cursors[1].pitchOffset = -12;*/
 	}
 
 	Sequencer::~Sequencer() {
