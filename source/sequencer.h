@@ -69,7 +69,7 @@ namespace vargason::bigsequencer {
 
 		const int maxWidth = 32;
 		const int maxHeight = 32;
-		const int maxNumCursors = 2;
+		const int maxNumCursors = 4;
 
 	private:
 		Cursor* cursors = nullptr;
