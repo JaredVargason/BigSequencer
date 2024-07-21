@@ -155,7 +155,7 @@ namespace vargason::bigsequencer {
 						}
 						break;
 
-						// Cursor 1
+					// Cursor 1
 					case SequencerParams::kParamCursor1ActiveId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							sequencer->getCursor(0).active = value;
@@ -178,7 +178,7 @@ namespace vargason::bigsequencer {
 						}
 						break;
 
-						// Cursor 2
+					// Cursor 2
 					case SequencerParams::kParamCursor2ActiveId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							sequencer->getCursor(1).active = value;
@@ -197,6 +197,52 @@ namespace vargason::bigsequencer {
 					case SequencerParams::kParamCursor2PitchOffsetId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							Cursor& cursor = sequencer->getCursor(1);
+							cursor.pitchOffset = cursor.pitchMin + (cursor.pitchMax - cursor.pitchMin) * value;
+						}
+						break;
+
+					// Cursor 3
+					case SequencerParams::kParamCursor3ActiveId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							sequencer->getCursor(2).active = value;
+						}
+						break;
+					case SequencerParams::kParamCursor3NoteLengthId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							sequencer->getCursor(2).noteLength = value;
+						}
+						break;
+					case SequencerParams::kParamCursor3NoteIntervalId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							sequencer->getCursor(2).interval = (Interval)(Interval::thirtySecondNote + (Interval::doubleWholeNote - Interval::thirtySecondNote) * value);
+						}
+						break;
+					case SequencerParams::kParamCursor3PitchOffsetId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							Cursor& cursor = sequencer->getCursor(2);
+							cursor.pitchOffset = cursor.pitchMin + (cursor.pitchMax - cursor.pitchMin) * value;
+						}
+						break;
+
+					// Cursor 4
+					case SequencerParams::kParamCursor4ActiveId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							sequencer->getCursor(3).active = value;
+						}
+						break;
+					case SequencerParams::kParamCursor4NoteLengthId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							sequencer->getCursor(3).noteLength = value;
+						}
+						break;
+					case SequencerParams::kParamCursor4NoteIntervalId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							sequencer->getCursor(3).interval = (Interval)(Interval::thirtySecondNote + (Interval::doubleWholeNote - Interval::thirtySecondNote) * value);
+						}
+						break;
+					case SequencerParams::kParamCursor4PitchOffsetId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							Cursor& cursor = sequencer->getCursor(3);
 							cursor.pitchOffset = cursor.pitchMin + (cursor.pitchMax - cursor.pitchMin) * value;
 						}
 						break;
@@ -223,18 +269,20 @@ namespace vargason::bigsequencer {
 		double quarterNotes = data.processContext->projectTimeMusic;
 		float numericInterval = cursor.numericInterval();
 		if (quarterNotes >= cursor.lastNoteTime + numericInterval) {
-			NoteData noteData = sequencer->getNote(cursor.position);
-			uint8_t realPitch = noteData.pitch + cursor.pitchOffset;
-			sendMidiNoteOn(data.outputEvents, realPitch, noteData.velocity);
+			if (cursor.active) {
+				NoteData noteData = sequencer->getNote(cursor.position);
+				uint8_t realPitch = noteData.pitch + cursor.pitchOffset;
+				sendMidiNoteOn(data.outputEvents, realPitch, noteData.velocity);
 
-			cursor.notePlaying = true;
-			int newPos = cursor.position + 1;
-			int totalNotes = sequencer->totalNotes();
-			if (newPos > totalNotes) {
-				newPos = 0;
+				cursor.notePlaying = true;
+				int newPos = cursor.position + 1;
+				int totalNotes = sequencer->totalNotes();
+				if (newPos > totalNotes) {
+					newPos = 0;
+				}
+				cursor.position = newPos;
+				cursor.currentlyPlayingNote = realPitch;
 			}
-			cursor.position = newPos;
-			cursor.currentlyPlayingNote = realPitch;
 			cursor.lastNoteTime = quarterNotes;
 		}
 		if (cursor.notePlaying && quarterNotes >= cursor.lastNoteTime + cursor.realNoteLength()) {

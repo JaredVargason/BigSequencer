@@ -40,8 +40,8 @@ tresult PLUGIN_API BigSequencerController::initialize (FUnknown* context)
 	parameters.addParameter(STR16("Cursor 1 Active"), nullptr, 0, 1.0, Vst::ParameterInfo::kCanAutomate, kParamCursor1ActiveId);
 	parameters.addParameter(STR16("Cursor 1 Note Length"), nullptr, 0, 0.4, Vst::ParameterInfo::kCanAutomate, kParamCursor1NoteLengthId);
 
-	Vst::RangeParameter* cursor1OctaveOffsetParameter = new Vst::RangeParameter(STR16("Cursor 1 Octave Offset"), kParamCursor1PitchOffsetId, nullptr, -24, 24, 0, 0, 0);
-	parameters.addParameter(cursor1OctaveOffsetParameter);
+	Vst::RangeParameter* cursor1PitchOffsetParameter = new Vst::RangeParameter(STR16("Cursor 1 Pitch Offset"), kParamCursor1PitchOffsetId, nullptr, -24, 24, 0, 0, 0);
+	parameters.addParameter(cursor1PitchOffsetParameter);
 
 	Vst::RangeParameter* cursor1NoteIntervalParameter = new Vst::RangeParameter(STR16("Cursor 1 Note Interval"), kParamCursor1NoteIntervalId, nullptr, 0, Interval::doubleWholeNote, Interval::quarterNote, 0, 0);
 	parameters.addParameter(cursor1NoteIntervalParameter);
@@ -50,11 +50,31 @@ tresult PLUGIN_API BigSequencerController::initialize (FUnknown* context)
 	parameters.addParameter(STR16("Cursor 2 Active"), nullptr, 0, 1.0, Vst::ParameterInfo::kCanAutomate, kParamCursor2ActiveId);
 	parameters.addParameter(STR16("Cursor 2 Note Length"), nullptr, 0, 0.4, Vst::ParameterInfo::kCanAutomate, kParamCursor2NoteLengthId);
 
-	Vst::RangeParameter* cursor2OctaveOffsetParameter = new Vst::RangeParameter(STR16("Cursor 2 Octave Offset"), kParamCursor2PitchOffsetId, nullptr, -24, 24, -12, 0, 0);
+	Vst::RangeParameter* cursor2OctaveOffsetParameter = new Vst::RangeParameter(STR16("Cursor 2 Pitch Offset"), kParamCursor2PitchOffsetId, nullptr, -24, 24, -12, 0, 0);
 	parameters.addParameter(cursor2OctaveOffsetParameter);
 
 	Vst::RangeParameter* cursor2NoteIntervalParameter = new Vst::RangeParameter(STR16("Cursor 2 Note Interval"), kParamCursor2NoteIntervalId, nullptr, 0, Interval::doubleWholeNote, Interval::halfNote, 0, 0);
 	parameters.addParameter(cursor2NoteIntervalParameter);
+
+	// Cursor 3, inactive by default
+	parameters.addParameter(STR16("Cursor 3 Active"), nullptr, 0, 0, Vst::ParameterInfo::kCanAutomate, kParamCursor3ActiveId);
+	parameters.addParameter(STR16("Cursor 3 Note Length"), nullptr, 0, 0.4, Vst::ParameterInfo::kCanAutomate, kParamCursor3NoteLengthId);
+
+	Vst::RangeParameter* cursor3OctaveOffsetParameter = new Vst::RangeParameter(STR16("Cursor 3 Pitch Offset"), kParamCursor3PitchOffsetId, nullptr, -24, 24, -12, 0, 0);
+	parameters.addParameter(cursor3OctaveOffsetParameter);
+
+	Vst::RangeParameter* cursor3NoteIntervalParameter = new Vst::RangeParameter(STR16("Cursor 3 Note Interval"), kParamCursor3NoteIntervalId, nullptr, 0, Interval::doubleWholeNote, Interval::wholeNote, 0, 0);
+	parameters.addParameter(cursor3NoteIntervalParameter);
+
+	// Cursor 4, inactive by default
+	parameters.addParameter(STR16("Cursor 4 Active"), nullptr, 0, 0, Vst::ParameterInfo::kCanAutomate, kParamCursor4ActiveId);
+	parameters.addParameter(STR16("Cursor 4 Note Length"), nullptr, 0, 0.4, Vst::ParameterInfo::kCanAutomate, kParamCursor4NoteLengthId);
+
+	Vst::RangeParameter* cursor4OctaveOffsetParameter = new Vst::RangeParameter(STR16("Cursor 4 Pitch Offset"), kParamCursor4PitchOffsetId, nullptr, -24, 24, -12, 0, 0);
+	parameters.addParameter(cursor4OctaveOffsetParameter);
+
+	Vst::RangeParameter* cursor4NoteIntervalParameter = new Vst::RangeParameter(STR16("Cursor 4 Note Interval"), kParamCursor4NoteIntervalId, nullptr, 0, Interval::doubleWholeNote, Interval::doubleWholeNote, 0, 0);
+	parameters.addParameter(cursor4NoteIntervalParameter);
 
 	return result;
 }
