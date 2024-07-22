@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 
 namespace vargason::bigsequencer {
 	enum Note {
@@ -19,8 +20,15 @@ namespace vargason::bigsequencer {
 	enum Scale {
 		chromatic,
 		major,
-		minor,
+		majorPentatonic,
+		harmonicMinor,
+		melodicMinor,
 		dorian,
+		phrygian,
+		lydian,
+		mixolydian,
+		aeolian,
+		locrian
 	};
 
 	enum Interval {
@@ -32,4 +40,6 @@ namespace vargason::bigsequencer {
 		wholeNote,
 		doubleWholeNote
 	};
+
+	const std::vector<int> getScaleIntegers(Scale scale);
 }
