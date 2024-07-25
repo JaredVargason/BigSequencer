@@ -5,7 +5,6 @@
 #include "bigsequencerprocessor.h"
 #include "bigsequencercids.h"
 #include "plugids.h"
-#include "notedatagenerator.h"
 #include "scales.h"
 
 #include "base/source/fstreamer.h"
@@ -42,11 +41,10 @@ namespace vargason::bigsequencer {
 		}
 		addEventOutput(STR16("Event Out"), 1);
 
-		RandomNoteDataGenerator noteDataGenerator;
+		
 		this->sequencer = new Sequencer();
-
-		NoteData* noteData = noteDataGenerator.generateNoteData(a, major, 55, 70, sequencer->getWidth(), sequencer->getHeight());
-		sequencer->setNotes(sequencer->getWidth(), sequencer->getHeight(), noteData);
+		this->randomNoteGenerator = new RandomNoteDataGenerator();
+		regenerateGridNotes();
 		this->timerThread = new std::thread();
 
 		return kResultOk;
@@ -57,6 +55,7 @@ namespace vargason::bigsequencer {
 	{
 		// Here the Plug-in will be de-instantiated, last possibility to remove some memory!
 		delete sequencer;
+		delete randomNoteGenerator;
 		delete timerThread;
 		//---do not forget to call parent ------
 		return AudioEffect::terminate();
@@ -155,7 +154,7 @@ namespace vargason::bigsequencer {
 						}
 						break;
 
-					// Cursor 1
+						// Cursor 1
 					case SequencerParams::kParamCursor1ActiveId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							sequencer->getCursor(0).active = value;
@@ -168,7 +167,7 @@ namespace vargason::bigsequencer {
 						break;
 					case SequencerParams::kParamCursor1NoteIntervalId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer->getCursor(0).interval = (Interval) (Interval::thirtySecondNote + (Interval::doubleWholeNote - Interval::thirtySecondNote) * value);
+							sequencer->getCursor(0).interval = (Interval)(Interval::thirtySecondNote + (Interval::doubleWholeNote - Interval::thirtySecondNote) * value);
 						}
 						break;
 					case SequencerParams::kParamCursor1PitchOffsetId:
@@ -178,7 +177,7 @@ namespace vargason::bigsequencer {
 						}
 						break;
 
-					// Cursor 2
+						// Cursor 2
 					case SequencerParams::kParamCursor2ActiveId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							sequencer->getCursor(1).active = value;
@@ -191,7 +190,7 @@ namespace vargason::bigsequencer {
 						break;
 					case SequencerParams::kParamCursor2NoteIntervalId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer->getCursor(1).interval = (Interval) (Interval::thirtySecondNote + (Interval::doubleWholeNote - Interval::thirtySecondNote) * value);
+							sequencer->getCursor(1).interval = (Interval)(Interval::thirtySecondNote + (Interval::doubleWholeNote - Interval::thirtySecondNote) * value);
 						}
 						break;
 					case SequencerParams::kParamCursor2PitchOffsetId:
@@ -201,7 +200,7 @@ namespace vargason::bigsequencer {
 						}
 						break;
 
-					// Cursor 3
+						// Cursor 3
 					case SequencerParams::kParamCursor3ActiveId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							sequencer->getCursor(2).active = value;
@@ -224,7 +223,7 @@ namespace vargason::bigsequencer {
 						}
 						break;
 
-					// Cursor 4
+						// Cursor 4
 					case SequencerParams::kParamCursor4ActiveId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							sequencer->getCursor(3).active = value;
@@ -246,6 +245,44 @@ namespace vargason::bigsequencer {
 							cursor.pitchOffset = cursor.pitchMin + (cursor.pitchMax - cursor.pitchMin) * value;
 						}
 						break;
+
+						// "fake" parameters
+					case SequencerParams::kParamScaleId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							scale = (Scale)(11 * value);
+							regenerateGridNotes();
+						}
+						break;
+					case SequencerParams::kParamRootNoteId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							rootNote = (Pitch)(Pitch::b * value);
+							regenerateGridNotes();
+						}
+						break;
+					case SequencerParams::kParamMinNoteId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							minNote = noteLowerBound + (noteUpperBound - noteLowerBound) * value;
+							if (minNote > maxNote) {
+								maxNote = minNote + 1;
+							}
+							regenerateGridNotes();
+						}
+						break;
+					case SequencerParams::kParamMaxNoteId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							maxNote = noteLowerBound + (noteUpperBound - noteLowerBound) * value;
+							if (minNote > maxNote) {
+								minNote = maxNote - 1;
+							}
+							regenerateGridNotes();
+						}
+						break;
+					case SequencerParams::kParamFillChanceId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							fillChance = 100 * value;
+							regenerateGridNotes();
+						}
+						break;
 					}
 				}
 			}
@@ -265,7 +302,6 @@ namespace vargason::bigsequencer {
 	}
 
 	void BigSequencerProcessor::updateCursor(Vst::ProcessData& data, Cursor& cursor) {
-		
 		double quarterNotes = data.processContext->projectTimeMusic;
 		float numericInterval = cursor.numericInterval();
 		if (quarterNotes >= cursor.lastNoteTime + numericInterval) {
@@ -426,6 +462,11 @@ namespace vargason::bigsequencer {
 			midiEvent.noteOff.noteId = pitch;
 			eventList->addEvent(midiEvent);
 		}
+	}
+
+	void BigSequencerProcessor::regenerateGridNotes() {
+		NoteData* noteData = randomNoteGenerator->generate(sequencer->getWidth(), sequencer->getHeight(), Pitch::c, Scale::major, 55, 70);
+		sequencer->setNotes(sequencer->getWidth(), sequencer->getHeight(), noteData);
 	}
 }
 

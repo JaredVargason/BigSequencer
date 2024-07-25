@@ -7,9 +7,9 @@ namespace vargason::bigsequencer {
 	const std::vector<int> harmonicMinorIntegers = { 0, 2, 3, 5, 7, 8, 11 };
 	const std::vector<int> melodicMinorIntegers = { 0, 2, 3, 5, 7, 9, 11 };  // acsending
 	const std::vector<int> dorianIntegers = { 0, 2, 3, 5, 7, 9, 10 };
-	const std::vector<int> phyrgianIntegers = { 0, 1, 3, 5, 7, 8, 10 };
+	const std::vector<int> phrygianIntegers = { 0, 1, 3, 5, 7, 8, 10 };
 	const std::vector<int> lydianIntegers = { 0, 2, 4, 6, 7, 9, 11 };
-	const std::vector<int> mixoLydianIntegers = { 0, 2, 4, 5, 7, 9, 10 };
+	const std::vector<int> mixolydianIntegers = { 0, 2, 4, 5, 7, 9, 10 };
 	const std::vector<int> aeolianIntegers = { 0, 2, 3, 5, 7, 8, 10 };  // natural minor scale
 	const std::vector<int> locrianIntegers = { 0, 1, 3, 5, 6, 8, 10 };
 	
@@ -22,11 +22,10 @@ namespace vargason::bigsequencer {
 		dorianIntegers,
 		phrygianIntegers,
 		lydianIntegers,
-		mixoLydianIntegers,
+		mixolydianIntegers,
 		aeolianIntegers,
 		locrianIntegers
 	};
-
 	
 	const std::vector<int> getScaleIntegers(Scale scale) {
 		return scaleIntegers[(int)scale];

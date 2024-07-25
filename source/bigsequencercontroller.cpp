@@ -76,6 +76,34 @@ tresult PLUGIN_API BigSequencerController::initialize (FUnknown* context)
 	Vst::RangeParameter* cursor4NoteIntervalParameter = new Vst::RangeParameter(STR16("Cursor 4 Note Interval"), kParamCursor4NoteIntervalId, nullptr, 0, Interval::doubleWholeNote, Interval::doubleWholeNote, 0, 0);
 	parameters.addParameter(cursor4NoteIntervalParameter);
 
+	// "fake" parameters
+
+	// fix this so it uses pitch enum instead
+	Vst::RangeParameter* rootNoteParameter = new Vst::RangeParameter(STR16("Root Note"), kParamRootNoteId, nullptr, Pitch::c, Pitch::b, Pitch::c, 0, 0);
+	parameters.addParameter(rootNoteParameter);
+
+	Vst::StringListParameter* stringListParameter = new Vst::StringListParameter(STR16("Scale"), kParamScaleId, nullptr, 0);
+	stringListParameter->appendString(STR16("Chromatic"));
+	stringListParameter->appendString(STR16("Major"));
+	stringListParameter->appendString(STR16("Major Pentatonic"));
+	stringListParameter->appendString(STR16("Harmonic Minor"));
+	stringListParameter->appendString(STR16("Melodic Minor"));
+	stringListParameter->appendString(STR16("Dorian"));
+	stringListParameter->appendString(STR16("Phrygian"));
+	stringListParameter->appendString(STR16("Lydian"));
+	stringListParameter->appendString(STR16("Mixolydian"));
+	stringListParameter->appendString(STR16("Aeolian"));
+	stringListParameter->appendString(STR16("Locrian"));
+	parameters.addParameter(stringListParameter);
+
+	Vst::RangeParameter* minNoteParameter = new Vst::RangeParameter(STR16("Min Note"), kParamMinNoteId, nullptr, 24, 96, 56, 0, 0);
+	parameters.addParameter(minNoteParameter);
+
+	Vst::RangeParameter* maxNoteParameter = new Vst::RangeParameter(STR16("Max Note"), kParamMaxNoteId, nullptr, 24, 96, 76, 0, 0);
+	parameters.addParameter(maxNoteParameter);
+
+	parameters.addParameter(STR16("Fill Chance"), nullptr, 0, .5f, 0, kParamFillChanceId);
+
 	return result;
 }
 

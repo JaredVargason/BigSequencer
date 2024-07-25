@@ -2,10 +2,7 @@
 #include <vector>
 
 namespace vargason::bigsequencer {
-	enum Note {
-		a,
-		aSharp,
-		b,
+	enum Pitch {
 		c,
 		cSharp,
 		d,
@@ -14,7 +11,10 @@ namespace vargason::bigsequencer {
 		f,
 		fSharp,
 		g,
-		gSharp
+		gSharp,
+		a,
+		aSharp,
+		b
 	};
 
 	enum Scale {
