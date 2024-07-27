@@ -8,7 +8,24 @@ namespace vargason::bigsequencer {
 		setSize(width, height);
 		cursors = new Cursor[maxNumCursors];
 		cursors[0].active = true;
-		cursors[0].interval = quarterNote;
+		cursors[0].interval = Interval::quarterNote;
+		cursors[0].pitchOffset = 0;
+		cursors[0].noteLength = 0.4;
+
+		cursors[1].active = true;
+		cursors[1].interval = Interval::halfNote;
+		cursors[1].pitchOffset = -12;
+		cursors[1].noteLength = 0.4;
+
+		cursors[2].active = false;
+		cursors[2].interval = Interval::wholeNote;
+		cursors[3].pitchOffset = 12;
+		cursors[0].noteLength = 0.4;
+
+		cursors[3].active = false;
+		cursors[3].interval = Interval::eighthNote;
+		cursors[3].pitchOffset = 12;
+		cursors[0].noteLength = 0.4;
 	}
 
 	Sequencer::~Sequencer() {

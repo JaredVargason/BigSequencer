@@ -7,6 +7,7 @@ namespace vargason::bigsequencer {
 		kParamSequencerWidthId = 100,
 		kParamSequencerHeightId,
 		kParamHostSyncId,
+		kParamRetriggerId,
 
 		kParamCursor1ActiveId,
 		kParamCursor1NoteLengthId,
@@ -26,6 +27,13 @@ namespace vargason::bigsequencer {
 		kParamCursor4ActiveId,
 		kParamCursor4NoteLengthId,
 		kParamCursor4NoteIntervalId,
-		kParamCursor4PitchOffsetId
+		kParamCursor4PitchOffsetId,
+
+		// "fake" parameters
+		kParamScaleId,
+		kParamRootNoteId,
+		kParamMinNoteId,
+		kParamMaxNoteId,
+		kParamFillChanceId
 	};
 }

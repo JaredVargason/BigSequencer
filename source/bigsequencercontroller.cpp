@@ -34,7 +34,8 @@ tresult PLUGIN_API BigSequencerController::initialize (FUnknown* context)
 	Vst::RangeParameter* sequencerHeightParameter = new Vst::RangeParameter(STR16("Sequencer Height"), kParamSequencerHeightId, nullptr, 1, 32, 4, 0, 0);
 	parameters.addParameter(sequencerHeightParameter);
 
-	parameters.addParameter(STR16("Host Sync"), nullptr, 0, 1.0, Vst::ParameterInfo::kCanAutomate, kParamHostSyncId);
+	parameters.addParameter(STR16("Host Sync"), nullptr, 0, 1.0, 0, kParamHostSyncId);
+	parameters.addParameter(STR16("Retrigger"), nullptr, 0, 1.0, 0, kParamRetriggerId);
 
 	// Cursor 1
 	parameters.addParameter(STR16("Cursor 1 Active"), nullptr, 0, 1.0, Vst::ParameterInfo::kCanAutomate, kParamCursor1ActiveId);
@@ -48,7 +49,7 @@ tresult PLUGIN_API BigSequencerController::initialize (FUnknown* context)
 
 	// Cursor 2
 	parameters.addParameter(STR16("Cursor 2 Active"), nullptr, 0, 1.0, Vst::ParameterInfo::kCanAutomate, kParamCursor2ActiveId);
-	parameters.addParameter(STR16("Cursor 2 Note Length"), nullptr, 0, 0.4, Vst::ParameterInfo::kCanAutomate, kParamCursor2NoteLengthId);
+	parameters.addParameter(STR16("Cursor 2 Note Length"), nullptr, 0, 0.8, Vst::ParameterInfo::kCanAutomate, kParamCursor2NoteLengthId);
 
 	Vst::RangeParameter* cursor2OctaveOffsetParameter = new Vst::RangeParameter(STR16("Cursor 2 Pitch Offset"), kParamCursor2PitchOffsetId, nullptr, -24, 24, -12, 0, 0);
 	parameters.addParameter(cursor2OctaveOffsetParameter);
@@ -58,7 +59,7 @@ tresult PLUGIN_API BigSequencerController::initialize (FUnknown* context)
 
 	// Cursor 3, inactive by default
 	parameters.addParameter(STR16("Cursor 3 Active"), nullptr, 0, 0, Vst::ParameterInfo::kCanAutomate, kParamCursor3ActiveId);
-	parameters.addParameter(STR16("Cursor 3 Note Length"), nullptr, 0, 0.4, Vst::ParameterInfo::kCanAutomate, kParamCursor3NoteLengthId);
+	parameters.addParameter(STR16("Cursor 3 Note Length"), nullptr, 0, 0.6, Vst::ParameterInfo::kCanAutomate, kParamCursor3NoteLengthId);
 
 	Vst::RangeParameter* cursor3OctaveOffsetParameter = new Vst::RangeParameter(STR16("Cursor 3 Pitch Offset"), kParamCursor3PitchOffsetId, nullptr, -24, 24, -12, 0, 0);
 	parameters.addParameter(cursor3OctaveOffsetParameter);
@@ -75,6 +76,34 @@ tresult PLUGIN_API BigSequencerController::initialize (FUnknown* context)
 
 	Vst::RangeParameter* cursor4NoteIntervalParameter = new Vst::RangeParameter(STR16("Cursor 4 Note Interval"), kParamCursor4NoteIntervalId, nullptr, 0, Interval::doubleWholeNote, Interval::doubleWholeNote, 0, 0);
 	parameters.addParameter(cursor4NoteIntervalParameter);
+
+	// "fake" parameters
+
+	// fix this so it uses pitch enum instead
+	Vst::RangeParameter* rootNoteParameter = new Vst::RangeParameter(STR16("Root Note"), kParamRootNoteId, nullptr, Pitch::c, Pitch::b, Pitch::c, 0, 0);
+	parameters.addParameter(rootNoteParameter);
+
+	Vst::StringListParameter* stringListParameter = new Vst::StringListParameter(STR16("Scale"), kParamScaleId, nullptr, 0);
+	stringListParameter->appendString(STR16("Chromatic"));
+	stringListParameter->appendString(STR16("Major"));
+	stringListParameter->appendString(STR16("Major Pentatonic"));
+	stringListParameter->appendString(STR16("Harmonic Minor"));
+	stringListParameter->appendString(STR16("Melodic Minor"));
+	stringListParameter->appendString(STR16("Dorian"));
+	stringListParameter->appendString(STR16("Phrygian"));
+	stringListParameter->appendString(STR16("Lydian"));
+	stringListParameter->appendString(STR16("Mixolydian"));
+	stringListParameter->appendString(STR16("Aeolian"));
+	stringListParameter->appendString(STR16("Locrian"));
+	parameters.addParameter(stringListParameter);
+
+	Vst::RangeParameter* minNoteParameter = new Vst::RangeParameter(STR16("Min Note"), kParamMinNoteId, nullptr, 24, 96, 56, 0, 0);
+	parameters.addParameter(minNoteParameter);
+
+	Vst::RangeParameter* maxNoteParameter = new Vst::RangeParameter(STR16("Max Note"), kParamMaxNoteId, nullptr, 24, 96, 76, 0, 0);
+	parameters.addParameter(maxNoteParameter);
+
+	parameters.addParameter(STR16("Fill Chance"), nullptr, 0, .5f, 0, kParamFillChanceId);
 
 	return result;
 }

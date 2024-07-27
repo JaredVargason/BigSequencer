@@ -7,6 +7,7 @@
 
 #include "public.sdk/source/vst/vstaudioeffect.h"
 #include "sequencer.h"
+#include "notedatagenerator.h"
 
 namespace vargason::bigsequencer {
 
@@ -52,24 +53,35 @@ public:
 
 //------------------------------------------------------------------------
 protected:
-	vargason::bigsequencer::Sequencer* sequencer;
+	vargason::bigsequencer::Sequencer* sequencer = nullptr;
+	vargason::bigsequencer::RandomNoteDataGenerator* randomNoteGenerator = nullptr;
+
 	bool wasPreviouslyPlaying = false;  // whether the host was playing in the last frame
 	float lastProjectMusicTime = 0;  // music time of the last frame
 
 	bool hostSynced = true;  // whether sequencer starts when host playback starts
 	bool retrigger = true;  // whether the sequencer starts from 0 when playback is restarted
 
-	std::thread* timerThread;
+	const uint8_t noteLowerBound = 24;
+	const uint8_t noteUpperBound = 96;
+
+	uint8_t minNote = noteLowerBound;
+	uint8_t maxNote = noteUpperBound;
+	Pitch rootNote = Pitch::c;
+	Scale scale = Scale::chromatic;
+	float fillChance = 100;
+
+	std::thread* timerThread = nullptr;
 
 	void sendMidiNoteOn(Steinberg::Vst::IEventList* eventList, uint8_t pitch, float velocity);
 	void sendMidiNoteOff(Steinberg::Vst::IEventList* eventList, uint8_t pitch);
 
 private:
+	void regenerateGridNotes();
 	void handleParameterChanges(Steinberg::Vst::ProcessData& data);
 	void updateSequencer(Steinberg::Vst::ProcessData& data);
 	void updateCursor(Steinberg::Vst::ProcessData& data, Cursor& cursor);
 };
-
 
 //------------------------------------------------------------------------
 } // namespace vargason

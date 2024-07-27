@@ -74,7 +74,7 @@ namespace vargason::bigsequencer {
 	private:
 		Cursor* cursors = nullptr;
 
-		uint16_t width;
-		uint16_t height;
+		uint16_t width = 16;
+		uint16_t height = 4;
 	};
 }
