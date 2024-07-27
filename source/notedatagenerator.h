@@ -24,7 +24,7 @@ namespace vargason::bigsequencer {
 			return generateNoteData(width, height, availableNotes);
 		}
 	protected:
-		virtual NoteData* generateNoteData(int width, int height, std::vector<int> availableNotes) = 0;
+		virtual NoteData* generateNoteData(int width, int height, std::vector<int> &availableNotes) = 0;
 	};
 
 	class RandomNoteDataGenerator : public NoteDataGenerator {
@@ -37,16 +37,15 @@ namespace vargason::bigsequencer {
 			this->fillChance = fillChance;
 		}
 
-		NoteData* generateNoteData(int width, int height, std::vector<int> availableNotes) {
+		NoteData* generateNoteData(int width, int height, std::vector<int> &availableNotes) {
 			NoteData* noteDatas = new NoteData[width * height];
 			int numAvailableNotes = availableNotes.size();
-			std::uniform_int_distribution<> uniform_int(0, numAvailableNotes);
 			std::uniform_real_distribution<> uniform_real(0.0, 1.0);
 			for (int y = 0; y < height; y++) {
 				for (int x = 0; x < width; x++) {
 					NoteData* noteData = &noteDatas[y * width + x];
 					noteData->active = uniform_real(rnd) > fillChance;
-					noteData->pitch = availableNotes[uniform_int(rnd)];
+					noteData->pitch = availableNotes[uniform_real(rnd) * numAvailableNotes ];
 					noteData->velocity = .5f;
 					noteData->probability = 100;
 				}

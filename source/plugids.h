@@ -7,6 +7,7 @@ namespace vargason::bigsequencer {
 		kParamSequencerWidthId = 100,
 		kParamSequencerHeightId,
 		kParamHostSyncId,
+		kParamRetriggerId,
 
 		kParamCursor1ActiveId,
 		kParamCursor1NoteLengthId,

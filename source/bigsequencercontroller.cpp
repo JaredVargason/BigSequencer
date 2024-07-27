@@ -34,7 +34,8 @@ tresult PLUGIN_API BigSequencerController::initialize (FUnknown* context)
 	Vst::RangeParameter* sequencerHeightParameter = new Vst::RangeParameter(STR16("Sequencer Height"), kParamSequencerHeightId, nullptr, 1, 32, 4, 0, 0);
 	parameters.addParameter(sequencerHeightParameter);
 
-	parameters.addParameter(STR16("Host Sync"), nullptr, 0, 1.0, Vst::ParameterInfo::kCanAutomate, kParamHostSyncId);
+	parameters.addParameter(STR16("Host Sync"), nullptr, 0, 1.0, 0, kParamHostSyncId);
+	parameters.addParameter(STR16("Retrigger"), nullptr, 0, 1.0, 0, kParamRetriggerId);
 
 	// Cursor 1
 	parameters.addParameter(STR16("Cursor 1 Active"), nullptr, 0, 1.0, Vst::ParameterInfo::kCanAutomate, kParamCursor1ActiveId);
@@ -48,7 +49,7 @@ tresult PLUGIN_API BigSequencerController::initialize (FUnknown* context)
 
 	// Cursor 2
 	parameters.addParameter(STR16("Cursor 2 Active"), nullptr, 0, 1.0, Vst::ParameterInfo::kCanAutomate, kParamCursor2ActiveId);
-	parameters.addParameter(STR16("Cursor 2 Note Length"), nullptr, 0, 0.4, Vst::ParameterInfo::kCanAutomate, kParamCursor2NoteLengthId);
+	parameters.addParameter(STR16("Cursor 2 Note Length"), nullptr, 0, 0.8, Vst::ParameterInfo::kCanAutomate, kParamCursor2NoteLengthId);
 
 	Vst::RangeParameter* cursor2OctaveOffsetParameter = new Vst::RangeParameter(STR16("Cursor 2 Pitch Offset"), kParamCursor2PitchOffsetId, nullptr, -24, 24, -12, 0, 0);
 	parameters.addParameter(cursor2OctaveOffsetParameter);
@@ -58,7 +59,7 @@ tresult PLUGIN_API BigSequencerController::initialize (FUnknown* context)
 
 	// Cursor 3, inactive by default
 	parameters.addParameter(STR16("Cursor 3 Active"), nullptr, 0, 0, Vst::ParameterInfo::kCanAutomate, kParamCursor3ActiveId);
-	parameters.addParameter(STR16("Cursor 3 Note Length"), nullptr, 0, 0.4, Vst::ParameterInfo::kCanAutomate, kParamCursor3NoteLengthId);
+	parameters.addParameter(STR16("Cursor 3 Note Length"), nullptr, 0, 0.6, Vst::ParameterInfo::kCanAutomate, kParamCursor3NoteLengthId);
 
 	Vst::RangeParameter* cursor3OctaveOffsetParameter = new Vst::RangeParameter(STR16("Cursor 3 Pitch Offset"), kParamCursor3PitchOffsetId, nullptr, -24, 24, -12, 0, 0);
 	parameters.addParameter(cursor3OctaveOffsetParameter);

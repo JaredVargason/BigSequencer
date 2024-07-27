@@ -92,7 +92,7 @@ namespace vargason::bigsequencer {
 						uint8_t pitch = sequencer->getNote(0).pitch + cursor.pitchOffset;
 						cursor.currentlyPlayingNote = pitch;
 						sendMidiNoteOn(data.outputEvents, pitch, 0.40);
-						cursor.position = 1;
+						cursor.position = retrigger ? 1 : cursor.position;
 					}
 				}
 			}
@@ -137,6 +137,7 @@ namespace vargason::bigsequencer {
 								width = 1;
 							}
 							sequencer->setSize(width, sequencer->getHeight()); // cursor could be out of bounds if we do this wrong
+							regenerateGridNotes();
 						}
 						break;
 					case SequencerParams::kParamSequencerHeightId:
@@ -146,11 +147,17 @@ namespace vargason::bigsequencer {
 								height = 1;
 							}
 							sequencer->setSize(sequencer->getWidth(), height);
+							regenerateGridNotes();
 						}
 						break;
 					case SequencerParams::kParamHostSyncId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							// bool hostSynced = (value > 0.5);
+							hostSynced = value;
+						}
+						break;
+					case SequencerParams::kParamRetriggerId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							retrigger = value;
 						}
 						break;
 
@@ -465,7 +472,8 @@ namespace vargason::bigsequencer {
 	}
 
 	void BigSequencerProcessor::regenerateGridNotes() {
-		NoteData* noteData = randomNoteGenerator->generate(sequencer->getWidth(), sequencer->getHeight(), Pitch::c, Scale::major, 55, 70);
+		NoteData* noteData = randomNoteGenerator->generate(sequencer->getWidth(), sequencer->getHeight(), rootNote, scale, 55, 70);
+		randomNoteGenerator->fillChance = fillChance;
 		sequencer->setNotes(sequencer->getWidth(), sequencer->getHeight(), noteData);
 	}
 }
