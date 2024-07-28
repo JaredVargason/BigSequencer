@@ -69,7 +69,6 @@ protected:
 	uint8_t maxNote = noteUpperBound;
 	Pitch rootNote = Pitch::c;
 	Scale scale = Scale::chromatic;
-	float fillChance = 100;
 
 	std::thread* timerThread = nullptr;
 

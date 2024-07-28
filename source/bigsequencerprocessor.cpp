@@ -82,22 +82,26 @@ namespace vargason::bigsequencer {
 		// handle host being start & stopped
 		bool playing = data.processContext->state & data.processContext->kPlaying;
 		if (playing && !wasPreviouslyPlaying) {  // started from paused or stopped state.
-			if (data.processContext->projectTimeMusic == data.processContext->cycleStartMusic) {  // started from paused state
-				// started from stopped state
+			if (data.processContext->projectTimeMusic == data.processContext->cycleStartMusic) {  // started from stopped state
 				for (int i = 0; i < sequencer->maxNumCursors; i++) {
 					Cursor& cursor = sequencer->getCursor(i);
+
+					cursor.position = retrigger ? 1 : cursor.position;
+					cursor.lastNoteTime = 0;
+
 					if (cursor.active) {
-						cursor.lastNoteTime = 0;
-						cursor.notePlaying = true;
-						uint8_t pitch = sequencer->getNote(0).pitch + cursor.pitchOffset;
-						cursor.currentlyPlayingNote = pitch;
-						sendMidiNoteOn(data.outputEvents, pitch, 0.40);
-						cursor.position = retrigger ? 1 : cursor.position;
+						NoteData noteData = sequencer->getNote(0);
+						if (noteData.active) {
+							cursor.notePlaying = true;
+							uint8_t pitch = sequencer->getNote(0).pitch + cursor.pitchOffset;
+							cursor.currentlyPlayingNote = pitch;
+							sendMidiNoteOn(data.outputEvents, pitch, noteData.velocity);
+						}
 					}
 				}
 			}
 		}
-		else if (!playing && wasPreviouslyPlaying) {  // stopped or paused
+		else if (!playing && wasPreviouslyPlaying) {  // we stopped or paused playback
 			for (int i = 0; i < sequencer->maxNumCursors; i++) {
 				Cursor& cursor = sequencer->getCursor(i);
 				if (cursor.notePlaying) {
@@ -136,7 +140,7 @@ namespace vargason::bigsequencer {
 							if (width < 0) {
 								width = 1;
 							}
-							sequencer->setSize(width, sequencer->getHeight()); // cursor could be out of bounds if we do this wrong
+							sequencer->setSize(width, sequencer->getHeight());  // cursor could be out of bounds if we do this wrong
 							regenerateGridNotes();
 						}
 						break;
@@ -152,7 +156,7 @@ namespace vargason::bigsequencer {
 						break;
 					case SequencerParams::kParamHostSyncId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							hostSynced = value;
+							// hostSynced = value;
 						}
 						break;
 					case SequencerParams::kParamRetriggerId:
@@ -286,7 +290,7 @@ namespace vargason::bigsequencer {
 						break;
 					case SequencerParams::kParamFillChanceId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							fillChance = 100 * value;
+							randomNoteGenerator->fillChance = value;
 							regenerateGridNotes();
 						}
 						break;
@@ -314,17 +318,20 @@ namespace vargason::bigsequencer {
 		if (quarterNotes >= cursor.lastNoteTime + numericInterval) {
 			if (cursor.active) {
 				NoteData noteData = sequencer->getNote(cursor.position);
-				uint8_t realPitch = noteData.pitch + cursor.pitchOffset;
-				sendMidiNoteOn(data.outputEvents, realPitch, noteData.velocity);
+				if (noteData.active) {
+					uint8_t realPitch = noteData.pitch + cursor.pitchOffset;
+					sendMidiNoteOn(data.outputEvents, realPitch, noteData.velocity);
 
-				cursor.notePlaying = true;
+					cursor.notePlaying = true;
+					cursor.currentlyPlayingNote = realPitch;
+				}
+
 				int newPos = cursor.position + 1;
 				int totalNotes = sequencer->totalNotes();
 				if (newPos > totalNotes) {
 					newPos = 0;
 				}
 				cursor.position = newPos;
-				cursor.currentlyPlayingNote = realPitch;
 			}
 			cursor.lastNoteTime = quarterNotes;
 		}
@@ -472,8 +479,7 @@ namespace vargason::bigsequencer {
 	}
 
 	void BigSequencerProcessor::regenerateGridNotes() {
-		NoteData* noteData = randomNoteGenerator->generate(sequencer->getWidth(), sequencer->getHeight(), rootNote, scale, 55, 70);
-		randomNoteGenerator->fillChance = fillChance;
+		NoteData* noteData = randomNoteGenerator->generate(sequencer->getWidth(), sequencer->getHeight(), rootNote, scale, minNote, maxNote);
 		sequencer->setNotes(sequencer->getWidth(), sequencer->getHeight(), noteData);
 	}
 }

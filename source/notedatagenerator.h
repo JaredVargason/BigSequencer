@@ -33,7 +33,7 @@ namespace vargason::bigsequencer {
 		float fillChance;
 		std::mt19937 rnd;
 
-		RandomNoteDataGenerator(float fillChance = 50): rnd((std::random_device())()) {
+		RandomNoteDataGenerator(float fillChance = .5f): rnd((std::random_device())()) {
 			this->fillChance = fillChance;
 		}
 
@@ -44,8 +44,8 @@ namespace vargason::bigsequencer {
 			for (int y = 0; y < height; y++) {
 				for (int x = 0; x < width; x++) {
 					NoteData* noteData = &noteDatas[y * width + x];
-					noteData->active = uniform_real(rnd) > fillChance;
-					noteData->pitch = availableNotes[uniform_real(rnd) * numAvailableNotes ];
+					noteData->active = uniform_real(rnd) <= fillChance;
+					noteData->pitch = availableNotes[uniform_real(rnd) * numAvailableNotes];
 					noteData->velocity = .5f;
 					noteData->probability = 100;
 				}

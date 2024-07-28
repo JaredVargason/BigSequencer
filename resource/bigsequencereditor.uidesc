@@ -1,7 +1,11 @@
 {
 	"vstgui-ui-description": {
 		"version": "1",
-		"bitmaps": {},
+		"bitmaps": {
+			"28B960F2B70D5AE2BD663D5EEBAE6B26_snapshot": {
+				"path": "C:\\Users\\jared\\Projects\\BigSequencer\\resource\\28B960F2B70D5AE2BD663D5EEBAE6B26_snapshot.png"
+			}
+		},
 		"fonts": {},
 		"colors": {},
 		"gradients": {
@@ -27,6 +31,7 @@
 			]
 		},
 		"control-tags": {
+			"Cursor1Active": "104",
 			"Cursor1NoteInterval": "106",
 			"Cursor1NoteLength": "105",
 			"Cursor1PitchOffset": "107",
@@ -73,13 +78,13 @@
 				"SplitViewSize_1_1": "0.5073041168658698474303037073696032166481",
 				"SplitViewSize_2_0": "0.7369747899159664328294638835359364748001",
 				"SplitViewSize_2_1": "0.2588235294117647300460305359592894092202",
-				"TabSwitchValue": "0",
+				"TabSwitchValue": "4",
 				"Version": "1",
 				"ViewBackground": "0"
 			},
 			"UIAttributesController": {},
 			"UIViewCreatorDataSource": {
-				"SelectedRow": "23"
+				"SelectedRow": "9"
 			},
 			"UITagsDataSource": {
 				"SelectedRow": "-1"
@@ -88,7 +93,7 @@
 				"SelectedRow": "-1"
 			},
 			"UIBitmapsDataSource": {
-				"SelectedRow": "-1"
+				"SelectedRow": "0"
 			},
 			"UIGradientsDataSource": {
 				"SelectedRow": "-1"
@@ -190,32 +195,6 @@
 									"wants-focus": "true",
 									"wheel-inc-value": "0.1",
 									"zoom-factor": "10"
-								}
-							},
-							"CCheckBox": {
-								"attributes": {
-									"autosize-to-fit": "false",
-									"boxfill-color": "~ WhiteCColor",
-									"boxframe-color": "~ BlackCColor",
-									"checkmark-color": "~ RedCColor",
-									"class": "CCheckBox",
-									"control-tag": "HostSync",
-									"default-value": "1",
-									"draw-crossbox": "false",
-									"font": "~ SystemFont",
-									"font-color": "~ WhiteCColor",
-									"frame-width": "1",
-									"max-value": "1",
-									"min-value": "0",
-									"mouse-enabled": "true",
-									"opacity": "1",
-									"origin": "130, 5",
-									"round-rect-radius": "0",
-									"size": "75, 20",
-									"title": "Host Sync",
-									"transparent": "false",
-									"wants-focus": "true",
-									"wheel-inc-value": "0.1"
 								}
 							},
 							"CTextLabel": {
@@ -340,7 +319,7 @@
 									"min-value": "0",
 									"mouse-enabled": "true",
 									"opacity": "1",
-									"origin": "130, 30",
+									"origin": "105, 5",
 									"round-rect-radius": "0",
 									"size": "100, 20",
 									"title": "Retrigger",
@@ -2110,7 +2089,130 @@
 									"wants-focus": "false",
 									"wheel-inc-value": "0.1"
 								}
+							},
+							"CTextLabel": {
+								"attributes": {
+									"back-color": "~ BlackCColor",
+									"background-offset": "0, 0",
+									"class": "CTextLabel",
+									"default-value": "0.5",
+									"font": "~ NormalFont",
+									"font-antialias": "true",
+									"font-color": "~ WhiteCColor",
+									"frame-color": "~ BlackCColor",
+									"frame-width": "1",
+									"max-value": "1",
+									"min-value": "0",
+									"mouse-enabled": "true",
+									"opacity": "1",
+									"origin": "225, 145",
+									"round-rect-radius": "6",
+									"shadow-color": "~ RedCColor",
+									"size": "220, 70",
+									"style-3D-in": "false",
+									"style-3D-out": "false",
+									"style-no-draw": "false",
+									"style-no-frame": "false",
+									"style-no-text": "false",
+									"style-round-rect": "false",
+									"style-shadow-text": "false",
+									"text-alignment": "center",
+									"text-inset": "0, 0",
+									"text-rotation": "0",
+									"text-shadow-offset": "1, 1",
+									"title": "Adjusting any of these\\nas well as width and height\\nwill regenerate new sequencer values",
+									"transparent": "false",
+									"value-precision": "2",
+									"wants-focus": "false",
+									"wheel-inc-value": "0.1"
+								}
 							}
+						}
+					},
+					"CTextLabel": {
+						"attributes": {
+							"back-color": "~ BlackCColor",
+							"background-offset": "0, 0",
+							"class": "CTextLabel",
+							"default-value": "0.5",
+							"font": "~ NormalFontVeryBig",
+							"font-antialias": "true",
+							"font-color": "~ WhiteCColor",
+							"frame-color": "~ BlackCColor",
+							"frame-width": "1",
+							"max-value": "1",
+							"min-value": "0",
+							"mouse-enabled": "true",
+							"opacity": "1",
+							"origin": "170, 225",
+							"round-rect-radius": "6",
+							"shadow-color": "~ RedCColor",
+							"size": "35, 30",
+							"style-3D-in": "false",
+							"style-3D-out": "false",
+							"style-no-draw": "false",
+							"style-no-frame": "false",
+							"style-no-text": "false",
+							"style-round-rect": "false",
+							"style-shadow-text": "false",
+							"text-alignment": "center",
+							"text-inset": "0, 0",
+							"text-rotation": "0",
+							"text-shadow-offset": "1, 1",
+							"title": "Big",
+							"transparent": "false",
+							"value-precision": "2",
+							"wants-focus": "false",
+							"wheel-inc-value": "0.1"
+						}
+					},
+					"CTextLabel": {
+						"attributes": {
+							"back-color": "~ BlackCColor",
+							"background-offset": "0, 0",
+							"class": "CTextLabel",
+							"default-value": "0.5",
+							"font": "~ NormalFont",
+							"font-antialias": "true",
+							"font-color": "~ WhiteCColor",
+							"frame-color": "~ BlackCColor",
+							"frame-width": "1",
+							"max-value": "1",
+							"min-value": "0",
+							"mouse-enabled": "true",
+							"opacity": "1",
+							"origin": "200, 235",
+							"round-rect-radius": "6",
+							"shadow-color": "~ RedCColor",
+							"size": "60, 25",
+							"style-3D-in": "false",
+							"style-3D-out": "false",
+							"style-no-draw": "false",
+							"style-no-frame": "false",
+							"style-no-text": "false",
+							"style-round-rect": "false",
+							"style-shadow-text": "false",
+							"text-alignment": "center",
+							"text-inset": "0, 0",
+							"text-rotation": "0",
+							"text-shadow-offset": "1, 1",
+							"title": "Sequencer",
+							"transparent": "false",
+							"value-precision": "2",
+							"wants-focus": "false",
+							"wheel-inc-value": "0.1"
+						}
+					},
+					"CView": {
+						"attributes": {
+							"bitmap": "28B960F2B70D5AE2BD663D5EEBAE6B26_snapshot",
+							"class": "CView",
+							"mouse-enabled": "true",
+							"opacity": "1",
+							"origin": "695, 15",
+							"size": "140, 89",
+							"transparent": "false",
+							"wants-focus": "false"
 						}
 					}
 				}

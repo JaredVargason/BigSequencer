@@ -32,7 +32,7 @@ namespace vargason::bigsequencer {
 			8.0
 		};
 
-		void setNoteLength(float noteLength) {
+		void setNoteLength(float noteLength) {  // we do this because note playing bugs when length is 0 or 1
 			if (noteLength >= 1) {
 				noteLength = .998f;
 			}
