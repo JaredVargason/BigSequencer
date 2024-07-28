@@ -12,7 +12,7 @@ namespace vargason::bigsequencer {
 		int position = 0;
 
 		Interval interval = Interval::quarterNote;
-		float noteLength = 0.4;  // between 0 and 1
+
 		int8_t pitchOffset = 0;
 
 		uint8_t startPosition = 0;  // what index the cursor starts at
@@ -32,6 +32,20 @@ namespace vargason::bigsequencer {
 			8.0
 		};
 
+		void setNoteLength(float noteLength) {
+			if (noteLength >= 1) {
+				noteLength = .998f;
+			}
+			else if(noteLength <= 0) {
+				noteLength = 0.002f;
+			}
+			this->noteLength = noteLength;
+		};
+
+		float getNoteLength() {
+			return this->noteLength;
+		}
+
 		double realNoteLength() {
 			return noteLength * numericInterval();
 		}
@@ -39,6 +53,9 @@ namespace vargason::bigsequencer {
 		double numericInterval() {
 			return numericIntervals[(int)interval];
 		}
+
+	private:
+		float noteLength = 0.4;  // between 0 and 1
 	};
 
 	struct NoteData {
