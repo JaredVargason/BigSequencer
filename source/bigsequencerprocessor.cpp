@@ -169,7 +169,7 @@ namespace vargason::bigsequencer {
 						break;
 					case SequencerParams::kParamCursor1NoteLengthId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer->getCursor(0).noteLength = value;
+							sequencer->getCursor(0).setNoteLength(value);
 						}
 						break;
 					case SequencerParams::kParamCursor1NoteIntervalId:
@@ -192,7 +192,7 @@ namespace vargason::bigsequencer {
 						break;
 					case SequencerParams::kParamCursor2NoteLengthId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer->getCursor(1).noteLength = value;
+							sequencer->getCursor(1).setNoteLength(value);
 						}
 						break;
 					case SequencerParams::kParamCursor2NoteIntervalId:
@@ -215,7 +215,7 @@ namespace vargason::bigsequencer {
 						break;
 					case SequencerParams::kParamCursor3NoteLengthId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer->getCursor(2).noteLength = value;
+							sequencer->getCursor(2).setNoteLength(value);
 						}
 						break;
 					case SequencerParams::kParamCursor3NoteIntervalId:
@@ -238,7 +238,7 @@ namespace vargason::bigsequencer {
 						break;
 					case SequencerParams::kParamCursor4NoteLengthId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer->getCursor(3).noteLength = value;
+							sequencer->getCursor(3).setNoteLength(value);
 						}
 						break;
 					case SequencerParams::kParamCursor4NoteIntervalId:
