@@ -14,6 +14,7 @@ namespace vargason::bigsequencer {
 		Interval interval = Interval::quarterNote;
 
 		int8_t pitchOffset = 0;
+		float velocity = 0.6f;
 
 		uint8_t startPosition = 0;  // what index the cursor starts at
 		double offset = 0;  // between 0 and 1, offsets from the main beat, maybe allow -1 to 1
@@ -59,7 +60,6 @@ namespace vargason::bigsequencer {
 	};
 
 	struct NoteData {
-		float velocity = 0.40;
 		uint8_t pitch = 60;
 		uint8_t probability = 100; // probability that individual note will hit
 		bool active = true;
