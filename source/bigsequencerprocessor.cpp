@@ -95,7 +95,7 @@ namespace vargason::bigsequencer {
 							cursor.notePlaying = true;
 							uint8_t pitch = sequencer->getNote(0).pitch + cursor.pitchOffset;
 							cursor.currentlyPlayingNote = pitch;
-							sendMidiNoteOn(data.outputEvents, pitch, noteData.velocity);
+							sendMidiNoteOn(data.outputEvents, pitch, cursor.velocity);
 						}
 					}
 				}
@@ -181,6 +181,12 @@ namespace vargason::bigsequencer {
 							cursor.pitchOffset = cursor.pitchMin + (cursor.pitchMax - cursor.pitchMin) * value;
 						}
 						break;
+					case SequencerParams::kParamCursor1VelocityId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							Cursor& cursor = sequencer->getCursor(0);
+							cursor.velocity = value;
+						}
+						break;
 
 						// Cursor 2
 					case SequencerParams::kParamCursor2ActiveId:
@@ -202,6 +208,12 @@ namespace vargason::bigsequencer {
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							Cursor& cursor = sequencer->getCursor(1);
 							cursor.pitchOffset = cursor.pitchMin + (cursor.pitchMax - cursor.pitchMin) * value;
+						}
+						break;
+					case SequencerParams::kParamCursor2VelocityId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							Cursor& cursor = sequencer->getCursor(1);
+							cursor.velocity = value;
 						}
 						break;
 
@@ -227,6 +239,12 @@ namespace vargason::bigsequencer {
 							cursor.pitchOffset = cursor.pitchMin + (cursor.pitchMax - cursor.pitchMin) * value;
 						}
 						break;
+					case SequencerParams::kParamCursor3VelocityId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							Cursor& cursor = sequencer->getCursor(2);
+							cursor.velocity = value;
+						}
+						break;
 
 						// Cursor 4
 					case SequencerParams::kParamCursor4ActiveId:
@@ -248,6 +266,12 @@ namespace vargason::bigsequencer {
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							Cursor& cursor = sequencer->getCursor(3);
 							cursor.pitchOffset = cursor.pitchMin + (cursor.pitchMax - cursor.pitchMin) * value;
+						}
+						break;
+					case SequencerParams::kParamCursor4VelocityId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							Cursor& cursor = sequencer->getCursor(3);
+							cursor.velocity = value;
 						}
 						break;
 
@@ -314,7 +338,7 @@ namespace vargason::bigsequencer {
 				NoteData noteData = sequencer->getNote(cursor.position);
 				if (noteData.active) {
 					uint8_t realPitch = noteData.pitch + cursor.pitchOffset;
-					sendMidiNoteOn(data.outputEvents, realPitch, noteData.velocity);
+					sendMidiNoteOn(data.outputEvents, realPitch, cursor.velocity);
 
 					cursor.notePlaying = true;
 					cursor.currentlyPlayingNote = realPitch;

@@ -47,6 +47,8 @@ tresult PLUGIN_API BigSequencerController::initialize (FUnknown* context)
 	Vst::RangeParameter* cursor1NoteIntervalParameter = new Vst::RangeParameter(STR16("Cursor 1 Note Interval"), kParamCursor1NoteIntervalId, nullptr, 0, Interval::doubleWholeNote, Interval::quarterNote, 0, 0);
 	parameters.addParameter(cursor1NoteIntervalParameter);
 
+	parameters.addParameter(STR16("Cursor 1 Velocity"), nullptr, 0, 0.6, Vst::ParameterInfo::kCanAutomate, kParamCursor1VelocityId);
+
 	// Cursor 2
 	parameters.addParameter(STR16("Cursor 2 Active"), nullptr, 0, 1.0, Vst::ParameterInfo::kCanAutomate, kParamCursor2ActiveId);
 	parameters.addParameter(STR16("Cursor 2 Note Length"), nullptr, 0, 0.6, Vst::ParameterInfo::kCanAutomate, kParamCursor2NoteLengthId);
@@ -56,6 +58,8 @@ tresult PLUGIN_API BigSequencerController::initialize (FUnknown* context)
 
 	Vst::RangeParameter* cursor2NoteIntervalParameter = new Vst::RangeParameter(STR16("Cursor 2 Note Interval"), kParamCursor2NoteIntervalId, nullptr, 0, Interval::doubleWholeNote, Interval::halfNote, 0, 0);
 	parameters.addParameter(cursor2NoteIntervalParameter);
+
+	parameters.addParameter(STR16("Cursor 2 Velocity"), nullptr, 0, 0.6, Vst::ParameterInfo::kCanAutomate, kParamCursor2VelocityId);
 
 	// Cursor 3, inactive by default
 	parameters.addParameter(STR16("Cursor 3 Active"), nullptr, 0, 0, Vst::ParameterInfo::kCanAutomate, kParamCursor3ActiveId);
@@ -67,6 +71,8 @@ tresult PLUGIN_API BigSequencerController::initialize (FUnknown* context)
 	Vst::RangeParameter* cursor3NoteIntervalParameter = new Vst::RangeParameter(STR16("Cursor 3 Note Interval"), kParamCursor3NoteIntervalId, nullptr, 0, Interval::doubleWholeNote, Interval::eighthNote, 0, 0);
 	parameters.addParameter(cursor3NoteIntervalParameter);
 
+	parameters.addParameter(STR16("Cursor 3 Velocity"), nullptr, 0, 0.6, Vst::ParameterInfo::kCanAutomate, kParamCursor3VelocityId);
+
 	// Cursor 4, inactive by default
 	parameters.addParameter(STR16("Cursor 4 Active"), nullptr, 0, 0, Vst::ParameterInfo::kCanAutomate, kParamCursor4ActiveId);
 	parameters.addParameter(STR16("Cursor 4 Note Length"), nullptr, 0, 0.4, Vst::ParameterInfo::kCanAutomate, kParamCursor4NoteLengthId);
@@ -77,9 +83,9 @@ tresult PLUGIN_API BigSequencerController::initialize (FUnknown* context)
 	Vst::RangeParameter* cursor4NoteIntervalParameter = new Vst::RangeParameter(STR16("Cursor 4 Note Interval"), kParamCursor4NoteIntervalId, nullptr, 0, Interval::doubleWholeNote, Interval::wholeNote, 0, 0);
 	parameters.addParameter(cursor4NoteIntervalParameter);
 
-	// "fake" parameters
+	parameters.addParameter(STR16("Cursor 4 Velocity"), nullptr, 0, 0.6, Vst::ParameterInfo::kCanAutomate, kParamCursor4VelocityId);
 
-	// fix this so it uses pitch enum instead
+	// "fake" parameters
 	Vst::RangeParameter* rootNoteParameter = new Vst::RangeParameter(STR16("Root Note"), kParamRootNoteId, nullptr, Pitch::c, Pitch::b, Pitch::c, 0, 0);
 	parameters.addParameter(rootNoteParameter);
 
