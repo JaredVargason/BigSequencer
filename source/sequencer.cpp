@@ -15,16 +15,16 @@ namespace vargason::bigsequencer {
 		cursors[1].active = true;
 		cursors[1].interval = Interval::halfNote;
 		cursors[1].pitchOffset = -12;
-		cursors[1].setNoteLength(0.4f);
+		cursors[1].setNoteLength(0.6f);
 
 		cursors[2].active = false;
-		cursors[2].interval = Interval::wholeNote;
+		cursors[2].interval = Interval::eighthNote;
 		cursors[2].pitchOffset = 12;
-		cursors[2].setNoteLength(0.4f);
+		cursors[2].setNoteLength(0.6f);
 
 		cursors[3].active = false;
-		cursors[3].interval = Interval::eighthNote;
-		cursors[3].pitchOffset = 12;
+		cursors[3].interval = Interval::wholeNote;
+		cursors[3].pitchOffset = -24;
 		cursors[3].setNoteLength(0.4f);
 	}
 

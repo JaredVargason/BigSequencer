@@ -1,11 +1,7 @@
 {
 	"vstgui-ui-description": {
 		"version": "1",
-		"bitmaps": {
-			"28B960F2B70D5AE2BD663D5EEBAE6B26_snapshot": {
-				"path": "C:\\Users\\jared\\Projects\\BigSequencer\\resource\\28B960F2B70D5AE2BD663D5EEBAE6B26_snapshot.png"
-			}
-		},
+		"bitmaps": {},
 		"fonts": {},
 		"colors": {},
 		"gradients": {
@@ -78,7 +74,7 @@
 				"SplitViewSize_1_1": "0.5073041168658698474303037073696032166481",
 				"SplitViewSize_2_0": "0.7369747899159664328294638835359364748001",
 				"SplitViewSize_2_1": "0.2588235294117647300460305359592894092202",
-				"TabSwitchValue": "4",
+				"TabSwitchValue": "0",
 				"Version": "1",
 				"ViewBackground": "0"
 			},
@@ -93,7 +89,7 @@
 				"SelectedRow": "-1"
 			},
 			"UIBitmapsDataSource": {
-				"SelectedRow": "0"
+				"SelectedRow": "-1"
 			},
 			"UIGradientsDataSource": {
 				"SelectedRow": "-1"
@@ -2144,10 +2140,10 @@
 							"min-value": "0",
 							"mouse-enabled": "true",
 							"opacity": "1",
-							"origin": "170, 225",
+							"origin": "175, 245",
 							"round-rect-radius": "6",
 							"shadow-color": "~ RedCColor",
-							"size": "35, 30",
+							"size": "45, 35",
 							"style-3D-in": "false",
 							"style-3D-out": "false",
 							"style-no-draw": "false",
@@ -2181,7 +2177,7 @@
 							"min-value": "0",
 							"mouse-enabled": "true",
 							"opacity": "1",
-							"origin": "200, 235",
+							"origin": "210, 260",
 							"round-rect-radius": "6",
 							"shadow-color": "~ RedCColor",
 							"size": "60, 25",
@@ -2201,18 +2197,6 @@
 							"value-precision": "2",
 							"wants-focus": "false",
 							"wheel-inc-value": "0.1"
-						}
-					},
-					"CView": {
-						"attributes": {
-							"bitmap": "28B960F2B70D5AE2BD663D5EEBAE6B26_snapshot",
-							"class": "CView",
-							"mouse-enabled": "true",
-							"opacity": "1",
-							"origin": "695, 15",
-							"size": "140, 89",
-							"transparent": "false",
-							"wants-focus": "false"
 						}
 					}
 				}

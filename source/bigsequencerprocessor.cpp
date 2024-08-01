@@ -136,20 +136,14 @@ namespace vargason::bigsequencer {
 					switch (paramQueue->getParameterId()) {
 					case SequencerParams::kParamSequencerWidthId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							int width = value * sequencer->maxWidth;
-							if (width < 0) {
-								width = 1;
-							}
+							int width = 1 + value * sequencer->maxWidth;
 							sequencer->setSize(width, sequencer->getHeight());  // cursor could be out of bounds if we do this wrong
 							regenerateGridNotes();
 						}
 						break;
 					case SequencerParams::kParamSequencerHeightId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							int height = value * sequencer->maxWidth;
-							if (height < 0) {
-								height = 1;
-							}
+							int height = 1 + value * sequencer->maxHeight;
 							sequencer->setSize(sequencer->getWidth(), height);
 							regenerateGridNotes();
 						}
