@@ -278,7 +278,7 @@ namespace vargason::bigsequencer {
 						// "fake" parameters
 					case SequencerParams::kParamScaleId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							scale = (Scale)(11 * value);
+							scale = (Scale)(10 * value);
 							regenerateGridNotes();
 						}
 						break;
