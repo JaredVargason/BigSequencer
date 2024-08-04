@@ -2,13 +2,14 @@
 
 The Big Sequencer is a big grid of notes. You can change its width and height.
 
-Use the **retrigger** parameter to make the sequencer restart at the beginning on playback.
-
 It has multiple **cursors** that iterate along the grid. Each cursor has multiple parameters:
 - active (whether the cursor will play notes)
 - interval (quarter note, half note, etc)
 - note length (percentage of the interval that the note should play)
 - pitch offset (adjust the note pitch by this many semitones)
+- velocity (how hard the key press will be)
+
+Use the **retrigger** parameter to make the sequencer restart at the beginning on playback.
 
 ## Usage
 
