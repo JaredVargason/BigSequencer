@@ -22,20 +22,7 @@ project(BigSequencer
 # Include directories
 include_directories(
     libs/glfw/include
-    libs/imgui
-    libs/imgui/backends
 )
-
-# Add imgui
-set(IMGUI_SOURCES
-    libs/imgui/imgui.cpp
-    libs/imgui/imgui_draw.cpp
-    libs/imgui/imgui_demo.cpp
-    libs/imgui/imgui_widgets.cpp
-    libs/imgui/backends/imgui_impl_glfw.cpp
-    libs/imgui/backends/imgui_impl_opengl3.cpp
-)
-add_library(imgui STATIC ${IMGUI_SOURCES})
 
 # Add GLFW
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
@@ -60,6 +47,21 @@ smtg_add_vst3plugin(BigSequencer
     source/bigsequencercontroller.h
     source/bigsequencercontroller.cpp
     source/bigsequencerentry.cpp
+    source/imgui/imgui.h
+    source/imgui/imgui.cpp
+    source/imgui/imgui_internal.h
+    source/imgui/imgui_draw.cpp
+    source/imgui/imgui_demo.cpp
+    source/imgui/imgui_tables.cpp
+    source/imgui/imstb_textedit.h
+    source/imgui/imstb_truetype.h
+    source/imgui/imstb_rectpack.h
+    source/imgui/imgui_widgets.cpp
+    source/imgui/imgui_impl_glfw.h
+    source/imgui/imgui_impl_glfw.cpp
+    source/imgui/imgui_impl_opengl3_loader.h
+    source/imgui/imgui_impl_opengl3.h
+    source/imgui/imgui_impl_opengl3.cpp
 )
 
 smtg_target_add_plugin_snapshots (BigSequencer
@@ -71,7 +73,6 @@ smtg_target_add_plugin_snapshots (BigSequencer
 target_link_libraries(BigSequencer
     PRIVATE
         sdk
-        imgui
         glfw
 )
 
