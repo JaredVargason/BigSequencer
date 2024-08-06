@@ -19,17 +19,6 @@ project(BigSequencer
     DESCRIPTION "BigSequencer VST 3 Plug-in"
 )
 
-# Include directories
-include_directories(
-    libs/glfw/include
-)
-
-# Add GLFW
-set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-add_subdirectory(libs/glfw)
-
 # Add VST3 SDK
 add_subdirectory(${vst3sdk_SOURCE_DIR} ${PROJECT_BINARY_DIR}/vst3sdk)
 smtg_enable_vst3_sdk()
@@ -77,7 +66,6 @@ smtg_target_add_plugin_snapshots (BigSequencer
 target_link_libraries(BigSequencer
     PRIVATE
         sdk
-        glfw
 )
 
 smtg_target_configure_version_file(BigSequencer)
