@@ -47,6 +47,8 @@ smtg_add_vst3plugin(BigSequencer
     source/bigsequencercontroller.h
     source/bigsequencercontroller.cpp
     source/bigsequencerentry.cpp
+    source/notedatagenerator.h
+
     source/imgui/imgui.h
     source/imgui/imgui.cpp
     source/imgui/imgui_internal.h
@@ -57,11 +59,13 @@ smtg_add_vst3plugin(BigSequencer
     source/imgui/imstb_truetype.h
     source/imgui/imstb_rectpack.h
     source/imgui/imgui_widgets.cpp
-    source/imgui/imgui_impl_glfw.h
-    source/imgui/imgui_impl_glfw.cpp
-    source/imgui/imgui_impl_opengl3_loader.h
-    source/imgui/imgui_impl_opengl3.h
-    source/imgui/imgui_impl_opengl3.cpp
+    source/imgui/imgui_impl_dx11.h
+    source/imgui/imgui_impl_dx11.cpp
+    source/imgui/imgui_impl_win32.h
+    source/imgui/imgui_impl_win32.cpp
+
+    source/frontend/mypluginview.h
+    source/frontend/mypluginview.cpp
 )
 
 smtg_target_add_plugin_snapshots (BigSequencer

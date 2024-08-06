@@ -34,13 +34,15 @@ public:
 	Steinberg::tresult PLUGIN_API setState (Steinberg::IBStream* state) SMTG_OVERRIDE;
 	Steinberg::tresult PLUGIN_API getState (Steinberg::IBStream* state) SMTG_OVERRIDE;
 
+	//Steinberg::tresult PLUGIN_API setParamNormalized(Vst::ParamID tag, Vst::ParamValue value);
+
  	//---Interface---------
 	DEFINE_INTERFACES
 		// Here you can add more supported VST3 interfaces
 		// DEF_INTERFACE (Vst::IXXX)
-	END_DEFINE_INTERFACES (EditController)
-    DELEGATE_REFCOUNT (EditController)
-
+		END_DEFINE_INTERFACES(EditController)
+		DELEGATE_REFCOUNT(EditController)
+		
 //------------------------------------------------------------------------
 protected:
 };

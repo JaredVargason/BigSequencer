@@ -6,10 +6,7 @@
 #include "bigsequencercids.h"
 #include "plugids.h"
 #include "scales.h"
-
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_glfw.h"
-#include "imgui/imgui_impl_opengl3.h"
+#include "./frontend/mypluginview.h"
 
 using namespace Steinberg;
 
@@ -156,8 +153,38 @@ tresult PLUGIN_API BigSequencerController::getState (IBStream* state)
 //------------------------------------------------------------------------
 IPlugView* PLUGIN_API BigSequencerController::createView (FIDString name)
 {
-	return nullptr;
+	return new bigsequencer::frontend::MyPluginView();
 }
+
+/*tresult PLUGIN_API BigSequencerController::setParamNormalized(Vst::ParamID tag, Vst::ParamValue value) {
+	if (tag == kParamGain) {
+		gain = value;
+		if (view) {
+			view->setParameter(tag, value);
+		}
+		return kResultOk;
+	}
+	return EditController::setParamNormalized(tag, value);
+}
+
+tresult PLUGIN_API BigSequencerController::getParamStringByValue(ParamID tag, ParamValue valueNormalized, String128 string) {
+	if (tag == kParamGain) {
+		char text[32];
+		sprintf(text, "%.2f", valueNormalized);
+		Steinberg::UString(string, 128).fromAscii(text);
+		return kResultTrue;
+	}
+	return EditController::getParamStringByValue(tag, valueNormalized, string);
+}
+
+tresult PLUGIN_API BigSequencerController::getParamValueByString(ParamID tag, TChar* string, ParamValue& valueNormalized) {
+	if (tag == kParamGain) {
+		valueNormalized = atof(STRING128(string));
+		return kResultTrue;
+	}
+	return EditController::getParamValueByString(tag, string, valueNormalized);
+}*/
 
 //------------------------------------------------------------------------
 } // namespace vargason
+

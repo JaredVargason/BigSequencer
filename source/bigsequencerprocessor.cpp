@@ -469,7 +469,6 @@ namespace vargason::bigsequencer {
 
 	//------------------------------------------------------------------------
 
-
 	void BigSequencerProcessor::sendMidiNoteOn(Vst::IEventList* eventList, uint8_t pitch, float velocity) {
 		if (eventList) {
 			Vst::Event midiEvent = { 0 };
