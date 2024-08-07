@@ -7,6 +7,7 @@
 #include "vstgui/plugin-bindings/vst3editor.h"
 #include "plugids.h"
 #include "scales.h"
+#include "bigsequencereditor.h"
 
 using namespace Steinberg;
 
@@ -157,8 +158,8 @@ IPlugView* PLUGIN_API BigSequencerController::createView (FIDString name)
 	if (FIDStringsEqual (name, Vst::ViewType::kEditor))
 	{
 		// create your editor here and return a IPlugView ptr of it
-		auto* view = new VSTGUI::VST3Editor (this, "view", "bigsequencereditor.uidesc");
-		return view;
+		auto* view = new BigSequencerEditor(this, "view", "bigsequencereditor.uidesc");
+		return (IPlugView*)view;
 	}
 	return nullptr;
 }
