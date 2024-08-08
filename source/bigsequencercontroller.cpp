@@ -27,8 +27,61 @@ tresult PLUGIN_API BigSequencerController::initialize (FUnknown* context)
 		return result;
 	}
 
-	// Here you could register some parameters
+	addParameters();
+	return result;
+}
 
+//------------------------------------------------------------------------
+tresult PLUGIN_API BigSequencerController::terminate ()
+{
+	// Here the Plug-in will be de-instantiated, last possibility to remove some memory!
+
+	//---do not forget to call parent ------
+	return EditControllerEx1::terminate ();
+}
+
+//------------------------------------------------------------------------
+tresult PLUGIN_API BigSequencerController::setComponentState (IBStream* state)
+{
+	// Here you get the state of the component (Processor part)
+	if (!state)
+		return kResultFalse;
+
+	return kResultOk;
+}
+
+//------------------------------------------------------------------------
+tresult PLUGIN_API BigSequencerController::setState (IBStream* state)
+{
+	// Here you get the state of the controller
+
+	return kResultTrue;
+}
+
+//------------------------------------------------------------------------
+tresult PLUGIN_API BigSequencerController::getState (IBStream* state)
+{
+	// Here you are asked to deliver the state of the controller (if needed)
+	// Note: the real state of your plug-in is saved in the processor
+
+	return kResultTrue;
+}
+
+//------------------------------------------------------------------------
+IPlugView* PLUGIN_API BigSequencerController::createView (FIDString name)
+{
+	// Here the Host wants to open your editor (if you have one)
+	if (FIDStringsEqual (name, Vst::ViewType::kEditor))
+	{
+		// create your editor here and return a IPlugView ptr of it
+		auto* view = new BigSequencerEditor(this, "view", "bigsequencereditor.uidesc");
+		return (IPlugView*)view;
+	}
+	return nullptr;
+}
+
+void BigSequencerController::addParameters()
+{
 	Vst::RangeParameter* sequencerWidthParameter = new Vst::RangeParameter(STR16("Sequencer Width"), kParamSequencerWidthId, nullptr, 1, 32, 8, 0, 0);
 	parameters.addParameter(sequencerWidthParameter);
 
@@ -111,57 +164,36 @@ tresult PLUGIN_API BigSequencerController::initialize (FUnknown* context)
 	parameters.addParameter(maxNoteParameter);
 
 	parameters.addParameter(STR16("Fill Chance"), nullptr, 0, .5f, 0, kParamFillChanceId);
-
-	return result;
 }
 
-//------------------------------------------------------------------------
-tresult PLUGIN_API BigSequencerController::terminate ()
-{
-	// Here the Plug-in will be de-instantiated, last possibility to remove some memory!
+tresult PLUGIN_API BigSequencerController::notify(Steinberg::Vst::IMessage* message) {
+	std::string mID = message->getMessageID();
+	if (mID == "SequencerMessage") {
+		const void* data = nullptr;
+		uint32_t size = 0;
+		message->getAttributes()->getBinary("sequencer", data, size);
+		const char* byteData = static_cast<const char*>(data);
+		std::vector<char> serializedData(byteData, byteData + size);
 
-	//---do not forget to call parent ------
-	return EditControllerEx1::terminate ();
-}
+		int index = 0;
+		uint8_t width = serializedData[index++];
+		uint8_t height = serializedData[index++];
 
-//------------------------------------------------------------------------
-tresult PLUGIN_API BigSequencerController::setComponentState (IBStream* state)
-{
-	// Here you get the state of the component (Processor part)
-	if (!state)
-		return kResultFalse;
-
-	return kResultOk;
-}
-
-//------------------------------------------------------------------------
-tresult PLUGIN_API BigSequencerController::setState (IBStream* state)
-{
-	// Here you get the state of the controller
-
-	return kResultTrue;
-}
-
-//------------------------------------------------------------------------
-tresult PLUGIN_API BigSequencerController::getState (IBStream* state)
-{
-	// Here you are asked to deliver the state of the controller (if needed)
-	// Note: the real state of your plug-in is saved in the processor
-
-	return kResultTrue;
-}
-
-//------------------------------------------------------------------------
-IPlugView* PLUGIN_API BigSequencerController::createView (FIDString name)
-{
-	// Here the Host wants to open your editor (if you have one)
-	if (FIDStringsEqual (name, Vst::ViewType::kEditor))
-	{
-		// create your editor here and return a IPlugView ptr of it
-		auto* view = new BigSequencerEditor(this, "view", "bigsequencereditor.uidesc");
-		return (IPlugView*)view;
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				NoteData& noteData = sequencer.getNote(x, y);
+				noteData.active = serializedData[index++];
+				noteData.pitch = serializedData[index++];
+			}
+		}
+		for (int cursorIndex = 0; cursorIndex < sequencer.maxNumCursors; cursorIndex++) {
+			Cursor& cursor = sequencer.getCursor(cursorIndex);
+			cursor.active = serializedData[index++];
+			cursor.position = serializedData[index++];  // this could be anywhere in a 32x32 range, so we need a uint16 and thus two bytes here.
+		}
 	}
-	return nullptr;
+	message->release();
+	return kResultOk;
 }
 
 //------------------------------------------------------------------------

@@ -1,7 +1,6 @@
 #pragma once
 
 #include  "vstgui4/vstgui/lib/copenglview.h"
-#include <GL/gl.h>
 
 #include "sequencer.h"
 
@@ -16,6 +15,6 @@ namespace vargason::bigsequencer {
 		void setSequencer(Sequencer* sequencer);
 
 	private:
-		Sequencer* sequencer;
+		Sequencer* sequencer = nullptr;
 	};
 }

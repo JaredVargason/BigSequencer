@@ -53,8 +53,8 @@ public:
 
 //------------------------------------------------------------------------
 protected:
-	vargason::bigsequencer::Sequencer* sequencer = nullptr;
-	vargason::bigsequencer::RandomNoteDataGenerator* randomNoteGenerator = nullptr;
+	vargason::bigsequencer::Sequencer* sequencer = nullptr;  // this could be a not pointer probably.
+	vargason::bigsequencer::RandomNoteDataGenerator* randomNoteGenerator = nullptr;  // same.
 
 	bool wasPreviouslyPlaying = false;  // whether the host was playing in the last frame
 	float lastProjectMusicTime = 0;  // music time of the last frame
@@ -70,6 +70,7 @@ protected:
 	Pitch rootNote = Pitch::c;
 	Scale scale = Scale::chromatic;
 
+	std::thread* messageThread = nullptr;
 	std::thread* timerThread = nullptr;
 
 	void sendMidiNoteOn(Steinberg::Vst::IEventList* eventList, uint8_t pitch, float velocity);
@@ -80,6 +81,11 @@ private:
 	void handleParameterChanges(Steinberg::Vst::ProcessData& data);
 	void updateSequencer(Steinberg::Vst::ProcessData& data);
 	void updateCursor(Steinberg::Vst::ProcessData& data, Cursor& cursor);
+
+	// sending GUI updates
+	void messageSender();
+	void sendDataToController();
+	void getSequencerData(std::vector<char>& sequencerData);
 };
 
 //------------------------------------------------------------------------

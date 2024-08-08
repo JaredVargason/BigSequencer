@@ -499,6 +499,42 @@ namespace vargason::bigsequencer {
 		NoteData* noteData = randomNoteGenerator->generate(sequencer->getWidth(), sequencer->getHeight(), rootNote, scale, minNote, maxNote);
 		sequencer->setNotes(sequencer->getWidth(), sequencer->getHeight(), noteData);
 	}
+
+	void BigSequencerProcessor::messageSender()
+	{
+	}
+
+	void BigSequencerProcessor::sendDataToController() {
+		Vst::IMessage* message = allocateMessage();
+		if (!message) {
+			return;
+		}
+		message->setMessageID("SequencerMessage");
+		Steinberg::Vst::IAttributeList* attr = message->getAttributes();
+		if (attr) {
+			std::vector<char> sequencerData;
+			getSequencerData(sequencerData);
+			attr->setBinary("sequencer", &sequencerData[0], sequencerData.size());
+		}
+		sendMessage(message);
+	}
+
+	void BigSequencerProcessor::getSequencerData(std::vector<char>& sequencerData) {
+		sequencerData.push_back(sequencer->getWidth());
+		sequencerData.push_back(sequencer->getHeight());
+		for (int y = 0; y < sequencer->getHeight(); y++) {
+			for (int x = 0; x < sequencer->getWidth(); x++) {
+				NoteData& noteData = sequencer->getNote(x, y);
+				sequencerData.push_back(noteData.active);
+				sequencerData.push_back(noteData.pitch);
+			}
+		}
+		for (int cursorIndex = 0; cursorIndex < sequencer->maxNumCursors; cursorIndex++) {
+			Cursor& cursor = sequencer->getCursor(cursorIndex);
+			sequencerData.push_back(cursor.active);
+			sequencerData.push_back(cursor.position);  // this could be anywhere in a 32x32 range, so we need a uint16 and thus two bytes here.
+		}
+	}
 }
 
 // namespace vargason
