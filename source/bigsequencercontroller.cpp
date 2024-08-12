@@ -7,7 +7,6 @@
 #include "vstgui/plugin-bindings/vst3editor.h"
 #include "plugids.h"
 #include "scales.h"
-#include "bigsequencereditor.h"
 
 using namespace Steinberg;
 
@@ -35,7 +34,7 @@ tresult PLUGIN_API BigSequencerController::initialize (FUnknown* context)
 tresult PLUGIN_API BigSequencerController::terminate ()
 {
 	// Here the Plug-in will be de-instantiated, last possibility to remove some memory!
-
+	shouldUpdate = false;
 	//---do not forget to call parent ------
 	return EditControllerEx1::terminate ();
 }
@@ -74,8 +73,9 @@ IPlugView* PLUGIN_API BigSequencerController::createView (FIDString name)
 	if (FIDStringsEqual (name, Vst::ViewType::kEditor))
 	{
 		// create your editor here and return a IPlugView ptr of it
-		auto* view = new BigSequencerEditor(this, "view", "bigsequencereditor.uidesc");
-		return (IPlugView*)view;
+		editor = new BigSequencerEditor(this, "view", "bigsequencereditor.uidesc", sequencer);
+		shouldUpdate = true;
+		return (IPlugView*)editor;
 	}
 	return nullptr;
 }
@@ -168,7 +168,7 @@ void BigSequencerController::addParameters()
 
 tresult PLUGIN_API BigSequencerController::notify(Steinberg::Vst::IMessage* message) {
 	std::string mID = message->getMessageID();
-	if (mID == "SequencerMessage") {
+	if (mID == "SequencerMessage" && shouldUpdate) {
 		const void* data = nullptr;
 		uint32_t size = 0;
 		message->getAttributes()->getBinary("sequencer", data, size);
@@ -178,6 +178,9 @@ tresult PLUGIN_API BigSequencerController::notify(Steinberg::Vst::IMessage* mess
 		int index = 0;
 		uint8_t width = serializedData[index++];
 		uint8_t height = serializedData[index++];
+		if (width != sequencer.getWidth() || height != sequencer.getHeight()) {
+			sequencer.setSize(width, height);
+		}
 
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
@@ -186,11 +189,12 @@ tresult PLUGIN_API BigSequencerController::notify(Steinberg::Vst::IMessage* mess
 				noteData.pitch = serializedData[index++];
 			}
 		}
-		for (int cursorIndex = 0; cursorIndex < sequencer.maxNumCursors; cursorIndex++) {
+		/*for (int cursorIndex = 0; cursorIndex < sequencer.maxNumCursors; cursorIndex++) {
 			Cursor& cursor = sequencer.getCursor(cursorIndex);
 			cursor.active = serializedData[index++];
 			cursor.position = serializedData[index++];  // this could be anywhere in a 32x32 range, so we need a uint16 and thus two bytes here.
-		}
+		}*/
+		this->editor->setSequencerViewInvalid();
 	}
 	message->release();
 	return kResultOk;

@@ -4,6 +4,7 @@
 
 #pragma once
 #include <thread>
+#include <mutex>
 
 #include "public.sdk/source/vst/vstaudioeffect.h"
 #include "sequencer.h"
@@ -70,8 +71,9 @@ protected:
 	Pitch rootNote = Pitch::c;
 	Scale scale = Scale::chromatic;
 
+	std::mutex sequencer_mutex;
 	std::thread* messageThread = nullptr;
-	std::thread* timerThread = nullptr;
+	bool messageThreadRunning = false;
 
 	void sendMidiNoteOn(Steinberg::Vst::IEventList* eventList, uint8_t pitch, float velocity);
 	void sendMidiNoteOff(Steinberg::Vst::IEventList* eventList, uint8_t pitch);

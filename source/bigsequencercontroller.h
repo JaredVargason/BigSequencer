@@ -6,6 +6,8 @@
 
 #include "public.sdk/source/vst/vsteditcontroller.h"
 #include "sequencer.h"
+#include "bigsequencereditor.h"
+
 
 namespace vargason::bigsequencer {
 
@@ -46,7 +48,9 @@ public:
 
 //------------------------------------------------------------------------
 private:
+	bool shouldUpdate = false;
 	Sequencer sequencer;  // kind of a storage thing tbh
+	BigSequencerEditor* editor = nullptr;
 	void addParameters();
 };
 

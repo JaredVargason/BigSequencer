@@ -79,8 +79,8 @@ namespace vargason::bigsequencer {
 		uint16_t getHeight();
 		void setSize(int width, int height);
 
-		NoteData getNote(int index);
-		NoteData getNote(int x, int y);
+		NoteData& getNote(int index);
+		NoteData& getNote(int x, int y);
 		void setNotes(int width, int height, NoteData* notes);
 		int totalNotes();
 

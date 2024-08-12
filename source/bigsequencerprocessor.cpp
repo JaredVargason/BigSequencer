@@ -11,6 +11,7 @@
 #include "pluginterfaces/vst/ivstparameterchanges.h"
 #include "pluginterfaces/vst/ivstevents.h"
 
+
 using namespace Steinberg;
 
 namespace vargason::bigsequencer {
@@ -44,7 +45,8 @@ namespace vargason::bigsequencer {
 		this->sequencer = new Sequencer();
 		this->randomNoteGenerator = new RandomNoteDataGenerator();
 		regenerateGridNotes();
-		this->timerThread = new std::thread();
+		this->messageThreadRunning = true;
+		this->messageThread = new std::thread(&BigSequencerProcessor::messageSender, this);
 
 		return kResultOk;
 	}
@@ -53,9 +55,14 @@ namespace vargason::bigsequencer {
 	tresult PLUGIN_API BigSequencerProcessor::terminate()
 	{
 		// Here the Plug-in will be de-instantiated, last possibility to remove some memory!
+		messageThreadRunning = false;
+		if (this->messageThread->joinable()) {
+			this->messageThread->join();
+		}
+
 		delete sequencer;
 		delete randomNoteGenerator;
-		delete timerThread;
+
 		//---do not forget to call parent ------
 		return AudioEffect::terminate();
 	}
@@ -500,8 +507,16 @@ namespace vargason::bigsequencer {
 		sequencer->setNotes(sequencer->getWidth(), sequencer->getHeight(), noteData);
 	}
 
-	void BigSequencerProcessor::messageSender()
-	{
+	void BigSequencerProcessor::messageSender() {
+		while (messageThreadRunning) {
+			auto startTime = std::chrono::high_resolution_clock::now();
+			sendDataToController();
+			auto endTime = std::chrono::high_resolution_clock::now();
+			std::chrono::duration<double, std::milli> elapsed = endTime - startTime;
+
+			// Sleep for the remaining time to maintain 60 Hz
+			std::this_thread::sleep_for(std::chrono::milliseconds(16) - elapsed);
+		}
 	}
 
 	void BigSequencerProcessor::sendDataToController() {
@@ -520,6 +535,7 @@ namespace vargason::bigsequencer {
 	}
 
 	void BigSequencerProcessor::getSequencerData(std::vector<char>& sequencerData) {
+		std::lock_guard<std::mutex> guard(sequencer_mutex);
 		sequencerData.push_back(sequencer->getWidth());
 		sequencerData.push_back(sequencer->getHeight());
 		for (int y = 0; y < sequencer->getHeight(); y++) {
@@ -531,8 +547,8 @@ namespace vargason::bigsequencer {
 		}
 		for (int cursorIndex = 0; cursorIndex < sequencer->maxNumCursors; cursorIndex++) {
 			Cursor& cursor = sequencer->getCursor(cursorIndex);
-			sequencerData.push_back(cursor.active);
-			sequencerData.push_back(cursor.position);  // this could be anywhere in a 32x32 range, so we need a uint16 and thus two bytes here.
+			//sequencerData.push_back(cursor.active);
+			//sequencerData.push_back(cursor.position);  // this could be anywhere in a 32x32 range, so we need a uint16 and thus two bytes here.
 		}
 	}
 }
