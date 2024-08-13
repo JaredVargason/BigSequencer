@@ -5,7 +5,6 @@ namespace vargason::bigsequencer {
 	BigSequencerEditor::BigSequencerEditor(Steinberg::Vst::EditController* controller, VSTGUI::UTF8StringPtr templateName, VSTGUI::UTF8StringPtr xmlFile, Sequencer& sequencer) : VSTGUI::VST3Editor(controller, templateName, xmlFile) {
 		//this->viewName = xmlFile;
 		this->sequencer = &sequencer;
-		int x = 2;
 	}
 
 	bool BigSequencerEditor::open(void* parent, const VSTGUI::PlatformType& platformType) {

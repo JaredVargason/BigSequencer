@@ -48,7 +48,6 @@ public:
 
 //------------------------------------------------------------------------
 private:
-	bool shouldUpdate = false;
 	Sequencer sequencer;  // kind of a storage thing tbh
 	BigSequencerEditor* editor = nullptr;
 	void addParameters();

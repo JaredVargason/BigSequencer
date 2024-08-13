@@ -71,10 +71,6 @@ protected:
 	Pitch rootNote = Pitch::c;
 	Scale scale = Scale::chromatic;
 
-	std::mutex sequencer_mutex;
-	std::thread* messageThread = nullptr;
-	bool messageThreadRunning = false;
-
 	void sendMidiNoteOn(Steinberg::Vst::IEventList* eventList, uint8_t pitch, float velocity);
 	void sendMidiNoteOff(Steinberg::Vst::IEventList* eventList, uint8_t pitch);
 
@@ -82,11 +78,11 @@ private:
 	void regenerateGridNotes();
 	void handleParameterChanges(Steinberg::Vst::ProcessData& data);
 	void updateSequencer(Steinberg::Vst::ProcessData& data);
-	void updateCursor(Steinberg::Vst::ProcessData& data, Cursor& cursor);
+	void updateCursor(Steinberg::Vst::ProcessData& data, int cursorIndex, Cursor& cursor);
 
 	// sending GUI updates
-	void messageSender();
-	void sendDataToController();
+	void sendSequencerUpdate();
+	void sendCursorUpdate(int index, Cursor& cursor);
 	void getSequencerData(std::vector<char>& sequencerData);
 };
 

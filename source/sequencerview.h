@@ -26,20 +26,27 @@ namespace vargason::bigsequencer {
 		}
 	private:
 		Sequencer* sequencer;
-		const Color inactiveColor = { 128, 128, 128 };
-		const Color colors[12] = {
+		const Color inactiveNoteColor = { 128, 128, 128 };
+		const Color noteColors[12] = {
 			{255, 0, 0},    // red
 			{255, 128, 0},  // orange
 			{255, 255, 0},  // yellow
 			{128, 255, 0},  // light green
-			{0, 255, 0}, // green
-			{0, 255, 128},
-			{0, 255, 255},
-			{0, 128, 255},
-			{0, 0, 255},
-			{127, 0, 255},
-			{255, 0, 255},
-			{102, 0, 51}
+			{0, 255, 0},  // green
+			{0, 255, 128},  // teal
+			{0, 255, 255},  // light blue
+			{0, 128, 255},  // sky blue
+			{0, 0, 255},  // dark blue
+			{127, 0, 255},  // purple
+			{255, 0, 255},  // pink
+			{102, 0, 51}  // maroon or something
+		};
+
+		const Color cursorColors[4] = {
+			{102, 0, 0},
+			{0, 102, 102},
+			{102, 102, 0},
+			{0, 102, 0}
 		};
 	};
 }

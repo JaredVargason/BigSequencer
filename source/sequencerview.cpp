@@ -46,7 +46,7 @@ namespace vargason::bigsequencer {
 				float xPos = x * sqrWidth;
 				float yPos = viewSize.getHeight() - y * sqrWidth;
 				NoteData& noteData = sequencer->getNote(x, y);
-				const Color color = noteData.active ? colors[noteData.pitch % 12] : inactiveColor;
+				const Color color = noteData.active ? noteColors[noteData.pitch % 12] : inactiveNoteColor;
 
 				glColor3ub(color.r, color.g, color.b);
 				glVertex2f(xPos, yPos);  // top left
@@ -59,18 +59,31 @@ namespace vargason::bigsequencer {
 			}
 		}
 		glEnd();
-		/*
+
 		// draw cursors on top
 		glBegin(GL_TRIANGLES);
 		for (int i = 0; i < sequencer->maxNumCursors; i++) {
-			float xPos = 0;
-			float yPos = 0;
-			// draw inside the square
 
+			// draw inside the square
+			Cursor& cursor = sequencer->getCursor(i);
+			float xIndex = (cursor.position % sequencer->getWidth());
+			float yIndex = cursor.position / sequencer->getWidth();
+
+			float xPos = xIndex * sqrWidth;
+			float yPos = viewSize.getHeight() - yIndex * sqrWidth;
+
+			uint8_t alpha = cursor.active ? 1 : 0;
+			const Color color = cursorColors[i];
+			glColor4ub(color.r, color.g, color.b, alpha);
+			glVertex2f(xPos, yPos);  // top left
+			glVertex2f(xPos + sqrWidth, yPos);  // top right
+			glVertex2f(xPos + sqrWidth, yPos - sqrWidth);  // bottom right
+
+			glVertex2f(xPos, yPos);  // top left
+			glVertex2f(xPos + sqrWidth, yPos - sqrWidth);  // bottom right
+			glVertex2f(xPos, yPos - sqrWidth); // bottom left
 		}
 		glEnd();
-		*/
-		
 
 		glFlush();
 		this->getPlatformOpenGLView()->swapBuffers();

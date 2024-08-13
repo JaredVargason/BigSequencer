@@ -34,7 +34,6 @@ tresult PLUGIN_API BigSequencerController::initialize (FUnknown* context)
 tresult PLUGIN_API BigSequencerController::terminate ()
 {
 	// Here the Plug-in will be de-instantiated, last possibility to remove some memory!
-	shouldUpdate = false;
 	//---do not forget to call parent ------
 	return EditControllerEx1::terminate ();
 }
@@ -74,7 +73,6 @@ IPlugView* PLUGIN_API BigSequencerController::createView (FIDString name)
 	{
 		// create your editor here and return a IPlugView ptr of it
 		editor = new BigSequencerEditor(this, "view", "bigsequencereditor.uidesc", sequencer);
-		shouldUpdate = true;
 		return (IPlugView*)editor;
 	}
 	return nullptr;
@@ -168,7 +166,7 @@ void BigSequencerController::addParameters()
 
 tresult PLUGIN_API BigSequencerController::notify(Steinberg::Vst::IMessage* message) {
 	std::string mID = message->getMessageID();
-	if (mID == "SequencerMessage" && shouldUpdate) {
+	if (mID == "SequencerMessage") {
 		const void* data = nullptr;
 		uint32_t size = 0;
 		message->getAttributes()->getBinary("sequencer", data, size);
@@ -189,11 +187,16 @@ tresult PLUGIN_API BigSequencerController::notify(Steinberg::Vst::IMessage* mess
 				noteData.pitch = serializedData[index++];
 			}
 		}
-		/*for (int cursorIndex = 0; cursorIndex < sequencer.maxNumCursors; cursorIndex++) {
-			Cursor& cursor = sequencer.getCursor(cursorIndex);
-			cursor.active = serializedData[index++];
-			cursor.position = serializedData[index++];  // this could be anywhere in a 32x32 range, so we need a uint16 and thus two bytes here.
-		}*/
+
+		this->editor->setSequencerViewInvalid();
+	}
+	else if (mID == "CursorMessage") {
+		Steinberg::int64 cursorIndex, cursorPosition, cursorActive;
+		message->getAttributes()->getInt("index", cursorIndex);
+		message->getAttributes()->getInt("position", cursorPosition);
+		message->getAttributes()->getInt("active", cursorActive);
+		sequencer.getCursor(cursorIndex).position = cursorPosition;
+		sequencer.getCursor(cursorIndex).active = cursorActive;
 		this->editor->setSequencerViewInvalid();
 	}
 	message->release();
