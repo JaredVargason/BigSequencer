@@ -45,8 +45,6 @@ namespace vargason::bigsequencer {
 		this->sequencer = new Sequencer();
 		this->randomNoteGenerator = new RandomNoteDataGenerator();
 		regenerateGridNotes();
-		//this->messageThreadRunning = true;
-		//this->messageThread = new std::thread(&BigSequencerProcessor::messageSender, this);
 		return kResultOk;
 	}
 

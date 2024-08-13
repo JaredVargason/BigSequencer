@@ -3,8 +3,6 @@
 //------------------------------------------------------------------------
 
 #pragma once
-#include <thread>
-#include <mutex>
 
 #include "public.sdk/source/vst/vstaudioeffect.h"
 #include "sequencer.h"

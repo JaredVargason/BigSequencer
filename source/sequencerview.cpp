@@ -25,16 +25,6 @@ namespace vargason::bigsequencer {
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
-
-		/*glBegin(GL_TRIANGLES);
-		glColor3f(1.0f, 0.0f, 0.0f);
-		glVertex2f(viewSize.getWidth() / 2, viewSize.getHeight() - 50);
-		glColor3f(0.0f, 1.0f, 0.0f);
-		glVertex2f(50, 50);
-		glColor3f(0.0f, 0.0f, 1.0f);
-		glVertex2f(viewSize.getWidth() - 50, 50);
-		glEnd();*/
-
 		float sqrWidth = viewSize.getWidth() / sequencer->getWidth();
 		glBegin(GL_TRIANGLES);
 		for (int y = 0; y < sequencer->getHeight(); y++) {
