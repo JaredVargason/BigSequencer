@@ -79,8 +79,8 @@ namespace vargason::bigsequencer {
 		uint16_t getHeight();
 		void setSize(int width, int height);
 
-		NoteData getNote(int index);
-		NoteData getNote(int x, int y);
+		NoteData& getNote(int index);
+		NoteData& getNote(int x, int y);
 		void setNotes(int width, int height, NoteData* notes);
 		int totalNotes();
 
@@ -89,7 +89,7 @@ namespace vargason::bigsequencer {
 		const int maxNumCursors = 4;
 
 	private:
-		Cursor* cursors = nullptr;
+		Cursor* cursors = nullptr;  // these don't need to be pointers either if we have a constant size
 
 		uint16_t width = 16;
 		uint16_t height = 4;

@@ -11,6 +11,7 @@
 #include "pluginterfaces/vst/ivstparameterchanges.h"
 #include "pluginterfaces/vst/ivstevents.h"
 
+
 using namespace Steinberg;
 
 namespace vargason::bigsequencer {
@@ -44,8 +45,6 @@ namespace vargason::bigsequencer {
 		this->sequencer = new Sequencer();
 		this->randomNoteGenerator = new RandomNoteDataGenerator();
 		regenerateGridNotes();
-		this->timerThread = new std::thread();
-
 		return kResultOk;
 	}
 
@@ -53,9 +52,10 @@ namespace vargason::bigsequencer {
 	tresult PLUGIN_API BigSequencerProcessor::terminate()
 	{
 		// Here the Plug-in will be de-instantiated, last possibility to remove some memory!
+
 		delete sequencer;
 		delete randomNoteGenerator;
-		delete timerThread;
+
 		//---do not forget to call parent ------
 		return AudioEffect::terminate();
 	}
@@ -85,17 +85,22 @@ namespace vargason::bigsequencer {
 				for (int i = 0; i < sequencer->maxNumCursors; i++) {
 					Cursor& cursor = sequencer->getCursor(i);
 
-					cursor.position = retrigger ? 1 : cursor.position;
-					cursor.lastNoteTime = 0;
+					if (retrigger) {
+						cursor.position = 0;
+						cursor.lastNoteTime = 0;
+					}
+					cursor.position = retrigger ? 0 : cursor.position;
 
+					sendCursorUpdate(i, cursor);
 					if (cursor.active) {
-						NoteData noteData = sequencer->getNote(0);
+						NoteData noteData = sequencer->getNote(cursor.position);
 						if (noteData.active) {
 							cursor.notePlaying = true;
 							uint8_t pitch = sequencer->getNote(0).pitch + cursor.pitchOffset;
 							cursor.currentlyPlayingNote = pitch;
 							sendMidiNoteOn(data.outputEvents, pitch, cursor.velocity);
 						}
+						cursor.position++;
 					}
 				}
 			}
@@ -138,6 +143,7 @@ namespace vargason::bigsequencer {
 							int width = 1 + value * sequencer->maxWidth;
 							sequencer->setSize(width, sequencer->getHeight());  // cursor could be out of bounds if we do this wrong
 							regenerateGridNotes();
+							sendSequencerUpdate();
 						}
 						break;
 					case SequencerParams::kParamSequencerHeightId:
@@ -145,6 +151,7 @@ namespace vargason::bigsequencer {
 							int height = 1 + value * sequencer->maxHeight;
 							sequencer->setSize(sequencer->getWidth(), height);
 							regenerateGridNotes();
+							sendSequencerUpdate();
 						}
 						break;
 					case SequencerParams::kParamHostSyncId:
@@ -279,36 +286,41 @@ namespace vargason::bigsequencer {
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							scale = (Scale)(10 * value);
 							regenerateGridNotes();
+							sendSequencerUpdate();
 						}
 						break;
 					case SequencerParams::kParamRootNoteId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							rootNote = (Pitch)(Pitch::b * value);
 							regenerateGridNotes();
+							sendSequencerUpdate();
 						}
 						break;
 					case SequencerParams::kParamMinNoteId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							minNote = noteLowerBound + (noteUpperBound - noteLowerBound) * value;
 							if (minNote > maxNote) {
-								maxNote = minNote + 1;
+								maxNote = minNote;
 							}
 							regenerateGridNotes();
+							sendSequencerUpdate();
 						}
 						break;
 					case SequencerParams::kParamMaxNoteId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							maxNote = noteLowerBound + (noteUpperBound - noteLowerBound) * value;
 							if (minNote > maxNote) {
-								minNote = maxNote - 1;
+								minNote = maxNote;
 							}
 							regenerateGridNotes();
+							sendSequencerUpdate();
 						}
 						break;
 					case SequencerParams::kParamFillChanceId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							randomNoteGenerator->fillChance = value;
 							regenerateGridNotes();
+							sendSequencerUpdate();
 						}
 						break;
 					}
@@ -325,11 +337,11 @@ namespace vargason::bigsequencer {
 			if (lastProjectMusicTime > data.processContext->projectTimeMusic) {  // the measure/song ended and we are back at 0
 				cursor.lastNoteTime -= cycleLength;
 			}
- 			updateCursor(data, cursor);
+			updateCursor(data, cursorIndex, cursor);
 		}
 	}
 
-	void BigSequencerProcessor::updateCursor(Vst::ProcessData& data, Cursor& cursor) {
+	void BigSequencerProcessor::updateCursor(Vst::ProcessData& data, int index, Cursor& cursor) {
 		double quarterNotes = data.processContext->projectTimeMusic;
 		float numericInterval = cursor.numericInterval();
 		if (quarterNotes >= cursor.lastNoteTime + numericInterval) {
@@ -342,10 +354,10 @@ namespace vargason::bigsequencer {
 					cursor.notePlaying = true;
 					cursor.currentlyPlayingNote = realPitch;
 				}
-
+				sendCursorUpdate(index, cursor);
 				int newPos = cursor.position + 1;
 				int totalNotes = sequencer->totalNotes();
-				if (newPos > totalNotes) {
+				if (newPos >= totalNotes) {
 					newPos = 0;
 				}
 				cursor.position = newPos;
@@ -498,6 +510,48 @@ namespace vargason::bigsequencer {
 	void BigSequencerProcessor::regenerateGridNotes() {
 		NoteData* noteData = randomNoteGenerator->generate(sequencer->getWidth(), sequencer->getHeight(), rootNote, scale, minNote, maxNote);
 		sequencer->setNotes(sequencer->getWidth(), sequencer->getHeight(), noteData);
+	}
+
+	void BigSequencerProcessor::sendSequencerUpdate() {
+		Vst::IMessage* message = allocateMessage();
+		if (!message) {
+			return;
+		}
+		message->setMessageID("SequencerMessage");
+		Steinberg::Vst::IAttributeList* attr = message->getAttributes();
+		if (attr) {
+			std::vector<char> sequencerData;
+			getSequencerData(sequencerData);
+			attr->setBinary("sequencer", &sequencerData[0], sequencerData.size());
+		}
+		sendMessage(message);
+	}
+
+	void BigSequencerProcessor::getSequencerData(std::vector<char>& sequencerData) {
+		sequencerData.push_back(sequencer->getWidth());
+		sequencerData.push_back(sequencer->getHeight());
+		for (int y = 0; y < sequencer->getHeight(); y++) {
+			for (int x = 0; x < sequencer->getWidth(); x++) {
+				NoteData& noteData = sequencer->getNote(x, y);
+				sequencerData.push_back(noteData.active);
+				sequencerData.push_back(noteData.pitch);
+			}
+		}
+	}
+
+	void BigSequencerProcessor::sendCursorUpdate(int index, Cursor& cursor) {
+		Vst::IMessage* message = allocateMessage();
+		if (!message) {
+			return;
+		}
+		message->setMessageID("CursorMessage");
+		Steinberg::Vst::IAttributeList* attr = message->getAttributes();
+		if (attr) {
+			attr->setInt("index", index);
+			attr->setInt("position", cursor.position);
+			attr->setInt("active", cursor.active);
+		}
+		sendMessage(message);
 	}
 }
 

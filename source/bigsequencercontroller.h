@@ -5,6 +5,9 @@
 #pragma once
 
 #include "public.sdk/source/vst/vsteditcontroller.h"
+#include "sequencer.h"
+#include "bigsequencereditor.h"
+
 
 namespace vargason::bigsequencer {
 
@@ -34,6 +37,8 @@ public:
 	Steinberg::tresult PLUGIN_API setState (Steinberg::IBStream* state) SMTG_OVERRIDE;
 	Steinberg::tresult PLUGIN_API getState (Steinberg::IBStream* state) SMTG_OVERRIDE;
 
+	Steinberg::tresult PLUGIN_API notify(Steinberg::Vst::IMessage* message) SMTG_OVERRIDE;
+
  	//---Interface---------
 	DEFINE_INTERFACES
 		// Here you can add more supported VST3 interfaces
@@ -42,7 +47,10 @@ public:
     DELEGATE_REFCOUNT (EditController)
 
 //------------------------------------------------------------------------
-protected:
+private:
+	Sequencer sequencer;  // kind of a storage thing tbh
+	BigSequencerEditor* editor = nullptr;
+	void addParameters();
 };
 
 //------------------------------------------------------------------------

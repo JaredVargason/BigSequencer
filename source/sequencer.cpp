@@ -33,11 +33,11 @@ namespace vargason::bigsequencer {
 		delete cursors;
 	}
 
-	NoteData Sequencer::getNote(int index) {
+	NoteData& Sequencer::getNote(int index) {
 		return notes[index];
 	}
 
-	NoteData Sequencer::getNote(int x, int y) {
+	NoteData& Sequencer::getNote(int x, int y) {
 		return notes[y * width + x];
 	}
 

@@ -30,12 +30,17 @@ smtg_add_vst3plugin(BigSequencer
     source/scales.cpp
     source/sequencer.h
     source/sequencer.cpp
+    source/notedatagenerator.h
     source/bigsequencercids.h
     source/bigsequencerprocessor.h
     source/bigsequencerprocessor.cpp
     source/bigsequencercontroller.h
     source/bigsequencercontroller.cpp
     source/bigsequencerentry.cpp
+    source/bigsequencereditor.h
+    source/bigsequencereditor.cpp
+    source/sequencerview.h
+    source/sequencerview.cpp
 )
 
 #- VSTGUI Wanted ----
