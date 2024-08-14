@@ -162,6 +162,8 @@ void BigSequencerController::addParameters()
 	parameters.addParameter(maxNoteParameter);
 
 	parameters.addParameter(STR16("Fill Chance"), nullptr, 0, .5f, 0, kParamFillChanceId);
+
+	parameters.addParameter(STR16("Cursor Tab"), nullptr, 0, 0, 0, kParamCursorTab);
 }
 
 tresult PLUGIN_API BigSequencerController::notify(Steinberg::Vst::IMessage* message) {
@@ -191,13 +193,18 @@ tresult PLUGIN_API BigSequencerController::notify(Steinberg::Vst::IMessage* mess
 		this->editor->setSequencerViewInvalid();
 	}
 	else if (mID == "CursorMessage") {
-		Steinberg::int64 cursorIndex, cursorPosition, cursorActive;
+		Steinberg::int64 cursorIndex, cursorPosition;
 		message->getAttributes()->getInt("index", cursorIndex);
 		message->getAttributes()->getInt("position", cursorPosition);
-		message->getAttributes()->getInt("active", cursorActive);
+		
 		sequencer.getCursor(cursorIndex).position = cursorPosition;
-		sequencer.getCursor(cursorIndex).active = cursorActive;
 		this->editor->setSequencerViewInvalid();
+	}
+	else if (mID == "CursorActiveMessage") {
+		Steinberg::int64 cursorIndex, cursorActive;
+		message->getAttributes()->getInt("index", cursorIndex);
+		message->getAttributes()->getInt("active", cursorActive);
+		sequencer.getCursor(cursorIndex).active = cursorActive;
 	}
 	message->release();
 	return kResultOk;

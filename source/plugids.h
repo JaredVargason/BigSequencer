@@ -38,6 +38,8 @@ namespace vargason::bigsequencer {
 		kParamRootNoteId,
 		kParamMinNoteId,
 		kParamMaxNoteId,
-		kParamFillChanceId
+		kParamFillChanceId,
+
+		kParamCursorTab
 	};
 }

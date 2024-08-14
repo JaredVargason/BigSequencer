@@ -169,6 +169,7 @@ namespace vargason::bigsequencer {
 					case SequencerParams::kParamCursor1ActiveId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							sequencer->getCursor(0).active = value;
+							sendCursorActiveUpdate(0, value);
 						}
 						break;
 					case SequencerParams::kParamCursor1NoteLengthId:
@@ -198,6 +199,7 @@ namespace vargason::bigsequencer {
 					case SequencerParams::kParamCursor2ActiveId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							sequencer->getCursor(1).active = value;
+							sendCursorActiveUpdate(1, value);
 						}
 						break;
 					case SequencerParams::kParamCursor2NoteLengthId:
@@ -227,6 +229,7 @@ namespace vargason::bigsequencer {
 					case SequencerParams::kParamCursor3ActiveId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							sequencer->getCursor(2).active = value;
+							sendCursorActiveUpdate(2, value);
 						}
 						break;
 					case SequencerParams::kParamCursor3NoteLengthId:
@@ -256,6 +259,7 @@ namespace vargason::bigsequencer {
 					case SequencerParams::kParamCursor4ActiveId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							sequencer->getCursor(3).active = value;
+							sendCursorActiveUpdate(3, value);
 						}
 						break;
 					case SequencerParams::kParamCursor4NoteLengthId:
@@ -539,6 +543,20 @@ namespace vargason::bigsequencer {
 		}
 	}
 
+	void BigSequencerProcessor::sendCursorActiveUpdate(int index, bool val) {
+		Vst::IMessage* message = allocateMessage();
+		if (!message) {
+			return;
+		}
+		message->setMessageID("CursorMessage");
+		Steinberg::Vst::IAttributeList* attr = message->getAttributes();
+		if (attr) {
+			attr->setInt("index", index);
+			attr->setInt("active", val);
+		}
+		sendMessage(message);
+	}
+
 	void BigSequencerProcessor::sendCursorUpdate(int index, Cursor& cursor) {
 		Vst::IMessage* message = allocateMessage();
 		if (!message) {
@@ -549,7 +567,6 @@ namespace vargason::bigsequencer {
 		if (attr) {
 			attr->setInt("index", index);
 			attr->setInt("position", cursor.position);
-			attr->setInt("active", cursor.active);
 		}
 		sendMessage(message);
 	}

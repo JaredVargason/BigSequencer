@@ -12,7 +12,7 @@ namespace vargason::bigsequencer {
 			return false;
 		}
 
-		const VSTGUI::CRect viewSize(695, 100, 835, 240);
+		const VSTGUI::CRect viewSize(275, 155, 275 + 360, 155 + 360);
 		sequencerView = new SequencerView(viewSize, *sequencer);
 		frame->addView(sequencerView);
 
