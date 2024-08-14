@@ -80,6 +80,7 @@ private:
 
 	// sending GUI updates
 	void sendSequencerUpdate();
+	void sendCursorActiveUpdate(int index, bool val);
 	void sendCursorUpdate(int index, Cursor& cursor);
 	void getSequencerData(std::vector<char>& sequencerData);
 };
