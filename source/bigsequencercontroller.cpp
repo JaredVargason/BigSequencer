@@ -107,7 +107,6 @@ void BigSequencerController::addParameters()
 	cursor1NoteIntervalParameter->setNormalized(0.5f);
 	parameters.addParameter(cursor1NoteIntervalParameter);
 
-
 	parameters.addParameter(STR16("Cursor 1 Velocity"), nullptr, 0, 0.6, Vst::ParameterInfo::kCanAutomate, kParamCursor1VelocityId);
 
 	// Cursor 2
