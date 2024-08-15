@@ -44,7 +44,6 @@ namespace vargason::bigsequencer {
 		
 		this->sequencer = new Sequencer();
 		this->randomNoteGenerator = new RandomNoteDataGenerator();
-		regenerateGridNotes();
 		return kResultOk;
 	}
 
@@ -303,9 +302,6 @@ namespace vargason::bigsequencer {
 					case SequencerParams::kParamMinNoteId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							minNote = noteLowerBound + (noteUpperBound - noteLowerBound) * value;
-							if (minNote > maxNote) {
-								maxNote = minNote;
-							}
 							regenerateGridNotes();
 							sendSequencerUpdate();
 						}
@@ -313,9 +309,6 @@ namespace vargason::bigsequencer {
 					case SequencerParams::kParamMaxNoteId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							maxNote = noteLowerBound + (noteUpperBound - noteLowerBound) * value;
-							if (minNote > maxNote) {
-								minNote = maxNote;
-							}
 							regenerateGridNotes();
 							sendSequencerUpdate();
 						}
@@ -401,19 +394,16 @@ namespace vargason::bigsequencer {
 		if (!state) {
 			return kResultFalse;
 		}
-		/*
 		// called when we load a preset, the model has to be reloaded
 		IBStreamer streamer (state, kLittleEndian);
-		short width = 0;
-		if (!streamer.readInt16(width)) {
+
+		// Read sequencer deets
+		uint8_t width = 0;
+		if (!streamer.readInt8u(width)) {
 			return kResultFalse;
 		}
-		short height = 0;
-		if (!streamer.readInt16(height)) {
-			return kResultFalse;
-		}
-		short cursor = 0;
-		if (!streamer.readInt16(height)) {
+		uint8_t height = 0;
+		if (!streamer.readInt8u(height)) {
 			return kResultFalse;
 		}
 
@@ -421,25 +411,21 @@ namespace vargason::bigsequencer {
 		bool failure = false;
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				char pitch = 0;
-				char velocity = 0;
-				char probability = 0;
 
+				bool active = false;
+				char pitch = 0;
+
+				if (!streamer.readBool(active)) {
+					failure = false;
+					break;
+				}
 				if (!streamer.readInt8(pitch)) {
 					 failure = false;
 					 break;
 				}
-				if (!streamer.readInt8(velocity)) {
-					failure = false;
-					break;
-				}
-				if (!streamer.readInt8(probability)) {
-					failure = false;
-					break;
-				}
+
+				noteDatas[y * width + x].active = active;
 				noteDatas[y * width + x].pitch = pitch;
-				noteDatas[y * width + x].velocity = velocity;
-				noteDatas[y * width + x].probability = probability;
 			}
 			if (failure) {
 				break;
@@ -451,34 +437,89 @@ namespace vargason::bigsequencer {
 			return kResultFalse;
 		}
 
+		// Write cursors
+		std::vector<Cursor> cursors;
+		for (int i = 0; i < sequencer->maxNumCursors; i++) {
+			Cursor cursor;
+			if (!streamer.readBool(cursor.active)) {
+				failure = false;
+				break;
+			}
+
+			Steinberg::uint8 interval;
+			if (!streamer.readInt8u(interval)) {
+				failure = false;
+				break;
+			}
+			cursor.interval = (Interval)interval;
+
+			Steinberg::int8 pitchOffset;
+			if (!streamer.readInt8(pitchOffset)) {
+				failure = false;
+				break;
+			}
+			cursor.pitchOffset = pitchOffset;
+
+			if (!streamer.readFloat(cursor.velocity)) {
+				failure = false;
+				break;
+			}
+		}
+
+		if (failure) {
+			return kResultFalse;
+		}
+
+
+		// copy over all data on read success
+		for (int i = 0; i < sequencer->maxNumCursors; i++) {
+			Cursor& cursor = sequencer->getCursor(i);
+			cursor.active = cursors[i].active;
+			cursor.interval = cursors[i].interval;
+			cursor.pitchOffset = cursors[i].pitchOffset;
+			cursor.velocity = cursors[i].velocity;
+		}
 		sequencer->setNotes(width, height, noteDatas);
-		sequencer->setCursor(cursor);
-		*/
+
 		return kResultOk;
 	}
 
 	//------------------------------------------------------------------------
 	tresult PLUGIN_API BigSequencerProcessor::getState(IBStream* state)
 	{
-		/*
-		// here we need to save the model
 		IBStreamer streamer(state, kLittleEndian);
+
+
+		// Write grid data
 		int width = sequencer->getWidth();
 		int height = sequencer->getHeight();
-		double cursor = sequencer->getCursor();
-		streamer.writeInt16(width);
-		streamer.writeInt16(height);
-		streamer.writeDouble(cursor);
+		streamer.writeInt8u(width);
+		streamer.writeInt8u(height);
 
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				NoteData noteData = sequencer->getNote(x, y);
-				streamer.writeInt8(noteData.pitch);
-				streamer.writeInt8(noteData.velocity);
-				streamer.writeInt8(noteData.probability);
+				streamer.writeBool(noteData.active);
+				streamer.writeInt8u(noteData.pitch);
 			}
 		}
-		*/
+
+		// Write cursors
+		for (int cursorIndex = 0; cursorIndex < sequencer->maxNumCursors; cursorIndex++) {
+			Cursor cursor = sequencer->getCursor(cursorIndex);
+			streamer.writeBool(cursor.active);
+			streamer.writeInt8u(cursor.interval);
+			streamer.writeInt8(cursor.pitchOffset);
+			streamer.writeFloat(cursor.velocity);
+		}
+
+		// Write random generator
+		streamer.writeInt8u(scale);
+		streamer.writeInt8u(rootNote);
+		streamer.writeInt8u(minNote);
+		streamer.writeInt8u(maxNote);
+		streamer.writeFloat(randomNoteGenerator->fillChance);
+
 		return kResultOk;
 	}
 
@@ -548,7 +589,7 @@ namespace vargason::bigsequencer {
 		if (!message) {
 			return;
 		}
-		message->setMessageID("CursorMessage");
+		message->setMessageID("CursorActiveMessage");
 		Steinberg::Vst::IAttributeList* attr = message->getAttributes();
 		if (attr) {
 			attr->setInt("index", index);

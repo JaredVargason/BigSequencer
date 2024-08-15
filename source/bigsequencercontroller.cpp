@@ -205,6 +205,7 @@ tresult PLUGIN_API BigSequencerController::notify(Steinberg::Vst::IMessage* mess
 		message->getAttributes()->getInt("index", cursorIndex);
 		message->getAttributes()->getInt("active", cursorActive);
 		sequencer.getCursor(cursorIndex).active = cursorActive;
+		this->editor->setSequencerViewInvalid();
 	}
 	message->release();
 	return kResultOk;

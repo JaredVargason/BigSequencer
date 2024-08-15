@@ -21,6 +21,9 @@ namespace vargason::bigsequencer {
 					availableNotes.push_back(currentNote);
 				}
 			}
+			if (availableNotes.size() == 0) {
+				availableNotes.push_back(noteMin);
+			}
 			return generateNoteData(width, height, availableNotes);
 		}
 	protected:

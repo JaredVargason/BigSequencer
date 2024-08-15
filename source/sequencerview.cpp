@@ -7,9 +7,6 @@ namespace vargason::bigsequencer {
 
 	void SequencerView::drawOpenGL(const VSTGUI::CRect& updateRect) {
 		// draw our sequencer
-		if (sequencer == nullptr) {
-			return;
-		}
 		VSTGUI::CRect viewSize = getViewSize();
 		glViewport(0, 0, viewSize.getWidth(), viewSize.getHeight());
 
@@ -56,15 +53,17 @@ namespace vargason::bigsequencer {
 
 			// draw inside the square
 			Cursor& cursor = sequencer->getCursor(i);
+			if (!cursor.active) {
+				continue;
+			}
 			float xIndex = (cursor.position % sequencer->getWidth());
 			float yIndex = cursor.position / sequencer->getWidth();
 
 			float xPos = xIndex * sqrWidth;
 			float yPos = viewSize.getHeight() - yIndex * sqrWidth;
 
-			uint8_t alpha = cursor.active ? 1 : 0;
 			const Color color = cursorColors[i];
-			glColor4ub(color.r, color.g, color.b, alpha);
+			glColor3ub(color.r, color.g, color.b);
 			glVertex2f(xPos, yPos);  // top left
 			glVertex2f(xPos + sqrWidth, yPos);  // top right
 			glVertex2f(xPos + sqrWidth, yPos - sqrWidth);  // bottom right
