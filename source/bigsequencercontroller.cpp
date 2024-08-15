@@ -96,7 +96,15 @@ void BigSequencerController::addParameters()
 	Vst::RangeParameter* cursor1PitchOffsetParameter = new Vst::RangeParameter(STR16("Cursor 1 Pitch Offset"), kParamCursor1PitchOffsetId, nullptr, -24, 24, 0, 0, 0);
 	parameters.addParameter(cursor1PitchOffsetParameter);
 
-	Vst::RangeParameter* cursor1NoteIntervalParameter = new Vst::RangeParameter(STR16("Cursor 1 Note Interval"), kParamCursor1NoteIntervalId, nullptr, 0, Interval::doubleWholeNote, Interval::quarterNote, 0, 0);
+	Vst::StringListParameter* cursor1NoteIntervalParameter = new Vst::StringListParameter(STR16("Cursor 1 Note Interval"), kParamCursor1NoteIntervalId, nullptr, 0);
+	cursor1NoteIntervalParameter->appendString(STR16("1/32"));
+	cursor1NoteIntervalParameter->appendString(STR16("1/16"));
+	cursor1NoteIntervalParameter->appendString(STR16("1/8"));
+	cursor1NoteIntervalParameter->appendString(STR16("1/4"));
+	cursor1NoteIntervalParameter->appendString(STR16("1/2"));
+	cursor1NoteIntervalParameter->appendString(STR16("1/1"));
+	cursor1NoteIntervalParameter->appendString(STR16("2/1"));
+	cursor1NoteIntervalParameter->setNormalized(0.5f);
 	parameters.addParameter(cursor1NoteIntervalParameter);
 
 	parameters.addParameter(STR16("Cursor 1 Velocity"), nullptr, 0, 0.6, Vst::ParameterInfo::kCanAutomate, kParamCursor1VelocityId);
@@ -108,7 +116,15 @@ void BigSequencerController::addParameters()
 	Vst::RangeParameter* cursor2OctaveOffsetParameter = new Vst::RangeParameter(STR16("Cursor 2 Pitch Offset"), kParamCursor2PitchOffsetId, nullptr, -24, 24, -12, 0, 0);
 	parameters.addParameter(cursor2OctaveOffsetParameter);
 
-	Vst::RangeParameter* cursor2NoteIntervalParameter = new Vst::RangeParameter(STR16("Cursor 2 Note Interval"), kParamCursor2NoteIntervalId, nullptr, 0, Interval::doubleWholeNote, Interval::halfNote, 0, 0);
+	Vst::StringListParameter* cursor2NoteIntervalParameter = new Vst::StringListParameter(STR16("Cursor 2 Note Interval"), kParamCursor2NoteIntervalId, nullptr, 0);
+	cursor2NoteIntervalParameter->appendString(STR16("1/32"));
+	cursor2NoteIntervalParameter->appendString(STR16("1/16"));
+	cursor2NoteIntervalParameter->appendString(STR16("1/8"));
+	cursor2NoteIntervalParameter->appendString(STR16("1/4"));
+	cursor2NoteIntervalParameter->appendString(STR16("1/2"));
+	cursor2NoteIntervalParameter->appendString(STR16("1/1"));
+	cursor2NoteIntervalParameter->appendString(STR16("2/1"));
+	cursor2NoteIntervalParameter->setNormalized(0.69f);
 	parameters.addParameter(cursor2NoteIntervalParameter);
 
 	parameters.addParameter(STR16("Cursor 2 Velocity"), nullptr, 0, 0.6, Vst::ParameterInfo::kCanAutomate, kParamCursor2VelocityId);
@@ -119,8 +135,15 @@ void BigSequencerController::addParameters()
 
 	Vst::RangeParameter* cursor3OctaveOffsetParameter = new Vst::RangeParameter(STR16("Cursor 3 Pitch Offset"), kParamCursor3PitchOffsetId, nullptr, -24, 24, 12, 0, 0);
 	parameters.addParameter(cursor3OctaveOffsetParameter);
-
-	Vst::RangeParameter* cursor3NoteIntervalParameter = new Vst::RangeParameter(STR16("Cursor 3 Note Interval"), kParamCursor3NoteIntervalId, nullptr, 0, Interval::doubleWholeNote, Interval::eighthNote, 0, 0);
+	Vst::StringListParameter* cursor3NoteIntervalParameter = new Vst::StringListParameter(STR16("Cursor 3 Note Interval"), kParamCursor3NoteIntervalId, nullptr, 0);
+	cursor3NoteIntervalParameter->appendString(STR16("1/32"));
+	cursor3NoteIntervalParameter->appendString(STR16("1/16"));
+	cursor3NoteIntervalParameter->appendString(STR16("1/8"));
+	cursor3NoteIntervalParameter->appendString(STR16("1/4"));
+	cursor3NoteIntervalParameter->appendString(STR16("1/2"));
+	cursor3NoteIntervalParameter->appendString(STR16("1/1"));
+	cursor3NoteIntervalParameter->appendString(STR16("2/1"));
+	cursor3NoteIntervalParameter->setNormalized(0.8f);
 	parameters.addParameter(cursor3NoteIntervalParameter);
 
 	parameters.addParameter(STR16("Cursor 3 Velocity"), nullptr, 0, 0.6, Vst::ParameterInfo::kCanAutomate, kParamCursor3VelocityId);
@@ -132,7 +155,15 @@ void BigSequencerController::addParameters()
 	Vst::RangeParameter* cursor4OctaveOffsetParameter = new Vst::RangeParameter(STR16("Cursor 4 Pitch Offset"), kParamCursor4PitchOffsetId, nullptr, -24, 24, -24, 0, 0);
 	parameters.addParameter(cursor4OctaveOffsetParameter);
 
-	Vst::RangeParameter* cursor4NoteIntervalParameter = new Vst::RangeParameter(STR16("Cursor 4 Note Interval"), kParamCursor4NoteIntervalId, nullptr, 0, Interval::doubleWholeNote, Interval::wholeNote, 0, 0);
+	Vst::StringListParameter* cursor4NoteIntervalParameter = new Vst::StringListParameter(STR16("Cursor 4 Note Interval"), kParamCursor4NoteIntervalId, nullptr, 0);
+	cursor4NoteIntervalParameter->appendString(STR16("1/32"));
+	cursor4NoteIntervalParameter->appendString(STR16("1/16"));
+	cursor4NoteIntervalParameter->appendString(STR16("1/8"));
+	cursor4NoteIntervalParameter->appendString(STR16("1/4"));
+	cursor4NoteIntervalParameter->appendString(STR16("1/2"));
+	cursor4NoteIntervalParameter->appendString(STR16("1/1"));
+	cursor4NoteIntervalParameter->appendString(STR16("2/1"));
+	cursor4NoteIntervalParameter->setNormalized(1.0f);
 	parameters.addParameter(cursor4NoteIntervalParameter);
 
 	parameters.addParameter(STR16("Cursor 4 Velocity"), nullptr, 0, 0.6, Vst::ParameterInfo::kCanAutomate, kParamCursor4VelocityId);
@@ -141,19 +172,19 @@ void BigSequencerController::addParameters()
 	Vst::RangeParameter* rootNoteParameter = new Vst::RangeParameter(STR16("Root Note"), kParamRootNoteId, nullptr, Pitch::c, Pitch::b, Pitch::c, 0, 0);
 	parameters.addParameter(rootNoteParameter);
 
-	Vst::StringListParameter* stringListParameter = new Vst::StringListParameter(STR16("Scale"), kParamScaleId, nullptr, 0);
-	stringListParameter->appendString(STR16("Chromatic"));
-	stringListParameter->appendString(STR16("Major"));
-	stringListParameter->appendString(STR16("Major Pentatonic"));
-	stringListParameter->appendString(STR16("Harmonic Minor"));
-	stringListParameter->appendString(STR16("Melodic Minor"));
-	stringListParameter->appendString(STR16("Dorian"));
-	stringListParameter->appendString(STR16("Phrygian"));
-	stringListParameter->appendString(STR16("Lydian"));
-	stringListParameter->appendString(STR16("Mixolydian"));
-	stringListParameter->appendString(STR16("Aeolian"));
-	stringListParameter->appendString(STR16("Locrian"));
-	parameters.addParameter(stringListParameter);
+	Vst::StringListParameter* scaleParameter = new Vst::StringListParameter(STR16("Scale"), kParamScaleId, nullptr, 0);
+	scaleParameter->appendString(STR16("Chromatic"));
+	scaleParameter->appendString(STR16("Major"));
+	scaleParameter->appendString(STR16("Major Pentatonic"));
+	scaleParameter->appendString(STR16("Harmonic Minor"));
+	scaleParameter->appendString(STR16("Melodic Minor"));
+	scaleParameter->appendString(STR16("Dorian"));
+	scaleParameter->appendString(STR16("Phrygian"));
+	scaleParameter->appendString(STR16("Lydian"));
+	scaleParameter->appendString(STR16("Mixolydian"));
+	scaleParameter->appendString(STR16("Aeolian"));
+	scaleParameter->appendString(STR16("Locrian"));
+	parameters.addParameter(scaleParameter);
 
 	Vst::RangeParameter* minNoteParameter = new Vst::RangeParameter(STR16("Min Note"), kParamMinNoteId, nullptr, 24, 96, 56, 0, 0);
 	parameters.addParameter(minNoteParameter);
