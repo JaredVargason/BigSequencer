@@ -76,7 +76,7 @@
 				"Size": "5, 5"
 			},
 			"UITemplateController": {
-				"SelectedTemplate": "Cursor4"
+				"SelectedTemplate": "view"
 			},
 			"UIEditController": {
 				"EditViewScale": "1",
@@ -426,37 +426,6 @@
 							"wants-focus": "false"
 						},
 						"children": {
-							"CSlider": {
-								"attributes": {
-									"bitmap-offset": "0, 0",
-									"class": "CSlider",
-									"control-tag": "RootNote",
-									"default-value": "0",
-									"draw-back": "true",
-									"draw-back-color": "~ WhiteCColor",
-									"draw-frame": "true",
-									"draw-frame-color": "~ BlackCColor",
-									"draw-value": "true",
-									"draw-value-color": "~ RedCColor",
-									"draw-value-from-center": "false",
-									"draw-value-inverted": "false",
-									"frame-width": "1",
-									"handle-offset": "0, 0",
-									"max-value": "1",
-									"min-value": "0",
-									"mode": "use global",
-									"mouse-enabled": "true",
-									"opacity": "1",
-									"orientation": "horizontal",
-									"origin": "5, 105",
-									"reverse-orientation": "false",
-									"size": "105, 20",
-									"transparent": "false",
-									"wants-focus": "true",
-									"wheel-inc-value": "0.1",
-									"zoom-factor": "10"
-								}
-							},
 							"CTextLabel": {
 								"attributes": {
 									"back-color": "~ TransparentCColor",
@@ -882,6 +851,45 @@
 									"transparent": "false",
 									"value-precision": "0",
 									"wants-focus": "false",
+									"wheel-inc-value": "0.1"
+								}
+							},
+							"COptionMenu": {
+								"attributes": {
+									"back-color": "~ WhiteCColor",
+									"background-offset": "0, 0",
+									"class": "COptionMenu",
+									"control-tag": "RootNote",
+									"default-value": "0",
+									"font": "~ NormalFont",
+									"font-antialias": "true",
+									"font-color": "~ BlackCColor",
+									"frame-color": "~ BlackCColor",
+									"frame-width": "1",
+									"max-value": "11",
+									"menu-check-style": "false",
+									"menu-popup-style": "false",
+									"min-value": "0",
+									"mouse-enabled": "true",
+									"opacity": "1",
+									"origin": "5, 105",
+									"round-rect-radius": "6",
+									"shadow-color": "~ RedCColor",
+									"size": "100, 20",
+									"style-3D-in": "false",
+									"style-3D-out": "false",
+									"style-no-draw": "false",
+									"style-no-frame": "false",
+									"style-no-text": "false",
+									"style-round-rect": "false",
+									"style-shadow-text": "false",
+									"text-alignment": "center",
+									"text-inset": "0, 0",
+									"text-rotation": "0",
+									"text-shadow-offset": "1, 1",
+									"transparent": "false",
+									"value-precision": "2",
+									"wants-focus": "true",
 									"wheel-inc-value": "0.1"
 								}
 							}

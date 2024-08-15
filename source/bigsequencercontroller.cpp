@@ -168,8 +168,19 @@ void BigSequencerController::addParameters()
 
 	parameters.addParameter(STR16("Cursor 4 Velocity"), nullptr, 0, 0.6, Vst::ParameterInfo::kCanAutomate, kParamCursor4VelocityId);
 
-	// "fake" parameters
-	Vst::RangeParameter* rootNoteParameter = new Vst::RangeParameter(STR16("Root Note"), kParamRootNoteId, nullptr, Pitch::c, Pitch::b, Pitch::c, 0, 0);
+	Vst::StringListParameter* rootNoteParameter = new Vst::StringListParameter(STR16("Root Note"), kParamRootNoteId, nullptr, 0);
+	rootNoteParameter->appendString(STR16("C"));
+	rootNoteParameter->appendString(STR16("C#"));
+	rootNoteParameter->appendString(STR16("D"));
+	rootNoteParameter->appendString(STR16("D#"));
+	rootNoteParameter->appendString(STR16("E"));
+	rootNoteParameter->appendString(STR16("F"));
+	rootNoteParameter->appendString(STR16("F#"));
+	rootNoteParameter->appendString(STR16("G"));
+	rootNoteParameter->appendString(STR16("G#"));
+	rootNoteParameter->appendString(STR16("A"));
+	rootNoteParameter->appendString(STR16("A#"));
+	rootNoteParameter->appendString(STR16("B"));
 	parameters.addParameter(rootNoteParameter);
 
 	Vst::StringListParameter* scaleParameter = new Vst::StringListParameter(STR16("Scale"), kParamScaleId, nullptr, 0);
