@@ -76,7 +76,7 @@
 				"Size": "5, 5"
 			},
 			"UITemplateController": {
-				"SelectedTemplate": "view"
+				"SelectedTemplate": "Cursor4"
 			},
 			"UIEditController": {
 				"EditViewScale": "1",
@@ -343,7 +343,7 @@
 									"background-offset": "0, 0",
 									"class": "CParamDisplay",
 									"control-tag": "SequencerWidth",
-									"default-value": "0.5",
+									"default-value": "0.225806",
 									"font": "~ NormalFont",
 									"font-antialias": "true",
 									"font-color": "~ WhiteCColor",
@@ -380,7 +380,7 @@
 									"background-offset": "0, 0",
 									"class": "CParamDisplay",
 									"control-tag": "SequencerHeight",
-									"default-value": "0.5",
+									"default-value": "0.0967742",
 									"font": "~ NormalFont",
 									"font-antialias": "true",
 									"font-color": "~ WhiteCColor",
@@ -817,7 +817,7 @@
 									"background-offset": "0, 0",
 									"class": "CParamDisplay",
 									"control-tag": "MaxNote",
-									"default-value": "0.5",
+									"default-value": "0.722222",
 									"font": "~ NormalFont",
 									"font-antialias": "true",
 									"font-color": "~ WhiteCColor",
@@ -854,7 +854,7 @@
 									"background-offset": "0, 0",
 									"class": "CParamDisplay",
 									"control-tag": "MinNote",
-									"default-value": "0.5",
+									"default-value": "0.444444",
 									"font": "~ NormalFont",
 									"font-antialias": "true",
 									"font-color": "~ WhiteCColor",
@@ -1183,37 +1183,6 @@
 									"zoom-factor": "10"
 								}
 							},
-							"CSlider": {
-								"attributes": {
-									"bitmap-offset": "0, 0",
-									"class": "CSlider",
-									"control-tag": "Cursor1NoteInterval",
-									"default-value": "0.5",
-									"draw-back": "true",
-									"draw-back-color": "~ WhiteCColor",
-									"draw-frame": "true",
-									"draw-frame-color": "~ BlackCColor",
-									"draw-value": "true",
-									"draw-value-color": "~ RedCColor",
-									"draw-value-from-center": "false",
-									"draw-value-inverted": "false",
-									"frame-width": "1",
-									"handle-offset": "0, 0",
-									"max-value": "1",
-									"min-value": "0",
-									"mode": "use global",
-									"mouse-enabled": "true",
-									"opacity": "1",
-									"orientation": "horizontal",
-									"origin": "5, 85",
-									"reverse-orientation": "false",
-									"size": "190, 20",
-									"transparent": "false",
-									"wants-focus": "true",
-									"wheel-inc-value": "1",
-									"zoom-factor": "10"
-								}
-							},
 							"CTextLabel": {
 								"attributes": {
 									"back-color": "~ TransparentCColor",
@@ -1317,6 +1286,45 @@
 									"wants-focus": "true",
 									"wheel-inc-value": "0.1",
 									"zoom-factor": "10"
+								}
+							},
+							"COptionMenu": {
+								"attributes": {
+									"back-color": "~ WhiteCColor",
+									"background-offset": "0, 0",
+									"class": "COptionMenu",
+									"control-tag": "Cursor1NoteInterval",
+									"default-value": "0",
+									"font": "~ NormalFont",
+									"font-antialias": "true",
+									"font-color": "~ BlackCColor",
+									"frame-color": "~ BlackCColor",
+									"frame-width": "1",
+									"max-value": "6",
+									"menu-check-style": "false",
+									"menu-popup-style": "false",
+									"min-value": "0",
+									"mouse-enabled": "true",
+									"opacity": "1",
+									"origin": "5, 85",
+									"round-rect-radius": "6",
+									"shadow-color": "~ RedCColor",
+									"size": "100, 20",
+									"style-3D-in": "false",
+									"style-3D-out": "false",
+									"style-no-draw": "false",
+									"style-no-frame": "false",
+									"style-no-text": "false",
+									"style-round-rect": "false",
+									"style-shadow-text": "false",
+									"text-alignment": "center",
+									"text-inset": "0, 0",
+									"text-rotation": "0",
+									"text-shadow-offset": "1, 1",
+									"transparent": "false",
+									"value-precision": "2",
+									"wants-focus": "true",
+									"wheel-inc-value": "0.1"
 								}
 							}
 						}
@@ -1548,37 +1556,6 @@
 									"zoom-factor": "10"
 								}
 							},
-							"CSlider": {
-								"attributes": {
-									"bitmap-offset": "0, 0",
-									"class": "CSlider",
-									"control-tag": "Cursor2NoteInterval",
-									"default-value": "0.666667",
-									"draw-back": "true",
-									"draw-back-color": "~ WhiteCColor",
-									"draw-frame": "true",
-									"draw-frame-color": "~ BlackCColor",
-									"draw-value": "true",
-									"draw-value-color": "~ RedCColor",
-									"draw-value-from-center": "false",
-									"draw-value-inverted": "false",
-									"frame-width": "1",
-									"handle-offset": "0, 0",
-									"max-value": "1",
-									"min-value": "0",
-									"mode": "use global",
-									"mouse-enabled": "true",
-									"opacity": "1",
-									"orientation": "horizontal",
-									"origin": "5, 85",
-									"reverse-orientation": "false",
-									"size": "190, 20",
-									"transparent": "false",
-									"wants-focus": "true",
-									"wheel-inc-value": "1",
-									"zoom-factor": "10"
-								}
-							},
 							"CTextLabel": {
 								"attributes": {
 									"back-color": "~ TransparentCColor",
@@ -1681,6 +1658,45 @@
 									"transparent": "false",
 									"value-precision": "2",
 									"wants-focus": "false",
+									"wheel-inc-value": "0.1"
+								}
+							},
+							"COptionMenu": {
+								"attributes": {
+									"back-color": "~ WhiteCColor",
+									"background-offset": "0, 0",
+									"class": "COptionMenu",
+									"control-tag": "Cursor2NoteInterval",
+									"default-value": "0",
+									"font": "~ NormalFont",
+									"font-antialias": "true",
+									"font-color": "~ BlackCColor",
+									"frame-color": "~ BlackCColor",
+									"frame-width": "1",
+									"max-value": "6",
+									"menu-check-style": "false",
+									"menu-popup-style": "false",
+									"min-value": "0",
+									"mouse-enabled": "true",
+									"opacity": "1",
+									"origin": "5, 85",
+									"round-rect-radius": "6",
+									"shadow-color": "~ RedCColor",
+									"size": "100, 20",
+									"style-3D-in": "false",
+									"style-3D-out": "false",
+									"style-no-draw": "false",
+									"style-no-frame": "false",
+									"style-no-text": "false",
+									"style-round-rect": "false",
+									"style-shadow-text": "false",
+									"text-alignment": "center",
+									"text-inset": "0, 0",
+									"text-rotation": "0",
+									"text-shadow-offset": "1, 1",
+									"transparent": "false",
+									"value-precision": "2",
+									"wants-focus": "true",
 									"wheel-inc-value": "0.1"
 								}
 							}
@@ -1913,37 +1929,6 @@
 									"zoom-factor": "10"
 								}
 							},
-							"CSlider": {
-								"attributes": {
-									"bitmap-offset": "0, 0",
-									"class": "CSlider",
-									"control-tag": "Cursor3NoteInterval",
-									"default-value": "0.333333",
-									"draw-back": "true",
-									"draw-back-color": "~ WhiteCColor",
-									"draw-frame": "true",
-									"draw-frame-color": "~ BlackCColor",
-									"draw-value": "true",
-									"draw-value-color": "~ RedCColor",
-									"draw-value-from-center": "false",
-									"draw-value-inverted": "false",
-									"frame-width": "1",
-									"handle-offset": "0, 0",
-									"max-value": "1",
-									"min-value": "0",
-									"mode": "use global",
-									"mouse-enabled": "true",
-									"opacity": "1",
-									"orientation": "horizontal",
-									"origin": "5, 85",
-									"reverse-orientation": "false",
-									"size": "190, 20",
-									"transparent": "false",
-									"wants-focus": "true",
-									"wheel-inc-value": "1",
-									"zoom-factor": "10"
-								}
-							},
 							"CTextLabel": {
 								"attributes": {
 									"back-color": "~ TransparentCColor",
@@ -2047,6 +2032,45 @@
 									"wants-focus": "true",
 									"wheel-inc-value": "0.1",
 									"zoom-factor": "10"
+								}
+							},
+							"COptionMenu": {
+								"attributes": {
+									"back-color": "~ WhiteCColor",
+									"background-offset": "0, 0",
+									"class": "COptionMenu",
+									"control-tag": "Cursor3NoteInterval",
+									"default-value": "0",
+									"font": "~ NormalFont",
+									"font-antialias": "true",
+									"font-color": "~ BlackCColor",
+									"frame-color": "~ BlackCColor",
+									"frame-width": "1",
+									"max-value": "6",
+									"menu-check-style": "false",
+									"menu-popup-style": "false",
+									"min-value": "0",
+									"mouse-enabled": "true",
+									"opacity": "1",
+									"origin": "5, 85",
+									"round-rect-radius": "6",
+									"shadow-color": "~ RedCColor",
+									"size": "100, 20",
+									"style-3D-in": "false",
+									"style-3D-out": "false",
+									"style-no-draw": "false",
+									"style-no-frame": "false",
+									"style-no-text": "false",
+									"style-round-rect": "false",
+									"style-shadow-text": "false",
+									"text-alignment": "center",
+									"text-inset": "0, 0",
+									"text-rotation": "0",
+									"text-shadow-offset": "1, 1",
+									"transparent": "false",
+									"value-precision": "2",
+									"wants-focus": "true",
+									"wheel-inc-value": "0.1"
 								}
 							}
 						}
@@ -2278,37 +2302,6 @@
 									"zoom-factor": "10"
 								}
 							},
-							"CSlider": {
-								"attributes": {
-									"bitmap-offset": "0, 0",
-									"class": "CSlider",
-									"control-tag": "Cursor4NoteInterval",
-									"default-value": "0.833333",
-									"draw-back": "true",
-									"draw-back-color": "~ WhiteCColor",
-									"draw-frame": "true",
-									"draw-frame-color": "~ BlackCColor",
-									"draw-value": "true",
-									"draw-value-color": "~ RedCColor",
-									"draw-value-from-center": "false",
-									"draw-value-inverted": "false",
-									"frame-width": "1",
-									"handle-offset": "0, 0",
-									"max-value": "1",
-									"min-value": "0",
-									"mode": "use global",
-									"mouse-enabled": "true",
-									"opacity": "1",
-									"orientation": "horizontal",
-									"origin": "5, 85",
-									"reverse-orientation": "false",
-									"size": "190, 20",
-									"transparent": "false",
-									"wants-focus": "true",
-									"wheel-inc-value": "1",
-									"zoom-factor": "10"
-								}
-							},
 							"CTextLabel": {
 								"attributes": {
 									"back-color": "~ TransparentCColor",
@@ -2412,6 +2405,45 @@
 									"wants-focus": "true",
 									"wheel-inc-value": "0.1",
 									"zoom-factor": "10"
+								}
+							},
+							"COptionMenu": {
+								"attributes": {
+									"back-color": "~ WhiteCColor",
+									"background-offset": "0, 0",
+									"class": "COptionMenu",
+									"control-tag": "Cursor4NoteInterval",
+									"default-value": "0",
+									"font": "~ NormalFont",
+									"font-antialias": "true",
+									"font-color": "~ BlackCColor",
+									"frame-color": "~ BlackCColor",
+									"frame-width": "1",
+									"max-value": "6",
+									"menu-check-style": "false",
+									"menu-popup-style": "false",
+									"min-value": "0",
+									"mouse-enabled": "true",
+									"opacity": "1",
+									"origin": "5, 85",
+									"round-rect-radius": "6",
+									"shadow-color": "~ RedCColor",
+									"size": "100, 20",
+									"style-3D-in": "false",
+									"style-3D-out": "false",
+									"style-no-draw": "false",
+									"style-no-frame": "false",
+									"style-no-text": "false",
+									"style-round-rect": "false",
+									"style-shadow-text": "false",
+									"text-alignment": "center",
+									"text-inset": "0, 0",
+									"text-rotation": "0",
+									"text-shadow-offset": "1, 1",
+									"transparent": "false",
+									"value-precision": "2",
+									"wants-focus": "true",
+									"wheel-inc-value": "0.1"
 								}
 							}
 						}
