@@ -2,6 +2,8 @@
 
 The Big Sequencer is a big grid of notes. You can change its width and height.
 
+![Big Sequencer Demo Image](resource/sequencer.png)
+
 It has multiple **cursors** that iterate along the grid. Each cursor has multiple parameters:
 - active (whether the cursor will play notes)
 - interval (quarter note, half note, etc)
@@ -13,15 +15,19 @@ Use the **retrigger** parameter to make the sequencer restart at the beginning o
 
 ## Usage
 
-Once you have the VST installed in your DAW of choice, set the plugin's MIDI output channel.
-Turn cursors on and off to have more notes going at one time.
+Once you have the VST installed in your DAW of choice, set the plugin's MIDI output channel to match an instruments input channel.
+Turn cursors on and off to have more "hands" playing notes at a time.
 Changing the width, height, min note, max note, root note, scale, or fill chance will regenerate the note grid.
 
 ## Future Plans
 
-There are more cursor parameters that should be implemented:
-- offset (how off beat the note will be played)
-- start position (where on the grid the note will start)
-- transition rule (which note the cursor should move to next)
-    - this allows for varying patterns on our grid
-    - but we need to find out a good way to do it
+- There are more cursor parameters that should be implemented:
+    - offset (how off beat the note will be played)
+    - start position (where on the grid the note will start)
+    - transition rule (which note the cursor should move to next)
+        - this allows for varying patterns on our grid
+        - but we need to find out a good way to do it
+- More note generation methods (other noise types?)
+
+## Known Issues
+- The plugin will likely crash if you close the plugin view while playing- I'll get to that threading issue soon TM
