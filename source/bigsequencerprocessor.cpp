@@ -352,13 +352,13 @@ namespace vargason::bigsequencer {
 					cursor.currentlyPlayingNote = realPitch;
 				}
 				sendCursorUpdate(index, cursor);
-				int newPos = cursor.position + 1;
-				int totalNotes = sequencer->totalNotes();
-				if (newPos >= totalNotes) {
-					newPos = 0;
-				}
-				cursor.position = newPos;
 			}
+			int newPos = cursor.position + 1;
+			int totalNotes = sequencer->totalNotes();
+			if (newPos >= totalNotes) {
+				newPos = 0;
+			}
+			cursor.position = newPos;
 			cursor.lastNoteTime = quarterNotes;
 		}
 		if (cursor.notePlaying && quarterNotes >= cursor.lastNoteTime + cursor.realNoteLength()) {
