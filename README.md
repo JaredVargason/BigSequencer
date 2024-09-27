@@ -31,3 +31,20 @@ Changing the width, height, min note, max note, root note, scale, or fill chance
 
 ## Known Issues
 - The plugin will likely crash if you close the plugin view while playing- I'll get to that threading issue soon TM
+
+## Building
+
+To build the app, you will need the Steinberg VST3 SDK:
+
+```
+git submodule add https://github.com/steinbergmedia/vst3sdk.git
+git submodule update --init --recursive
+```
+
+Then in the BigSequencer project, we can build using CMake:
+```
+mkdir build
+cd build
+cmake ..
+cmake --build .
+```
