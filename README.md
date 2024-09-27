@@ -48,3 +48,5 @@ cd build
 cmake ..
 cmake --build .
 ```
+
+On build success, you will find the result in the `build/VST3/Debug` folder.
