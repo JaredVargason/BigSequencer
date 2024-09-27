@@ -5,7 +5,7 @@ option(SMTG_ENABLE_VST3_HOSTING_EXAMPLES "Enable VST 3 Hosting Examples" OFF)
 
 set(CMAKE_OSX_DEPLOYMENT_TARGET 10.13 CACHE STRING "")
 
-set(vst3sdk_SOURCE_DIR "${PROJECT_SOURCE_DIR}/vst3sdk")
+set(vst3sdk_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/vst3sdk")
 if(NOT vst3sdk_SOURCE_DIR)
     message(FATAL_ERROR "Path to VST3 SDK is empty!")
 endif()
