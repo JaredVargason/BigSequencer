@@ -39,13 +39,18 @@ namespace vargason::bigsequencer {
 		virtual NoteData* generateNoteData(int width, int height, std::vector<int> &availableNotes) = 0;
 	};
 
-	class RandomNoteDataGenerator : public NoteDataGenerator {
+	enum NoteDataGeneratorType {
+		valueNoise = 0,
+		perlinNoise = 1
+	};
+
+	class ValueNoiseNoteDataGenerator : public NoteDataGenerator {
 	public:
 
 		float fillChance;
 		std::mt19937 rnd;
 
-		RandomNoteDataGenerator(float fillChance = .5f): rnd(std::random_device()()) {
+		ValueNoiseNoteDataGenerator(float fillChance = .5f): rnd(std::random_device()()) {
 			this->fillChance = fillChance;
 		}
 
@@ -82,7 +87,6 @@ namespace vargason::bigsequencer {
 					NoteData* noteData = &noteDatas[y * width + x];
 					noteData->active = uniform_real(rnd) <= fillChance;
 					noteData->pitch = availableNotes[uniform_real(rnd) * numAvailableNotes];
-					noteData->probability = 100;
 				}
 			}
 			return noteDatas;
