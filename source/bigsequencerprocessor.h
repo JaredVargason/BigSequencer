@@ -53,8 +53,9 @@ public:
 
 //------------------------------------------------------------------------
 protected:
-	vargason::bigsequencer::Sequencer sequencer;
-	vargason::bigsequencer::RandomNoteDataGenerator randomNoteGenerator;
+	Sequencer sequencer;
+	RandomNoteDataGenerator randomNoteGenerator;
+	PerlinNoiseNoteDataGenerator perlinNoiseGenerator;
 	
 	std::mt19937 rnd;
 	std::uniform_real_distribution<double> dis;

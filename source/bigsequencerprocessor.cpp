@@ -297,15 +297,11 @@ namespace vargason::bigsequencer {
 					case SequencerParams::kParamScaleId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							scale = (Scale)(10 * value);
-							regenerateGridNotes();
-							sendSequencerUpdate();
 						}
 						break;
 					case SequencerParams::kParamRootNoteId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							rootNote = (Pitch)(Pitch::b * value);
-							regenerateGridNotes();
-							sendSequencerUpdate();
 						}
 						break;
 					case SequencerParams::kParamMinNoteId:
@@ -325,8 +321,11 @@ namespace vargason::bigsequencer {
 					case SequencerParams::kParamFillChanceId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							randomNoteGenerator.fillChance = value;
-							regenerateGridNotes();
-							sendSequencerUpdate();
+						}
+						break;
+					case SequencerParams::kParamNoiseTypeId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							randomNoteGenerator.fillChance = value;
 						}
 						break;
 					}
