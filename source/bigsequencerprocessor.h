@@ -54,6 +54,7 @@ public:
 protected:
 	vargason::bigsequencer::Sequencer* sequencer = nullptr;  // this could be a not pointer probably.
 	vargason::bigsequencer::RandomNoteDataGenerator* randomNoteGenerator = nullptr;  // same.
+	vargason::bigsequencer::PerlinNoiseNoteDataGenerator* perlinNoiseGenerator = nullptr;
 
 	bool wasPreviouslyPlaying = false;  // whether the host was playing in the last frame
 	float lastProjectMusicTime = 0;  // music time of the last frame

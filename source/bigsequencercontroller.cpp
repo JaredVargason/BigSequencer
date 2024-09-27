@@ -207,7 +207,12 @@ void BigSequencerController::addParameters()
 
 	parameters.addParameter(STR16("Fill Chance"), nullptr, 0, .5f, 0, kParamFillChanceId);
 
-	parameters.addParameter(STR16("Cursor Tab"), nullptr, 0, 0, 0, kParamCursorTab);
+	Vst::StringListParameter* noiseTypeParameter = new Vst::StringListParameter(STR16("NoiseType"), kParamNoiseTypeId, nullptr, 0);
+	noiseTypeParameter->appendString(STR16("Value Noise"));
+	noiseTypeParameter->appendString(STR16("Perlin Noise"));
+	parameters.addParameter(noiseTypeParameter);
+	parameters.addParameter(STR16("Generate"), nullptr, 0, 0, 0, kParamGenerateId);
+	parameters.addParameter(STR16("Cursor Tab"), nullptr, 0, 0, 0, kParamCursorTabId);
 }
 
 tresult PLUGIN_API BigSequencerController::notify(Steinberg::Vst::IMessage* message) {

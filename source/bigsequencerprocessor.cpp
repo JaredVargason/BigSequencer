@@ -288,32 +288,34 @@ namespace vargason::bigsequencer {
 					case SequencerParams::kParamScaleId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							scale = (Scale)(10 * value);
-							regenerateGridNotes();
-							sendSequencerUpdate();
 						}
 						break;
 					case SequencerParams::kParamRootNoteId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							rootNote = (Pitch)(Pitch::b * value);
-							regenerateGridNotes();
-							sendSequencerUpdate();
 						}
 						break;
 					case SequencerParams::kParamMinNoteId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							minNote = noteLowerBound + (noteUpperBound - noteLowerBound) * value;
-							regenerateGridNotes();
-							sendSequencerUpdate();
 						}
 						break;
 					case SequencerParams::kParamMaxNoteId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							maxNote = noteLowerBound + (noteUpperBound - noteLowerBound) * value;
-							regenerateGridNotes();
-							sendSequencerUpdate();
 						}
 						break;
 					case SequencerParams::kParamFillChanceId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							randomNoteGenerator->fillChance = value;
+						}
+						break;
+					case SequencerParams::kParamNoiseTypeId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							randomNoteGenerator->fillChance = value;
+						}
+						break;
+					case SequencerParams::kParamGenerateId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							randomNoteGenerator->fillChance = value;
 							regenerateGridNotes();
