@@ -43,7 +43,7 @@ namespace vargason::bigsequencer {
 		addEventOutput(STR16("Event Out"), 1);
 		
 		this->sequencer = new Sequencer();
-		this->randomNoteGenerator = new RandomNoteDataGenerator();
+		this->valueNoiseGenerator = new ValueNoiseNoteDataGenerator();
 		return kResultOk;
 	}
 
@@ -53,7 +53,7 @@ namespace vargason::bigsequencer {
 		// Here the Plug-in will be de-instantiated, last possibility to remove some memory!
 
 		delete sequencer;
-		delete randomNoteGenerator;
+		delete valueNoiseGenerator;
 
 		//---do not forget to call parent ------
 		return AudioEffect::terminate();
@@ -307,17 +307,17 @@ namespace vargason::bigsequencer {
 						break;
 					case SequencerParams::kParamFillChanceId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							randomNoteGenerator->fillChance = value;
+							valueNoiseGenerator->fillChance = value;
+							perlinNoiseGenerator->fillChance = value;
 						}
 						break;
 					case SequencerParams::kParamNoiseTypeId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							randomNoteGenerator->fillChance = value;
+							currentNoiseType = (NoteDataGeneratorType)(value * 2);
 						}
 						break;
 					case SequencerParams::kParamGenerateId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							randomNoteGenerator->fillChance = value;
 							regenerateGridNotes();
 							sendSequencerUpdate();
 						}
@@ -520,7 +520,7 @@ namespace vargason::bigsequencer {
 		streamer.writeInt8u(rootNote);
 		streamer.writeInt8u(minNote);
 		streamer.writeInt8u(maxNote);
-		streamer.writeFloat(randomNoteGenerator->fillChance);
+		streamer.writeFloat(valueNoiseGenerator->fillChance);
 
 		return kResultOk;
 	}
@@ -555,7 +555,15 @@ namespace vargason::bigsequencer {
 	}
 
 	void BigSequencerProcessor::regenerateGridNotes() {
-		NoteData* noteData = randomNoteGenerator->generate(sequencer->getWidth(), sequencer->getHeight(), rootNote, scale, minNote, maxNote);
+		NoteData* noteData = nullptr;
+		switch (currentNoiseType) {
+		case NoteDataGeneratorType::valueNoise:
+			noteData = valueNoiseGenerator->generate(sequencer->getWidth(), sequencer->getHeight(), rootNote, scale, minNote, maxNote);
+			break;
+		default:
+			noteData = perlinNoiseGenerator->generate(sequencer->getWidth(), sequencer->getHeight(), rootNote, scale, minNote, maxNote);
+			break;
+		}
 		sequencer->setNotes(sequencer->getWidth(), sequencer->getHeight(), noteData);
 	}
 

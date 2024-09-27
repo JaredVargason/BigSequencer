@@ -53,7 +53,7 @@ public:
 //------------------------------------------------------------------------
 protected:
 	vargason::bigsequencer::Sequencer* sequencer = nullptr;  // this could be a not pointer probably.
-	vargason::bigsequencer::RandomNoteDataGenerator* randomNoteGenerator = nullptr;  // same.
+	vargason::bigsequencer::ValueNoiseNoteDataGenerator* valueNoiseGenerator = nullptr;  // same.
 	vargason::bigsequencer::PerlinNoiseNoteDataGenerator* perlinNoiseGenerator = nullptr;
 
 	bool wasPreviouslyPlaying = false;  // whether the host was playing in the last frame
@@ -69,6 +69,7 @@ protected:
 	uint8_t maxNote = 71;
 	Pitch rootNote = Pitch::c;
 	Scale scale = Scale::chromatic;
+	NoteDataGeneratorType currentNoiseType = NoteDataGeneratorType::valueNoise;
 
 	void sendMidiNoteOn(Steinberg::Vst::IEventList* eventList, uint8_t pitch, float velocity);
 	void sendMidiNoteOff(Steinberg::Vst::IEventList* eventList, uint8_t pitch);
