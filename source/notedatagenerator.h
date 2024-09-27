@@ -49,7 +49,6 @@ namespace vargason::bigsequencer {
 					NoteData* noteData = &noteDatas[y * width + x];
 					noteData->active = uniform_real(rnd) <= fillChance;
 					noteData->pitch = availableNotes[uniform_real(rnd) * numAvailableNotes];
-					noteData->probability = 100;
 				}
 			}
 			return noteDatas;

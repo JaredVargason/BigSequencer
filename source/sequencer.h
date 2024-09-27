@@ -61,7 +61,6 @@ namespace vargason::bigsequencer {
 
 	struct NoteData {
 		uint8_t pitch = 60;
-		uint8_t probability = 100; // probability that individual note will hit
 		bool active = true;
 	};
 
