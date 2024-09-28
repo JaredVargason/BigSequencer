@@ -41,6 +41,7 @@ namespace vargason::bigsequencer {
 			return result;
 		}
 		addEventOutput(STR16("Event Out"), 1);
+
 		return kResultOk;
 	}
 
