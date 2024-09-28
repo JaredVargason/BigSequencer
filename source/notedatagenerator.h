@@ -78,7 +78,8 @@ namespace vargason::bigsequencer {
 				for (int x = 0; x < width; x++) {
 					NoteData* noteData = &noteDatas[y * width + x];
 					noteData->active = uniform_real(rnd) <= fillChance;
-					noteData->pitch = availableNotes[uniform_real(rnd) * numAvailableNotes];
+					float val = perlin(x, y);
+					noteData->pitch = availableNotes[val * numAvailableNotes];
 				}
 			}
 			return noteDatas;
@@ -108,7 +109,7 @@ namespace vargason::bigsequencer {
 		float dotGridGradient(int ix, int iy, float x, float y) {
 			vector2 gradient = randomGradient(ix, iy);
 			float dx = x - float(ix);
-			float dy = y - float(dy);
+			float dy = y - float(iy);
 			return dx * gradient.x + dy * gradient.y;
 		}
 

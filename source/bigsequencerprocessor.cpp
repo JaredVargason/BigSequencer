@@ -44,6 +44,7 @@ namespace vargason::bigsequencer {
 		
 		this->sequencer = new Sequencer();
 		this->valueNoiseGenerator = new ValueNoiseNoteDataGenerator();
+		this->perlinNoiseGenerator = new PerlinNoiseNoteDataGenerator();
 		return kResultOk;
 	}
 
