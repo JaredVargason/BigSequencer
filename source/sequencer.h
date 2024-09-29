@@ -16,8 +16,6 @@ namespace vargason::bigsequencer {
 		int8_t pitchOffset = 0;
 		float velocity = 0.6f;
 
-		uint8_t startPosition = 0;  // what index the cursor starts at
-		double offset = 0;  // between 0 and 1, offsets from the main beat, maybe allow -1 to 1
 		double lastNoteTime = 0;
 
 		const int pitchMin = -24;
