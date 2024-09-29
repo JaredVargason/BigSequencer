@@ -65,9 +65,15 @@ namespace vargason::bigsequencer {
 	public:
 		float fillChance;
 		std::mt19937 rnd;
+		float scale;
+		float xOffset;
+		float yOffset;
 
 		PerlinNoiseNoteDataGenerator(float fillChance = .5f): rnd(std::random_device()()) {
 			this->fillChance = fillChance;
+			this->scale = 1;
+			this->xOffset = 0;
+			this->yOffset = 0;
 		}
 
 		NoteData* generateNoteData(int width, int height, std::vector<int>& availableNotes) {
@@ -79,6 +85,9 @@ namespace vargason::bigsequencer {
 					NoteData* noteData = &noteDatas[y * width + x];
 					noteData->active = uniform_real(rnd) <= fillChance;
 					float val = perlin(x, y);
+					if (val == 1) {
+						val = .995;
+					}
 					noteData->pitch = availableNotes[val * numAvailableNotes];
 				}
 			}
@@ -113,18 +122,29 @@ namespace vargason::bigsequencer {
 			return dx * gradient.x + dy * gradient.y;
 		}
 
-		float perlin(int x, int y) {
+		float perlin(float x, float y) {
+			x += 0.5f;
+			y += 0.5f;
+			int x0 = (int)floor(x);
+			int x1 = x0 + 1;
+			int y0 = (int)floor(y);
+			int y1 = y0 + 1;
+
+			float sx = x - (float)x0;
+			float sy = y - (float)y0;
+
 			float n0, n1, ix0, ix1, value;
-			n0 = dotGridGradient(x, y, x, y);
-			n1 = dotGridGradient(x + 1, y, x, y);
-			ix0 = interpolate(n0, n1, 0);
 
-			n0 = dotGridGradient(x, y + 1, x, y);
-			n1 = dotGridGradient(x + 1, y + 1, x, y);
-			ix1 = interpolate(n0, n1, 0);
+			n0 = dotGridGradient(x0, y0, x, y);
+			n1 = dotGridGradient(x1, y0, x, y);
+			ix0 = interpolate(n0, n1, sx);
 
-			value = interpolate(ix0, ix1, 0);
-			return value;
+			n0 = dotGridGradient(x0, y1, x, y);
+			n1 = dotGridGradient(x1, y1, x, y);
+			ix1 = interpolate(n0, n1, sx);
+
+			value = interpolate(ix0, ix1, sy);
+			return value * 0.5 + 0.5;
 		}
 	};
 }
