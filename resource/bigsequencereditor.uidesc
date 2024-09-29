@@ -95,7 +95,7 @@
 			},
 			"UIAttributesController": {},
 			"UIViewCreatorDataSource": {
-				"SelectedRow": "15"
+				"SelectedRow": "32"
 			},
 			"UITagsDataSource": {
 				"SelectedRow": "-1"
@@ -402,8 +402,8 @@
 							"class": "CViewContainer",
 							"mouse-enabled": "true",
 							"opacity": "1",
-							"origin": "5, 245",
-							"size": "265, 265",
+							"origin": "5, 155",
+							"size": "265, 355",
 							"transparent": "false",
 							"wants-focus": "false"
 						},
@@ -894,7 +894,7 @@
 									"icon-text-margin": "0",
 									"kick-style": "true",
 									"opacity": "1",
-									"origin": "135, 235",
+									"origin": "140, 10",
 									"round-radius": "6",
 									"size": "100, 20",
 									"text-alignment": "center",
@@ -906,76 +906,44 @@
 									"wheel-inc-value": "0.1"
 								}
 							},
-							"COptionMenu": {
+							"CSegmentButton": {
 								"attributes": {
-									"back-color": "~ WhiteCColor",
-									"background-offset": "0, 0",
-									"class": "COptionMenu",
+									"class": "CSegmentButton",
 									"control-tag": "NoiseType",
 									"font": "~ NormalFont",
-									"font-antialias": "true",
-									"font-color": "~ BlackCColor",
 									"frame-color": "~ BlackCColor",
 									"frame-width": "1",
-									"menu-check-style": "false",
-									"menu-popup-style": "false",
+									"gradient": "Default TextButton Gradient",
+									"icon-text-margin": "0",
 									"opacity": "1",
-									"origin": "5, 235",
-									"round-rect-radius": "6",
-									"shadow-color": "~ RedCColor",
-									"size": "100, 20",
-									"style-3D-in": "false",
-									"style-3D-out": "false",
-									"style-no-draw": "false",
-									"style-no-frame": "false",
-									"style-no-text": "false",
-									"style-round-rect": "false",
-									"style-shadow-text": "false",
+									"origin": "5, 220",
+									"round-radius": "5",
+									"segment-names": "Value Noise,Perlin Noise",
+									"selection-mode": "Single",
+									"size": "255, 20",
+									"style": "horizontal",
 									"text-alignment": "center",
-									"text-inset": "0, 0",
-									"text-rotation": "0",
-									"text-shadow-offset": "1, 1",
+									"text-color": "~ BlackCColor",
+									"text-color-highlighted": "~ WhiteCColor",
 									"transparent": "false",
-									"value-precision": "2",
 									"wants-focus": "true",
 									"wheel-inc-value": "0.1"
 								}
 							},
-							"CTextLabel": {
+							"UIViewSwitchContainer": {
 								"attributes": {
-									"back-color": "~ TransparentCColor",
-									"background-offset": "0, 0",
-									"class": "CTextLabel",
-									"default-value": "0.5",
-									"font": "~ NormalFont",
-									"font-antialias": "true",
-									"font-color": "~ WhiteCColor",
-									"frame-color": "~ TransparentCColor",
-									"frame-width": "1",
-									"max-value": "1",
-									"min-value": "0",
+									"animation-style": "fade",
+									"animation-time": "120",
+									"animation-timing-function": "linear",
+									"background-color": "~ BlackCColor",
+									"background-color-draw-style": "filled and stroked",
+									"class": "UIViewSwitchContainer",
 									"mouse-enabled": "true",
 									"opacity": "1",
-									"origin": "5, 215",
-									"round-rect-radius": "6",
-									"shadow-color": "~ TransparentCColor",
-									"size": "100, 20",
-									"style-3D-in": "false",
-									"style-3D-out": "false",
-									"style-no-draw": "false",
-									"style-no-frame": "false",
-									"style-no-text": "false",
-									"style-round-rect": "false",
-									"style-shadow-text": "false",
-									"text-alignment": "left",
-									"text-inset": "0, 0",
-									"text-rotation": "0",
-									"text-shadow-offset": "1, 1",
-									"title": "Noise Type",
+									"origin": "5, 240",
+									"size": "255, 110",
 									"transparent": "false",
-									"value-precision": "2",
-									"wants-focus": "false",
-									"wheel-inc-value": "0.1"
+									"wants-focus": "false"
 								}
 							}
 						}
@@ -990,8 +958,8 @@
 							"class": "UIViewSwitchContainer",
 							"mouse-enabled": "true",
 							"opacity": "1",
-							"origin": "640, 215",
-							"size": "210, 300",
+							"origin": "640, 220",
+							"size": "210, 295",
 							"template-names": "Cursor1,Cursor2,Cursor3,Cursor4",
 							"template-switch-control": "CursorTab",
 							"transparent": "false",
@@ -2589,6 +2557,19 @@
 							}
 						}
 					}
+				}
+			},
+			"ValueNoise": {
+				"attributes": {
+					"background-color": "~ BlackCColor",
+					"background-color-draw-style": "filled and stroked",
+					"class": "CViewContainer",
+					"mouse-enabled": "true",
+					"opacity": "1",
+					"origin": "0, 0",
+					"size": "400, 400",
+					"transparent": "false",
+					"wants-focus": "false"
 				}
 			}
 		}
