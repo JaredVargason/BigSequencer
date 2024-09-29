@@ -35,7 +35,6 @@ Changing the width, height, min note, max note, root note, scale, or fill chance
 To build the app, you will need the Steinberg VST3 SDK:
 
 ```
-git submodule add https://github.com/steinbergmedia/vst3sdk.git
 git submodule update --init --recursive
 ```
 
