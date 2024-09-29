@@ -64,8 +64,8 @@ protected:
 	const uint8_t noteLowerBound = 24;
 	const uint8_t noteUpperBound = 96;
 
-	uint8_t minNote = noteLowerBound;
-	uint8_t maxNote = noteUpperBound;
+	uint8_t minNote = 60;
+	uint8_t maxNote = 71;
 	Pitch rootNote = Pitch::c;
 	Scale scale = Scale::chromatic;
 
