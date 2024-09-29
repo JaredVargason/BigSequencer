@@ -17,5 +17,6 @@ namespace vargason::bigsequencer {
 		
 		Sequencer* sequencer = nullptr;
 		SequencerView* sequencerView = nullptr;
+		bool viewAvailable = false;
 	};
 }

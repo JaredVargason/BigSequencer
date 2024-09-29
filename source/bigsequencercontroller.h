@@ -7,6 +7,7 @@
 #include "public.sdk/source/vst/vsteditcontroller.h"
 #include "sequencer.h"
 #include "bigsequencereditor.h"
+#include <public.sdk/source/vst/vstguieditor.h>
 
 
 namespace vargason::bigsequencer {
@@ -37,6 +38,8 @@ public:
 	Steinberg::tresult PLUGIN_API setState (Steinberg::IBStream* state) SMTG_OVERRIDE;
 	Steinberg::tresult PLUGIN_API getState (Steinberg::IBStream* state) SMTG_OVERRIDE;
 
+	void PLUGIN_API editorAttached(Steinberg::Vst::EditorView* view) SMTG_OVERRIDE;
+	void PLUGIN_API editorRemoved(Steinberg::Vst::EditorView* view) SMTG_OVERRIDE;
 	Steinberg::tresult PLUGIN_API notify(Steinberg::Vst::IMessage* message) SMTG_OVERRIDE;
 
  	//---Interface---------
@@ -51,6 +54,7 @@ private:
 	Sequencer sequencer;  // kind of a storage thing tbh
 	BigSequencerEditor* editor = nullptr;
 	void addParameters();
+	bool viewAvailable = false;
 };
 
 //------------------------------------------------------------------------

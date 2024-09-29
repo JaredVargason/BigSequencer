@@ -27,10 +27,8 @@ Changing the width, height, min note, max note, root note, scale, or fill chance
     - transition rule (which note the cursor should move to next)
         - this allows for varying patterns on our grid
         - but we need to find out a good way to do it
+    - probability (chance that the cursor will play the current note)
 - More note generation methods (other noise types?)
-
-## Known Issues
-- The plugin will likely crash if you close the plugin view while playing- I'll get to that threading issue soon TM
 
 ## Building
 

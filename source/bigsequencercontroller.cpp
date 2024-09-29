@@ -210,7 +210,20 @@ void BigSequencerController::addParameters()
 	parameters.addParameter(STR16("Cursor Tab"), nullptr, 0, 0, 0, kParamCursorTab);
 }
 
+void PLUGIN_API BigSequencerController::editorAttached(Steinberg::Vst::EditorView* view) {
+	Steinberg::Vst::EditControllerEx1::editorAttached(view);
+	viewAvailable = true;
+}
+
+void PLUGIN_API BigSequencerController::editorRemoved(Steinberg::Vst::EditorView* view) {
+	Steinberg::Vst::EditControllerEx1::editorRemoved(view);
+	viewAvailable = false;
+}
+
 tresult PLUGIN_API BigSequencerController::notify(Steinberg::Vst::IMessage* message) {
+	if (!viewAvailable) {
+		return kResultOk;
+	}
 	std::string mID = message->getMessageID();
 	if (mID == "SequencerMessage") {
 		const void* data = nullptr;
