@@ -1,6 +1,6 @@
 # BigSequencer
 
-The Big Sequencer is a big grid of notes. You can change its width and height.
+The BigSequencer is a randomly populated grid of notes that get sent over MIDI.
 
 ![Big Sequencer Demo Image](resource/sequencer.png)
 

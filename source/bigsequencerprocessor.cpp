@@ -378,7 +378,7 @@ namespace vargason::bigsequencer {
 				newPos = 0;
 			}
 			cursor.position = newPos;
-			cursor.lastNoteTime = quarterNotes;
+			cursor.lastNoteTime += numericInterval;
 		}
 		if (cursor.notePlaying && quarterNotes >= cursor.lastNoteTime + cursor.realNoteLength()) {
 			sendMidiNoteOff(data.outputEvents, cursor.currentlyPlayingNote);
