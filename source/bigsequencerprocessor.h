@@ -7,6 +7,7 @@
 #include "public.sdk/source/vst/vstaudioeffect.h"
 #include "sequencer.h"
 #include "notedatagenerator.h"
+#include <random>
 
 namespace vargason::bigsequencer {
 
@@ -54,6 +55,9 @@ public:
 protected:
 	vargason::bigsequencer::Sequencer* sequencer = nullptr;  // this could be a not pointer probably.
 	vargason::bigsequencer::RandomNoteDataGenerator* randomNoteGenerator = nullptr;  // same.
+	
+	std::mt19937 rnd;
+	std::uniform_real_distribution<double> dis;
 
 	bool wasPreviouslyPlaying = false;  // whether the host was playing in the last frame
 	float lastProjectMusicTime = 0;  // music time of the last frame

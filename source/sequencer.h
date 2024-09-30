@@ -6,16 +6,14 @@ namespace vargason::bigsequencer {
 
 	struct Cursor {
 		bool active = false;
-
-		bool notePlaying = false;
-		uint8_t currentlyPlayingNote = 60;
-		int position = 0;
-
 		Interval interval = Interval::quarterNote;
-
 		int8_t pitchOffset = 0;
 		float velocity = 0.6f;
+		float probability = 1.0f;
 
+		int position = 0;
+		bool notePlaying = false;
+		uint8_t currentlyPlayingNote = 60;
 		double lastNoteTime = 0;
 
 		const int pitchMin = -24;
