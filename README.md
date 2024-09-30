@@ -10,6 +10,7 @@ It has multiple **cursors** that iterate along the grid. Each cursor has multipl
 - note length (percentage of the interval that the note should play)
 - pitch offset (adjust the note pitch by this many semitones)
 - velocity (how hard the key press will be)
+- probability (chance that the cursor will play the current note)
 
 Use the **retrigger** parameter to make the sequencer restart at the beginning on playback.
 
@@ -27,7 +28,6 @@ Changing the width, height, min note, max note, root note, scale, or fill chance
     - transition rule (which note the cursor should move to next)
         - this allows for varying patterns on our grid
         - but we need to find out a good way to do it
-    - probability (chance that the cursor will play the current note)
 - More note generation methods (other noise types?)
 
 ## Building

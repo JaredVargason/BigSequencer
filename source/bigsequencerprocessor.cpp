@@ -18,7 +18,7 @@ namespace vargason::bigsequencer {
 	//------------------------------------------------------------------------
 	// BigSequencerProcessor
 	//------------------------------------------------------------------------
-	BigSequencerProcessor::BigSequencerProcessor()
+	BigSequencerProcessor::BigSequencerProcessor(): rnd(std::random_device()()), dis(0.0, 1.0)
 	{
 		//--- set the wanted controller for our processor
 		setControllerClass(kBigSequencerControllerUID);
@@ -91,7 +91,7 @@ namespace vargason::bigsequencer {
 					cursor.position = retrigger ? 0 : cursor.position;
 
 					sendCursorUpdate(i, cursor);
-					if (cursor.active) {
+					if (cursor.active && dis(rnd) < cursor.probability) {
 						NoteData noteData = sequencer->getNote(cursor.position);
 						if (noteData.active) {
 							cursor.notePlaying = true;
@@ -193,7 +193,12 @@ namespace vargason::bigsequencer {
 							cursor.velocity = value;
 						}
 						break;
-
+					case SequencerParams::kParamCursor1ProbabilityId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							Cursor& cursor = sequencer->getCursor(0);
+							cursor.probability = value;
+						}
+						break;
 						// Cursor 2
 					case SequencerParams::kParamCursor2ActiveId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
@@ -223,7 +228,12 @@ namespace vargason::bigsequencer {
 							cursor.velocity = value;
 						}
 						break;
-
+					case SequencerParams::kParamCursor2ProbabilityId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							Cursor& cursor = sequencer->getCursor(1);
+							cursor.probability = value;
+						}
+						break;
 						// Cursor 3
 					case SequencerParams::kParamCursor3ActiveId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
@@ -253,7 +263,12 @@ namespace vargason::bigsequencer {
 							cursor.velocity = value;
 						}
 						break;
-
+					case SequencerParams::kParamCursor3ProbabilityId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							Cursor& cursor = sequencer->getCursor(2);
+							cursor.probability = value;
+						}
+						break;
 						// Cursor 4
 					case SequencerParams::kParamCursor4ActiveId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
@@ -283,7 +298,12 @@ namespace vargason::bigsequencer {
 							cursor.velocity = value;
 						}
 						break;
-
+					case SequencerParams::kParamCursor4ProbabilityId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							Cursor& cursor = sequencer->getCursor(3);
+							cursor.probability = value;
+						}
+						break;
 						// "fake" parameters
 					case SequencerParams::kParamScaleId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
@@ -344,10 +364,9 @@ namespace vargason::bigsequencer {
 		if (quarterNotes >= cursor.lastNoteTime + numericInterval) {
 			if (cursor.active) {
 				NoteData noteData = sequencer->getNote(cursor.position);
-				if (noteData.active) {
+				if (noteData.active && dis(rnd) < cursor.probability) {
 					uint8_t realPitch = noteData.pitch + cursor.pitchOffset;
 					sendMidiNoteOn(data.outputEvents, realPitch, cursor.velocity);
-
 					cursor.notePlaying = true;
 					cursor.currentlyPlayingNote = realPitch;
 				}

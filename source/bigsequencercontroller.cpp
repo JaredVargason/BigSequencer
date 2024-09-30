@@ -108,6 +108,7 @@ void BigSequencerController::addParameters()
 	parameters.addParameter(cursor1NoteIntervalParameter);
 
 	parameters.addParameter(STR16("Cursor 1 Velocity"), nullptr, 0, 0.6f, Vst::ParameterInfo::kCanAutomate, kParamCursor1VelocityId);
+	parameters.addParameter(STR16("Cursor 1 Probability"), nullptr, 0, 1.0f, Vst::ParameterInfo::kCanAutomate, kParamCursor1ProbabilityId);
 
 	// Cursor 2
 	parameters.addParameter(STR16("Cursor 2 Active"), nullptr, 0, 1.0f, Vst::ParameterInfo::kCanAutomate, kParamCursor2ActiveId);
@@ -128,6 +129,7 @@ void BigSequencerController::addParameters()
 	parameters.addParameter(cursor2NoteIntervalParameter);
 
 	parameters.addParameter(STR16("Cursor 2 Velocity"), nullptr, 0, 0.6f, Vst::ParameterInfo::kCanAutomate, kParamCursor2VelocityId);
+	parameters.addParameter(STR16("Cursor 2 Probability"), nullptr, 0, 1.0f, Vst::ParameterInfo::kCanAutomate, kParamCursor2ProbabilityId);
 
 	// Cursor 3, inactive by default
 	parameters.addParameter(STR16("Cursor 3 Active"), nullptr, 0, 0, Vst::ParameterInfo::kCanAutomate, kParamCursor3ActiveId);
@@ -147,6 +149,7 @@ void BigSequencerController::addParameters()
 	parameters.addParameter(cursor3NoteIntervalParameter);
 
 	parameters.addParameter(STR16("Cursor 3 Velocity"), nullptr, 0, 0.6f, Vst::ParameterInfo::kCanAutomate, kParamCursor3VelocityId);
+	parameters.addParameter(STR16("Cursor 3 Probability"), nullptr, 0, 1.0f, Vst::ParameterInfo::kCanAutomate, kParamCursor3ProbabilityId);
 
 	// Cursor 4, inactive by default
 	parameters.addParameter(STR16("Cursor 4 Active"), nullptr, 0, 0, Vst::ParameterInfo::kCanAutomate, kParamCursor4ActiveId);
@@ -167,7 +170,7 @@ void BigSequencerController::addParameters()
 	parameters.addParameter(cursor4NoteIntervalParameter);
 
 	parameters.addParameter(STR16("Cursor 4 Velocity"), nullptr, 0, 0.6f, Vst::ParameterInfo::kCanAutomate, kParamCursor4VelocityId);
-
+	parameters.addParameter(STR16("Cursor 4 Probability"), nullptr, 0, 1.0f, Vst::ParameterInfo::kCanAutomate, kParamCursor4ProbabilityId);
 	// Note generation
 
 	Vst::StringListParameter* rootNoteParameter = new Vst::StringListParameter(STR16("Root Note"), kParamRootNoteId, nullptr, 0);
