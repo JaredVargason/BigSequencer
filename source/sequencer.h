@@ -79,14 +79,21 @@ namespace vargason::bigsequencer {
 		void setNotes(int width, int height, NoteData* notes);
 		int totalNotes();
 
-		const int maxWidth = 32;
-		const int maxHeight = 32;
-		const int maxNumCursors = 4;
+		static const int minWidth = 1;
+		static const int minHeight = 1;
+
+		static const int maxWidth = 32;
+		static const int maxHeight = 32;
+
+		static const int maxNumCursors = 4;
+
+		static const int defaultWidth = 16;
+		static const int defaultHeight = 4;
 
 	private:
 		Cursor* cursors = nullptr;  // these don't need to be pointers either if we have a constant size
 
-		uint16_t width = 16;
-		uint16_t height = 4;
+		uint16_t width = defaultWidth;
+		uint16_t height = defaultHeight;
 	};
 }

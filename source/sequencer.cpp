@@ -1,7 +1,7 @@
 #include "sequencer.h"
 
 namespace vargason::bigsequencer {
-	Sequencer::Sequencer() : Sequencer(16, 4) {
+	Sequencer::Sequencer() : Sequencer(defaultWidth, defaultHeight) {
 	}
 
 	Sequencer::Sequencer(int width, int height) {

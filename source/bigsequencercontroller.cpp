@@ -80,10 +80,10 @@ IPlugView* PLUGIN_API BigSequencerController::createView (FIDString name)
 
 void BigSequencerController::addParameters()
 {
-	Vst::RangeParameter* sequencerWidthParameter = new Vst::RangeParameter(STR16("Sequencer Width"), kParamSequencerWidthId, nullptr, 1, 32, 16, 31, 0);
+	Vst::RangeParameter* sequencerWidthParameter = new Vst::RangeParameter(STR16("Sequencer Width"), kParamSequencerWidthId, nullptr, Sequencer::minWidth, Sequencer::maxWidth, Sequencer::defaultWidth, Sequencer::maxWidth - Sequencer::minWidth, 0);
 	parameters.addParameter(sequencerWidthParameter);
 
-	Vst::RangeParameter* sequencerHeightParameter = new Vst::RangeParameter(STR16("Sequencer Height"), kParamSequencerHeightId, nullptr, 1, 32, 4, 31, 0);
+	Vst::RangeParameter* sequencerHeightParameter = new Vst::RangeParameter(STR16("Sequencer Height"), kParamSequencerHeightId, nullptr, Sequencer::minHeight, Sequencer::maxHeight, Sequencer::defaultHeight, Sequencer::maxHeight - Sequencer::minHeight, 0);
 	parameters.addParameter(sequencerHeightParameter);
 
 	parameters.addParameter(STR16("Host Sync"), nullptr, 0, 1.0f, 0, kParamHostSyncId);

@@ -1,6 +1,7 @@
 # BigSequencer
 
 The BigSequencer is a randomly populated grid of notes that get sent over MIDI.
+You can use it to quickly generate new ideas or to create easy ambient music.
 
 ![Big Sequencer Demo Image](resource/sequencer.png)
 
