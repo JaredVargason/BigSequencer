@@ -10,29 +10,6 @@ namespace vargason::bigsequencer {
 		for (int cursorIndex = 0; cursorIndex < maxNumCursors; cursorIndex++) {
 			cursors[cursorIndex] = defaultCursors[cursorIndex];
 		}
-		/*cursors[0].active = true;
-		cursors[0].interval = Interval::quarterNote;
-		cursors[0].pitchOffset = 0;
-		cursors[0].setNoteLength(0.4f);
-		cursors[0].velocity = 0.6f;
-
-		cursors[1].active = true;
-		cursors[1].interval = Interval::halfNote;
-		cursors[1].pitchOffset = -12;
-		cursors[1].setNoteLength(0.6f);
-		cursors[1].velocity = 0.6f;
-
-		cursors[2].active = false;
-		cursors[2].interval = Interval::eighthNote;
-		cursors[2].pitchOffset = 12;
-		cursors[2].setNoteLength(0.6f);
-		cursors[2].velocity = 0.6f;
-
-		cursors[3].active = false;
-		cursors[3].interval = Interval::wholeNote;
-		cursors[3].pitchOffset = -24;
-		cursors[3].setNoteLength(0.4f);
-		cursors[3].velocity = 0.6f;*/
 	}
 
 	Sequencer::~Sequencer() {
