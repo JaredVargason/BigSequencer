@@ -53,8 +53,8 @@ public:
 
 //------------------------------------------------------------------------
 protected:
-	vargason::bigsequencer::Sequencer* sequencer = nullptr;  // this could be a not pointer probably.
-	vargason::bigsequencer::RandomNoteDataGenerator* randomNoteGenerator = nullptr;  // same.
+	vargason::bigsequencer::Sequencer sequencer;
+	vargason::bigsequencer::RandomNoteDataGenerator randomNoteGenerator;
 	
 	std::mt19937 rnd;
 	std::uniform_real_distribution<double> dis;
@@ -65,13 +65,10 @@ protected:
 	bool hostSynced = true;  // whether sequencer starts when host playback starts
 	bool retrigger = true;  // whether the sequencer starts from 0 when playback is restarted
 
-	const uint8_t noteLowerBound = 24;
-	const uint8_t noteUpperBound = 96;
-
-	uint8_t minNote = 60;
-	uint8_t maxNote = 71;
-	Pitch rootNote = Pitch::c;
-	Scale scale = Scale::chromatic;
+	uint8_t minNote = NoteDataGenerator::defaultMinNote;
+	uint8_t maxNote = NoteDataGenerator::defaultMaxNote;
+	Pitch rootNote = NoteDataGenerator::defaultPitch;
+	Scale scale = NoteDataGenerator::defaultScale;
 
 	void sendMidiNoteOn(Steinberg::Vst::IEventList* eventList, uint8_t pitch, float velocity);
 	void sendMidiNoteOff(Steinberg::Vst::IEventList* eventList, uint8_t pitch);

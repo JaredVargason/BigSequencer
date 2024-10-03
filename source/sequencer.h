@@ -11,13 +11,24 @@ namespace vargason::bigsequencer {
 		float velocity = 0.6f;
 		float probability = 1.0f;
 
+		Cursor() : Cursor(true, Interval::quarterNote, 0, 0.6f, 0.6f, 1.0f) {}
+
+		Cursor(bool active, Interval interval, int8_t pitchOffset, float noteLength, float velocity, float probabilty) {
+			this->active = active;
+			this->interval = interval;
+			this->pitchOffset = pitchOffset;
+			setNoteLength(noteLength);
+			this->velocity = velocity;
+			this->probability = probabilty;
+		}
+
 		int position = 0;
 		bool notePlaying = false;
 		uint8_t currentlyPlayingNote = 60;
 		double lastNoteTime = 0;
 
-		const int pitchMin = -24;
-		const int pitchMax = 24;
+		static const int pitchMin = -24;
+		static const int pitchMax = 24;
 
 		const double* numericIntervals = new double[7] {
 			0.125,
@@ -37,9 +48,9 @@ namespace vargason::bigsequencer {
 				noteLength = 0.002f;
 			}
 			this->noteLength = noteLength;
-		};
+		}
 
-		float getNoteLength() {
+		float getNoteLength() const {
 			return this->noteLength;
 		}
 
@@ -91,9 +102,46 @@ namespace vargason::bigsequencer {
 		static const int defaultHeight = 4;
 
 	private:
-		Cursor* cursors = nullptr;  // these don't need to be pointers either if we have a constant size
+		Cursor cursors[4];
 
 		uint16_t width = defaultWidth;
 		uint16_t height = defaultHeight;
 	};
+
+	static const Cursor defaultCursors[Sequencer::maxNumCursors]{
+	{
+		true,
+		Interval::quarterNote,
+		0,
+		0.4f,
+		0.6f,
+		1.0f
+	},
+	{
+		true,
+		Interval::halfNote,
+		-12,
+		0.6f,
+		0.6f,
+		1.0f
+	},
+	{
+		false,
+		Interval::eighthNote,
+		12,
+		0.6f,
+		0.6f,
+		1.0f
+	},
+	{
+		false,
+		Interval::wholeNote,
+		-24,
+		0.4f,
+		0.6f,
+		1.0f
+	}
+	};
+
+
 }

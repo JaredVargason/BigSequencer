@@ -1,13 +1,16 @@
 #include "sequencer.h"
 
 namespace vargason::bigsequencer {
+
 	Sequencer::Sequencer() : Sequencer(defaultWidth, defaultHeight) {
 	}
 
 	Sequencer::Sequencer(int width, int height) {
 		setSize(width, height);
-		cursors = new Cursor[maxNumCursors];
-		cursors[0].active = true;
+		for (int cursorIndex = 0; cursorIndex < maxNumCursors; cursorIndex++) {
+			cursors[cursorIndex] = defaultCursors[cursorIndex];
+		}
+		/*cursors[0].active = true;
 		cursors[0].interval = Interval::quarterNote;
 		cursors[0].pitchOffset = 0;
 		cursors[0].setNoteLength(0.4f);
@@ -29,12 +32,11 @@ namespace vargason::bigsequencer {
 		cursors[3].interval = Interval::wholeNote;
 		cursors[3].pitchOffset = -24;
 		cursors[3].setNoteLength(0.4f);
-		cursors[3].velocity = 0.6f;
+		cursors[3].velocity = 0.6f;*/
 	}
 
 	Sequencer::~Sequencer() {
 		delete notes;
-		delete cursors;
 	}
 
 	NoteData& Sequencer::getNote(int index) {
