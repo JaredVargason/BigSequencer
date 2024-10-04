@@ -6,7 +6,6 @@ namespace vargason::bigsequencer {
 	enum SequencerParams : Steinberg::Vst::ParamID {
 		kParamSequencerWidthId = 100,
 		kParamSequencerHeightId,
-		kParamHostSyncId,
 		kParamRetriggerId,
 
 		kParamCursor1ActiveId,

@@ -8,6 +8,14 @@ namespace vargason::bigsequencer {
 
 	class NoteDataGenerator {
 	public:
+
+		static const Scale defaultScale = Scale::chromatic;
+		static const Pitch defaultPitch = Pitch::c;
+		static const uint8_t noteLowerBound = 24;
+		static const uint8_t noteUpperBound = 96;
+		static const uint8_t defaultMinNote = 60;
+		static const uint8_t defaultMaxNote = 71;
+		static constexpr float defaultFillChance = 0.5f;
 		
 		NoteData* generate(int width, int height, Pitch rootNote, Scale scale, uint8_t noteMin, uint8_t noteMax) {
 			// get all available notes to pass to the generate function

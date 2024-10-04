@@ -30,4 +30,9 @@ namespace vargason::bigsequencer {
 	const std::vector<int> getScaleIntegers(Scale scale) {
 		return scaleIntegers[(int)scale];
 	}
+
+	// get the interval in a normalized form so we can pass it into the controller
+	const float normalizedInterval(Interval interval) {
+		return (interval) / (float)(totalIntervals - 1);
+	}
 }

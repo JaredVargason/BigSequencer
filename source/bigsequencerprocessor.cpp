@@ -18,7 +18,7 @@ namespace vargason::bigsequencer {
 	//------------------------------------------------------------------------
 	// BigSequencerProcessor
 	//------------------------------------------------------------------------
-	BigSequencerProcessor::BigSequencerProcessor(): rnd(std::random_device()()), dis(0.0, 1.0)
+	BigSequencerProcessor::BigSequencerProcessor(): rnd(std::random_device()()), dis(0.0, 1.0), sequencer()
 	{
 		//--- set the wanted controller for our processor
 		setControllerClass(kBigSequencerControllerUID);
@@ -41,9 +41,6 @@ namespace vargason::bigsequencer {
 			return result;
 		}
 		addEventOutput(STR16("Event Out"), 1);
-		
-		this->sequencer = new Sequencer();
-		this->randomNoteGenerator = new RandomNoteDataGenerator();
 		return kResultOk;
 	}
 
@@ -51,9 +48,6 @@ namespace vargason::bigsequencer {
 	tresult PLUGIN_API BigSequencerProcessor::terminate()
 	{
 		// Here the Plug-in will be de-instantiated, last possibility to remove some memory!
-
-		delete sequencer;
-		delete randomNoteGenerator;
 
 		//---do not forget to call parent ------
 		return AudioEffect::terminate();
@@ -81,8 +75,8 @@ namespace vargason::bigsequencer {
 		bool playing = data.processContext->state & data.processContext->kPlaying;
 		if (playing && !wasPreviouslyPlaying) {  // started from paused or stopped state.
 			if (data.processContext->projectTimeMusic == data.processContext->cycleStartMusic) {  // started from stopped state
-				for (int i = 0; i < sequencer->maxNumCursors; i++) {
-					Cursor& cursor = sequencer->getCursor(i);
+				for (int i = 0; i < sequencer.maxNumCursors; i++) {
+					Cursor& cursor = sequencer.getCursor(i);
 
 					if (retrigger) {
 						cursor.position = 0;
@@ -92,10 +86,10 @@ namespace vargason::bigsequencer {
 
 					sendCursorUpdate(i, cursor);
 					if (cursor.active && dis(rnd) < cursor.probability) {
-						NoteData noteData = sequencer->getNote(cursor.position);
+						NoteData noteData = sequencer.getNote(cursor.position);
 						if (noteData.active) {
 							cursor.notePlaying = true;
-							uint8_t pitch = sequencer->getNote(0).pitch + cursor.pitchOffset;
+							uint8_t pitch = sequencer.getNote(0).pitch + cursor.pitchOffset;
 							cursor.currentlyPlayingNote = pitch;
 							sendMidiNoteOn(data.outputEvents, pitch, cursor.velocity);
 						}
@@ -105,8 +99,8 @@ namespace vargason::bigsequencer {
 			}
 		}
 		else if (!playing && wasPreviouslyPlaying) {  // we stopped or paused playback
-			for (int i = 0; i < sequencer->maxNumCursors; i++) {
-				Cursor& cursor = sequencer->getCursor(i);
+			for (int i = 0; i < sequencer.maxNumCursors; i++) {
+				Cursor& cursor = sequencer.getCursor(i);
 				if (cursor.notePlaying) {
 					cursor.notePlaying = false;
 					uint8_t pitch = cursor.currentlyPlayingNote;
@@ -117,7 +111,7 @@ namespace vargason::bigsequencer {
 
 		wasPreviouslyPlaying = playing;
 
-		if (hostSynced && playing) {
+		if (playing) {
 			updateSequencer(data);
 		}
 
@@ -139,23 +133,18 @@ namespace vargason::bigsequencer {
 					switch (paramQueue->getParameterId()) {
 					case SequencerParams::kParamSequencerWidthId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							int width = 1 + value * sequencer->maxWidth;
-							sequencer->setSize(width, sequencer->getHeight());  // cursor could be out of bounds if we do this wrong
+							int width = 1 + value * sequencer.maxWidth;
+							sequencer.setSize(width, sequencer.getHeight());  // cursor could be out of bounds if we do this wrong
 							regenerateGridNotes();
 							sendSequencerUpdate();
 						}
 						break;
 					case SequencerParams::kParamSequencerHeightId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							int height = 1 + value * sequencer->maxHeight;
-							sequencer->setSize(sequencer->getWidth(), height);
+							int height = 1 + value * sequencer.maxHeight;
+							sequencer.setSize(sequencer.getWidth(), height);
 							regenerateGridNotes();
 							sendSequencerUpdate();
-						}
-						break;
-					case SequencerParams::kParamHostSyncId:
-						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							// hostSynced = value;
 						}
 						break;
 					case SequencerParams::kParamRetriggerId:
@@ -167,140 +156,140 @@ namespace vargason::bigsequencer {
 						// Cursor 1
 					case SequencerParams::kParamCursor1ActiveId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer->getCursor(0).active = value;
+							sequencer.getCursor(0).active = value;
 							sendCursorActiveUpdate(0, value);
 						}
 						break;
 					case SequencerParams::kParamCursor1NoteLengthId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer->getCursor(0).setNoteLength(value);
+							sequencer.getCursor(0).setNoteLength(value);
 						}
 						break;
 					case SequencerParams::kParamCursor1NoteIntervalId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer->getCursor(0).interval = (Interval)(Interval::thirtySecondNote + (Interval::doubleWholeNote - Interval::thirtySecondNote) * value);
+							sequencer.getCursor(0).interval = (Interval)(Interval::thirtySecondNote + (Interval::doubleWholeNote - Interval::thirtySecondNote) * value);
 						}
 						break;
 					case SequencerParams::kParamCursor1PitchOffsetId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							Cursor& cursor = sequencer->getCursor(0);
+							Cursor& cursor = sequencer.getCursor(0);
 							cursor.pitchOffset = cursor.pitchMin + (cursor.pitchMax - cursor.pitchMin) * value;
 						}
 						break;
 					case SequencerParams::kParamCursor1VelocityId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							Cursor& cursor = sequencer->getCursor(0);
+							Cursor& cursor = sequencer.getCursor(0);
 							cursor.velocity = value;
 						}
 						break;
 					case SequencerParams::kParamCursor1ProbabilityId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							Cursor& cursor = sequencer->getCursor(0);
+							Cursor& cursor = sequencer.getCursor(0);
 							cursor.probability = value;
 						}
 						break;
 						// Cursor 2
 					case SequencerParams::kParamCursor2ActiveId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer->getCursor(1).active = value;
+							sequencer.getCursor(1).active = value;
 							sendCursorActiveUpdate(1, value);
 						}
 						break;
 					case SequencerParams::kParamCursor2NoteLengthId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer->getCursor(1).setNoteLength(value);
+							sequencer.getCursor(1).setNoteLength(value);
 						}
 						break;
 					case SequencerParams::kParamCursor2NoteIntervalId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer->getCursor(1).interval = (Interval)(Interval::thirtySecondNote + (Interval::doubleWholeNote - Interval::thirtySecondNote) * value);
+							sequencer.getCursor(1).interval = (Interval)(Interval::thirtySecondNote + (Interval::doubleWholeNote - Interval::thirtySecondNote) * value);
 						}
 						break;
 					case SequencerParams::kParamCursor2PitchOffsetId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							Cursor& cursor = sequencer->getCursor(1);
+							Cursor& cursor = sequencer.getCursor(1);
 							cursor.pitchOffset = cursor.pitchMin + (cursor.pitchMax - cursor.pitchMin) * value;
 						}
 						break;
 					case SequencerParams::kParamCursor2VelocityId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							Cursor& cursor = sequencer->getCursor(1);
+							Cursor& cursor = sequencer.getCursor(1);
 							cursor.velocity = value;
 						}
 						break;
 					case SequencerParams::kParamCursor2ProbabilityId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							Cursor& cursor = sequencer->getCursor(1);
+							Cursor& cursor = sequencer.getCursor(1);
 							cursor.probability = value;
 						}
 						break;
 						// Cursor 3
 					case SequencerParams::kParamCursor3ActiveId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer->getCursor(2).active = value;
+							sequencer.getCursor(2).active = value;
 							sendCursorActiveUpdate(2, value);
 						}
 						break;
 					case SequencerParams::kParamCursor3NoteLengthId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer->getCursor(2).setNoteLength(value);
+							sequencer.getCursor(2).setNoteLength(value);
 						}
 						break;
 					case SequencerParams::kParamCursor3NoteIntervalId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer->getCursor(2).interval = (Interval)(Interval::thirtySecondNote + (Interval::doubleWholeNote - Interval::thirtySecondNote) * value);
+							sequencer.getCursor(2).interval = (Interval)(Interval::thirtySecondNote + (Interval::doubleWholeNote - Interval::thirtySecondNote) * value);
 						}
 						break;
 					case SequencerParams::kParamCursor3PitchOffsetId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							Cursor& cursor = sequencer->getCursor(2);
+							Cursor& cursor = sequencer.getCursor(2);
 							cursor.pitchOffset = cursor.pitchMin + (cursor.pitchMax - cursor.pitchMin) * value;
 						}
 						break;
 					case SequencerParams::kParamCursor3VelocityId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							Cursor& cursor = sequencer->getCursor(2);
+							Cursor& cursor = sequencer.getCursor(2);
 							cursor.velocity = value;
 						}
 						break;
 					case SequencerParams::kParamCursor3ProbabilityId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							Cursor& cursor = sequencer->getCursor(2);
+							Cursor& cursor = sequencer.getCursor(2);
 							cursor.probability = value;
 						}
 						break;
 						// Cursor 4
 					case SequencerParams::kParamCursor4ActiveId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer->getCursor(3).active = value;
+							sequencer.getCursor(3).active = value;
 							sendCursorActiveUpdate(3, value);
 						}
 						break;
 					case SequencerParams::kParamCursor4NoteLengthId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer->getCursor(3).setNoteLength(value);
+							sequencer.getCursor(3).setNoteLength(value);
 						}
 						break;
 					case SequencerParams::kParamCursor4NoteIntervalId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer->getCursor(3).interval = (Interval)(Interval::thirtySecondNote + (Interval::doubleWholeNote - Interval::thirtySecondNote) * value);
+							sequencer.getCursor(3).interval = (Interval)(Interval::thirtySecondNote + (Interval::doubleWholeNote - Interval::thirtySecondNote) * value);
 						}
 						break;
 					case SequencerParams::kParamCursor4PitchOffsetId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							Cursor& cursor = sequencer->getCursor(3);
+							Cursor& cursor = sequencer.getCursor(3);
 							cursor.pitchOffset = cursor.pitchMin + (cursor.pitchMax - cursor.pitchMin) * value;
 						}
 						break;
 					case SequencerParams::kParamCursor4VelocityId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							Cursor& cursor = sequencer->getCursor(3);
+							Cursor& cursor = sequencer.getCursor(3);
 							cursor.velocity = value;
 						}
 						break;
 					case SequencerParams::kParamCursor4ProbabilityId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							Cursor& cursor = sequencer->getCursor(3);
+							Cursor& cursor = sequencer.getCursor(3);
 							cursor.probability = value;
 						}
 						break;
@@ -321,21 +310,21 @@ namespace vargason::bigsequencer {
 						break;
 					case SequencerParams::kParamMinNoteId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							minNote = noteLowerBound + (noteUpperBound - noteLowerBound) * value;
+							minNote = NoteDataGenerator::noteLowerBound + (NoteDataGenerator::noteUpperBound - NoteDataGenerator::noteLowerBound) * value;
 							regenerateGridNotes();
 							sendSequencerUpdate();
 						}
 						break;
 					case SequencerParams::kParamMaxNoteId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							maxNote = noteLowerBound + (noteUpperBound - noteLowerBound) * value;
+							maxNote = NoteDataGenerator::noteLowerBound + (NoteDataGenerator::noteUpperBound - NoteDataGenerator::noteLowerBound) * value;
 							regenerateGridNotes();
 							sendSequencerUpdate();
 						}
 						break;
 					case SequencerParams::kParamFillChanceId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							randomNoteGenerator->fillChance = value;
+							randomNoteGenerator.fillChance = value;
 							regenerateGridNotes();
 							sendSequencerUpdate();
 						}
@@ -349,8 +338,8 @@ namespace vargason::bigsequencer {
 	void BigSequencerProcessor::updateSequencer(Vst::ProcessData& data) {
 		double cycleLength = data.processContext->cycleEndMusic - data.processContext->cycleStartMusic;
 
-		for (int cursorIndex = 0; cursorIndex < sequencer->maxNumCursors; cursorIndex++) {
-			Cursor& cursor = sequencer->getCursor(cursorIndex);
+		for (int cursorIndex = 0; cursorIndex < sequencer.maxNumCursors; cursorIndex++) {
+			Cursor& cursor = sequencer.getCursor(cursorIndex);
 			if (lastProjectMusicTime > data.processContext->projectTimeMusic) {  // the measure/song ended and we are back at 0
 				cursor.lastNoteTime -= cycleLength;
 			}
@@ -363,7 +352,7 @@ namespace vargason::bigsequencer {
 		float numericInterval = cursor.numericInterval();
 		if (quarterNotes >= cursor.lastNoteTime + numericInterval) {
 			if (cursor.active) {
-				NoteData noteData = sequencer->getNote(cursor.position);
+				NoteData noteData = sequencer.getNote(cursor.position);
 				if (noteData.active && dis(rnd) < cursor.probability) {
 					uint8_t realPitch = noteData.pitch + cursor.pitchOffset;
 					sendMidiNoteOn(data.outputEvents, realPitch, cursor.velocity);
@@ -373,7 +362,7 @@ namespace vargason::bigsequencer {
 				sendCursorUpdate(index, cursor);
 			}
 			int newPos = cursor.position + 1;
-			int totalNotes = sequencer->totalNotes();
+			int totalNotes = sequencer.totalNotes();
 			if (newPos >= totalNotes) {
 				newPos = 0;
 			}
@@ -458,7 +447,7 @@ namespace vargason::bigsequencer {
 
 		// Write cursors
 		std::vector<Cursor> cursors;
-		for (int i = 0; i < sequencer->maxNumCursors; i++) {
+		for (int i = 0; i < sequencer.maxNumCursors; i++) {
 			Cursor cursor;
 			if (!streamer.readBool(cursor.active)) {
 				failure = false;
@@ -491,14 +480,14 @@ namespace vargason::bigsequencer {
 
 
 		// copy over all data on read success
-		for (int i = 0; i < sequencer->maxNumCursors; i++) {
-			Cursor& cursor = sequencer->getCursor(i);
+		for (int i = 0; i < sequencer.maxNumCursors; i++) {
+			Cursor& cursor = sequencer.getCursor(i);
 			cursor.active = cursors[i].active;
 			cursor.interval = cursors[i].interval;
 			cursor.pitchOffset = cursors[i].pitchOffset;
 			cursor.velocity = cursors[i].velocity;
 		}
-		sequencer->setNotes(width, height, noteDatas);
+		sequencer.setNotes(width, height, noteDatas);
 
 		return kResultOk;
 	}
@@ -510,22 +499,22 @@ namespace vargason::bigsequencer {
 
 
 		// Write grid data
-		int width = sequencer->getWidth();
-		int height = sequencer->getHeight();
+		int width = sequencer.getWidth();
+		int height = sequencer.getHeight();
 		streamer.writeInt8u(width);
 		streamer.writeInt8u(height);
 
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				NoteData noteData = sequencer->getNote(x, y);
+				NoteData noteData = sequencer.getNote(x, y);
 				streamer.writeBool(noteData.active);
 				streamer.writeInt8u(noteData.pitch);
 			}
 		}
 
 		// Write cursors
-		for (int cursorIndex = 0; cursorIndex < sequencer->maxNumCursors; cursorIndex++) {
-			Cursor cursor = sequencer->getCursor(cursorIndex);
+		for (int cursorIndex = 0; cursorIndex < sequencer.maxNumCursors; cursorIndex++) {
+			Cursor cursor = sequencer.getCursor(cursorIndex);
 			streamer.writeBool(cursor.active);
 			streamer.writeInt8u(cursor.interval);
 			streamer.writeInt8(cursor.pitchOffset);
@@ -537,7 +526,7 @@ namespace vargason::bigsequencer {
 		streamer.writeInt8u(rootNote);
 		streamer.writeInt8u(minNote);
 		streamer.writeInt8u(maxNote);
-		streamer.writeFloat(randomNoteGenerator->fillChance);
+		streamer.writeFloat(randomNoteGenerator.fillChance);
 
 		return kResultOk;
 	}
@@ -572,8 +561,8 @@ namespace vargason::bigsequencer {
 	}
 
 	void BigSequencerProcessor::regenerateGridNotes() {
-		NoteData* noteData = randomNoteGenerator->generate(sequencer->getWidth(), sequencer->getHeight(), rootNote, scale, minNote, maxNote);
-		sequencer->setNotes(sequencer->getWidth(), sequencer->getHeight(), noteData);
+		NoteData* noteData = randomNoteGenerator.generate(sequencer.getWidth(), sequencer.getHeight(), rootNote, scale, minNote, maxNote);
+		sequencer.setNotes(sequencer.getWidth(), sequencer.getHeight(), noteData);
 	}
 
 	void BigSequencerProcessor::sendSequencerUpdate() {
@@ -592,11 +581,11 @@ namespace vargason::bigsequencer {
 	}
 
 	void BigSequencerProcessor::getSequencerData(std::vector<char>& sequencerData) {
-		sequencerData.push_back(sequencer->getWidth());
-		sequencerData.push_back(sequencer->getHeight());
-		for (int y = 0; y < sequencer->getHeight(); y++) {
-			for (int x = 0; x < sequencer->getWidth(); x++) {
-				NoteData& noteData = sequencer->getNote(x, y);
+		sequencerData.push_back(sequencer.getWidth());
+		sequencerData.push_back(sequencer.getHeight());
+		for (int y = 0; y < sequencer.getHeight(); y++) {
+			for (int x = 0; x < sequencer.getWidth(); x++) {
+				NoteData& noteData = sequencer.getNote(x, y);
 				sequencerData.push_back(noteData.active);
 				sequencerData.push_back(noteData.pitch);
 			}

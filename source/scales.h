@@ -40,6 +40,8 @@ namespace vargason::bigsequencer {
 		wholeNote,
 		doubleWholeNote
 	};
+	const int totalIntervals = 7;
 
 	const std::vector<int> getScaleIntegers(Scale scale);
+	const float normalizedInterval(Interval interval);
 }
