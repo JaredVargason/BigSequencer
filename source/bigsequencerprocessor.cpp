@@ -111,7 +111,7 @@ namespace vargason::bigsequencer {
 
 		wasPreviouslyPlaying = playing;
 
-		if (hostSynced && playing) {
+		if (playing) {
 			updateSequencer(data);
 		}
 
@@ -145,11 +145,6 @@ namespace vargason::bigsequencer {
 							sequencer.setSize(sequencer.getWidth(), height);
 							regenerateGridNotes();
 							sendSequencerUpdate();
-						}
-						break;
-					case SequencerParams::kParamHostSyncId:
-						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							// hostSynced = value;
 						}
 						break;
 					case SequencerParams::kParamRetriggerId:

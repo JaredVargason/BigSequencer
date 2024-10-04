@@ -62,7 +62,6 @@ protected:
 	bool wasPreviouslyPlaying = false;  // whether the host was playing in the last frame
 	float lastProjectMusicTime = 0;  // music time of the last frame
 
-	bool hostSynced = true;  // whether sequencer starts when host playback starts
 	bool retrigger = true;  // whether the sequencer starts from 0 when playback is restarted
 
 	uint8_t minNote = NoteDataGenerator::defaultMinNote;

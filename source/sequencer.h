@@ -142,6 +142,4 @@ namespace vargason::bigsequencer {
 		1.0f
 	}
 	};
-
-
 }

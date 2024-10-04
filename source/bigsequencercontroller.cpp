@@ -87,8 +87,7 @@ void BigSequencerController::addParameters()
 	Vst::RangeParameter* sequencerHeightParameter = new Vst::RangeParameter(STR16("Sequencer Height"), kParamSequencerHeightId, nullptr, Sequencer::minHeight, Sequencer::maxHeight, Sequencer::defaultHeight, Sequencer::maxHeight - Sequencer::minHeight, 0);
 	parameters.addParameter(sequencerHeightParameter);
 
-	parameters.addParameter(STR16("Host Sync"), nullptr, 0, 1.0f, 0, kParamHostSyncId);
-	parameters.addParameter(STR16("Retrigger"), nullptr, 0, 1.0f, 0, kParamRetriggerId);
+	parameters.addParameter(STR16("Retrigger"), nullptr, 0, true, 0, kParamRetriggerId);
 
 	// Cursor 1
 	parameters.addParameter(STR16("Cursor 1 Active"), nullptr, 0, defaultCursors[0].active, Vst::ParameterInfo::kCanAutomate, kParamCursor1ActiveId);
@@ -105,7 +104,7 @@ void BigSequencerController::addParameters()
 	cursor1NoteIntervalParameter->appendString(STR16("1/2"));
 	cursor1NoteIntervalParameter->appendString(STR16("1/1"));
 	cursor1NoteIntervalParameter->appendString(STR16("2/1"));
-	cursor1NoteIntervalParameter->setNormalized(0.5f);
+	cursor1NoteIntervalParameter->setNormalized(normalizedInterval(defaultCursors[0].interval));
 	parameters.addParameter(cursor1NoteIntervalParameter);
 
 	parameters.addParameter(STR16("Cursor 1 Velocity"), nullptr, 0, defaultCursors[0].velocity, Vst::ParameterInfo::kCanAutomate, kParamCursor1VelocityId);
@@ -126,7 +125,7 @@ void BigSequencerController::addParameters()
 	cursor2NoteIntervalParameter->appendString(STR16("1/2"));
 	cursor2NoteIntervalParameter->appendString(STR16("1/1"));
 	cursor2NoteIntervalParameter->appendString(STR16("2/1"));
-	cursor2NoteIntervalParameter->setNormalized(0.69f);
+	cursor2NoteIntervalParameter->setNormalized(normalizedInterval(defaultCursors[1].interval));
 	parameters.addParameter(cursor2NoteIntervalParameter);
 
 	parameters.addParameter(STR16("Cursor 2 Velocity"), nullptr, 0, defaultCursors[1].velocity, Vst::ParameterInfo::kCanAutomate, kParamCursor2VelocityId);
@@ -147,7 +146,7 @@ void BigSequencerController::addParameters()
 	cursor3NoteIntervalParameter->appendString(STR16("1/2"));
 	cursor3NoteIntervalParameter->appendString(STR16("1/1"));
 	cursor3NoteIntervalParameter->appendString(STR16("2/1"));
-	cursor3NoteIntervalParameter->setNormalized(0.35f);
+	cursor3NoteIntervalParameter->setNormalized(normalizedInterval(defaultCursors[2].interval));
 	parameters.addParameter(cursor3NoteIntervalParameter);
 
 	parameters.addParameter(STR16("Cursor 3 Velocity"), nullptr, 0, defaultCursors[2].velocity, Vst::ParameterInfo::kCanAutomate, kParamCursor3VelocityId);
@@ -168,7 +167,7 @@ void BigSequencerController::addParameters()
 	cursor4NoteIntervalParameter->appendString(STR16("1/2"));
 	cursor4NoteIntervalParameter->appendString(STR16("1/1"));
 	cursor4NoteIntervalParameter->appendString(STR16("2/1"));
-	cursor4NoteIntervalParameter->setNormalized(0.8f);
+	cursor4NoteIntervalParameter->setNormalized(normalizedInterval(defaultCursors[3].interval));
 	parameters.addParameter(cursor4NoteIntervalParameter);
 
 	parameters.addParameter(STR16("Cursor 4 Velocity"), nullptr, 0, defaultCursors[3].velocity, Vst::ParameterInfo::kCanAutomate, kParamCursor4VelocityId);
