@@ -53,8 +53,9 @@ public:
 
 //------------------------------------------------------------------------
 protected:
-	vargason::bigsequencer::Sequencer sequencer;
-	vargason::bigsequencer::RandomNoteDataGenerator randomNoteGenerator;
+	Sequencer sequencer;
+	ValueNoiseNoteDataGenerator valueNoiseGenerator;
+	PerlinNoiseNoteDataGenerator perlinNoiseGenerator;
 	
 	std::mt19937 rnd;
 	std::uniform_real_distribution<double> dis;
@@ -64,10 +65,15 @@ protected:
 
 	bool retrigger = true;  // whether the sequencer starts from 0 when playback is restarted
 
+
 	uint8_t minNote = NoteDataGenerator::defaultMinNote;
 	uint8_t maxNote = NoteDataGenerator::defaultMaxNote;
 	Pitch rootNote = NoteDataGenerator::defaultPitch;
 	Scale scale = NoteDataGenerator::defaultScale;
+	const uint8_t noteLowerBound = 24;
+	const uint8_t noteUpperBound = 96;
+
+	NoteDataGeneratorType currentNoiseType = NoteDataGeneratorType::valueNoise;
 
 	void sendMidiNoteOn(Steinberg::Vst::IEventList* eventList, uint8_t pitch, float velocity);
 	void sendMidiNoteOff(Steinberg::Vst::IEventList* eventList, uint8_t pitch);

@@ -42,7 +42,8 @@ namespace vargason::bigsequencer {
 		kParamMinNoteId,
 		kParamMaxNoteId,
 		kParamFillChanceId,
+		kParamNoiseTypeId,
 
-		kParamCursorTab
+		kParamCursorTabId
 	};
 }
