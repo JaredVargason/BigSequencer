@@ -27,8 +27,15 @@ namespace vargason::bigsequencer {
 		phrygian,
 		lydian,
 		mixolydian,
-		aeolian,
-		locrian
+		minor,
+		locrian,
+		blues,
+		augmented,
+		prometheseus,
+		hirajoshi,
+		enigmatic,
+		gypsy,
+		superLocrian
 	};
 
 	enum Interval {

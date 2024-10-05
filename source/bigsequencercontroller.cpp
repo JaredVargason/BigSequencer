@@ -199,8 +199,15 @@ void BigSequencerController::addParameters()
 	scaleParameter->appendString(STR16("Phrygian"));
 	scaleParameter->appendString(STR16("Lydian"));
 	scaleParameter->appendString(STR16("Mixolydian"));
-	scaleParameter->appendString(STR16("Aeolian"));
+	scaleParameter->appendString(STR16("Minor"));
 	scaleParameter->appendString(STR16("Locrian"));
+	scaleParameter->appendString(STR16("Blues"));
+	scaleParameter->appendString(STR16("Augmented"));
+	scaleParameter->appendString(STR16("Prometheus"));
+	scaleParameter->appendString(STR16("Hirajoshi"));
+	scaleParameter->appendString(STR16("Enigmatic"));
+	scaleParameter->appendString(STR16("Gypsy"));
+	scaleParameter->appendString(STR16("Super Locrian"));
 	parameters.addParameter(scaleParameter);
 
 	Vst::RangeParameter* minNoteParameter = new Vst::RangeParameter(STR16("Min Note"), kParamMinNoteId, nullptr, NoteDataGenerator::noteLowerBound, NoteDataGenerator::noteUpperBound, NoteDataGenerator::defaultMinNote, NoteDataGenerator::noteUpperBound - NoteDataGenerator::noteLowerBound, 0);
