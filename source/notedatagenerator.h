@@ -49,14 +49,16 @@ namespace vargason::bigsequencer {
 
 		float fillChance;
 		std::mt19937 rnd;
+		bool useRandomSeed;
 
 		ValueNoiseNoteDataGenerator(float fillChance = .5f): rnd(std::random_device()()) {
 			this->fillChance = fillChance;
+			this->useRandomSeed = true;
 		}
 
 		NoteData* generateNoteData(int width, int height, std::vector<int> &availableNotes) {
 			NoteData* noteDatas = new NoteData[width * height];
-			int numAvailableNotes = availableNotes.size();
+			int numAvailableNotes = (int)availableNotes.size();
 			std::uniform_real_distribution<> uniform_real(0.0, 1.0);
 			for (int y = 0; y < height; y++) {
 				for (int x = 0; x < width; x++) {
@@ -86,10 +88,12 @@ namespace vargason::bigsequencer {
 
 		NoteData* generateNoteData(int width, int height, std::vector<int>& availableNotes) {
 			NoteData* noteDatas = new NoteData[width * height];
-			int numAvailableNotes = availableNotes.size();
+			int numAvailableNotes = (int)availableNotes.size();
 			std::uniform_real_distribution<> uniform_real(0.0, 1.0);
-			for (int y = 0; y < height; y++) {
-				for (int x = 0; x < width; x++) {
+			for (int y = yOffset; y < yOffset + height; y++) {
+				for (int x = xOffset; x < xOffset + width; x++) {
+					y *= scale;
+					x *= scale;
 					NoteData* noteData = &noteDatas[y * width + x];
 					noteData->active = uniform_real(rnd) <= fillChance;
 					float val = perlin(x, y);
@@ -114,8 +118,8 @@ namespace vargason::bigsequencer {
 			const unsigned w = 8 * sizeof(unsigned);
 			const unsigned s = w / 2;
 			unsigned a = ix, b = iy;
-			a *= 3284157443; b ^= a << s | a >> w - s;
-			b *= 1911520717; a ^= b << s | b >> w - s;
+			a *= 3284157443; b ^= a << s | a >> (w - s);
+			b *= 1911520717; a ^= b << s | b >> (w - s);
 			a *= 2048419325;
 			float random = a * (3.14159265 / ~(~0u >> 1));
 			vector2 v;

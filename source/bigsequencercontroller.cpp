@@ -222,7 +222,6 @@ void BigSequencerController::addParameters()
 	noiseTypeParameter->appendString(STR16("Value Noise"));
 	noiseTypeParameter->appendString(STR16("Perlin Noise"));
 	parameters.addParameter(noiseTypeParameter);
-	parameters.addParameter(STR16("Generate"), nullptr, 0, 0, 0, kParamGenerateId);
 	parameters.addParameter(STR16("Cursor Tab"), nullptr, 0, 0, 0, kParamCursorTabId);
 }
 
