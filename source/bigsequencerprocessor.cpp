@@ -296,14 +296,14 @@ namespace vargason::bigsequencer {
 						// "fake" parameters
 					case SequencerParams::kParamScaleId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							scale = (Scale)(10 * value);
+							scale = (Scale)((totalScales - 1) * value);
 							regenerateGridNotes();
 							sendSequencerUpdate();
 						}
 						break;
 					case SequencerParams::kParamRootNoteId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							rootNote = (Pitch)(Pitch::b * value);
+							rootNote = (Pitch)((totalPitches - 1) * value);
 							regenerateGridNotes();
 							sendSequencerUpdate();
 						}

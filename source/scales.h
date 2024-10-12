@@ -16,6 +16,7 @@ namespace vargason::bigsequencer {
 		aSharp,
 		b
 	};
+	const int totalPitches = 12;
 
 	enum Scale {
 		chromatic,
@@ -37,6 +38,7 @@ namespace vargason::bigsequencer {
 		gypsy,
 		superLocrian
 	};
+	const int totalScales = 18;
 
 	enum Interval {
 		thirtySecondNote = 0,
