@@ -575,7 +575,7 @@ namespace vargason::bigsequencer {
 		if (attr) {
 			std::vector<char> sequencerData;
 			getSequencerData(sequencerData);
-			attr->setBinary("sequencer", &sequencerData[0], sequencerData.size());
+			attr->setBinary("sequencer", &sequencerData[0], (int)sequencerData.size());
 		}
 		sendMessage(message);
 	}

@@ -12,7 +12,7 @@ namespace vargason::bigsequencer {
 		static const Scale defaultScale = Scale::chromatic;
 		static const Pitch defaultPitch = Pitch::c;
 		static const uint8_t noteLowerBound = 24;
-		static const uint8_t noteUpperBound = 96;
+		static const uint8_t noteUpperBound = 95;
 		static const uint8_t defaultMinNote = 60;
 		static const uint8_t defaultMaxNote = 71;
 		static constexpr float defaultFillChance = 0.5f;
@@ -50,7 +50,7 @@ namespace vargason::bigsequencer {
 
 		NoteData* generateNoteData(int width, int height, std::vector<int> &availableNotes) {
 			NoteData* noteDatas = new NoteData[width * height];
-			int numAvailableNotes = availableNotes.size();
+			int numAvailableNotes = (int)availableNotes.size();
 			std::uniform_real_distribution<> uniform_real(0.0, 1.0);
 			for (int y = 0; y < height; y++) {
 				for (int x = 0; x < width; x++) {

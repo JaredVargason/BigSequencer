@@ -3,6 +3,15 @@
 namespace vargason::bigsequencer {
 	SequencerView::SequencerView(const VSTGUI::CRect& size, Sequencer& sequencer) : VSTGUI::COpenGLView(size) {
 		this->sequencer = &sequencer;
+		const float lightnessModifier = 0.2f;
+		const float baseNoteLightnessModifier = 0.10f;
+		for (int i = 0; i < 71; i++) {
+			Color baseNoteColor = noteColors[i % 12];
+			HSLColor color = rgbToHsl(baseNoteColor);
+			float adjustedLightnessModifier = baseNoteLightnessModifier + (i / 12) * lightnessModifier;
+			color.l = adjustedLightnessModifier;
+			allColors[i] = hslToRgb(color);
+		}
 	}
 
 	void SequencerView::drawOpenGL(const VSTGUI::CRect& updateRect) {
@@ -33,7 +42,7 @@ namespace vargason::bigsequencer {
 				float xPos = x * sqrWidth;
 				float yPos = viewSize.getHeight() - y * sqrWidth;
 				NoteData& noteData = sequencer->getNote(x, y);
-				const Color color = noteData.active ? noteColors[noteData.pitch % 12] : inactiveNoteColor;
+				const Color color = noteData.active ? allColors[noteData.pitch - 24] : inactiveNoteColor;
 
 				glColor3ub(color.r, color.g, color.b);
 				glVertex2f(xPos, yPos);  // top left
