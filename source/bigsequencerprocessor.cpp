@@ -424,11 +424,11 @@ namespace vargason::bigsequencer {
 				char pitch = 0;
 
 				if (!streamer.readBool(active)) {
-					failure = false;
+					failure = true;
 					break;
 				}
 				if (!streamer.readInt8(pitch)) {
-					 failure = false;
+					 failure = true;
 					 break;
 				}
 
@@ -450,26 +450,38 @@ namespace vargason::bigsequencer {
 		for (int i = 0; i < sequencer.maxNumCursors; i++) {
 			Cursor cursor;
 			if (!streamer.readBool(cursor.active)) {
-				failure = false;
+				failure = true;
 				break;
 			}
 
 			Steinberg::uint8 interval;
 			if (!streamer.readInt8u(interval)) {
-				failure = false;
+				failure = true;
 				break;
 			}
 			cursor.interval = (Interval)interval;
 
 			Steinberg::int8 pitchOffset;
 			if (!streamer.readInt8(pitchOffset)) {
-				failure = false;
+				failure = true;
 				break;
 			}
 			cursor.pitchOffset = pitchOffset;
 
+			float noteLength;
+			if (!streamer.readFloat(noteLength)) {
+				failure = true;
+				break;
+			}
+			cursor.setNoteLength(noteLength);
+
 			if (!streamer.readFloat(cursor.velocity)) {
-				failure = false;
+				failure = true;
+				break;
+			}
+
+			if (!streamer.readFloat(cursor.probability)) {
+				failure = true;
 				break;
 			}
 		}
@@ -485,7 +497,9 @@ namespace vargason::bigsequencer {
 			cursor.active = cursors[i].active;
 			cursor.interval = cursors[i].interval;
 			cursor.pitchOffset = cursors[i].pitchOffset;
+			cursor.setNoteLength(cursors[i].getNoteLength());
 			cursor.velocity = cursors[i].velocity;
+			cursor.probability = cursors[i].probability;
 		}
 		sequencer.setNotes(width, height, noteDatas);
 
@@ -518,7 +532,9 @@ namespace vargason::bigsequencer {
 			streamer.writeBool(cursor.active);
 			streamer.writeInt8u(cursor.interval);
 			streamer.writeInt8(cursor.pitchOffset);
+			streamer.writeFloat(cursor.getNoteLength());
 			streamer.writeFloat(cursor.velocity);
+			streamer.writeFloat(cursor.probability);
 		}
 
 		// Write random generator
