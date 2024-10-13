@@ -56,8 +56,9 @@ protected:
 	vargason::bigsequencer::Sequencer sequencer;
 	vargason::bigsequencer::RandomNoteDataGenerator randomNoteGenerator;
 	
-	std::mt19937 rnd;
-	std::uniform_real_distribution<double> dis;
+	std::random_device randomDevice;
+	std::mt19937 cursorProbabilityRnd;
+	std::uniform_real_distribution<double> cursorProbabilityDis;
 
 	bool wasPreviouslyPlaying = false;  // whether the host was playing in the last frame
 	float lastProjectMusicTime = 0;  // music time of the last frame
@@ -68,11 +69,13 @@ protected:
 	uint8_t maxNote = NoteDataGenerator::defaultMaxNote;
 	Pitch rootNote = NoteDataGenerator::defaultPitch;
 	Scale scale = NoteDataGenerator::defaultScale;
+	bool useRandomSeed = true;
 
 	void sendMidiNoteOn(Steinberg::Vst::IEventList* eventList, uint8_t pitch, float velocity);
 	void sendMidiNoteOff(Steinberg::Vst::IEventList* eventList, uint8_t pitch);
 
 private:
+	void updateSeed(Steinberg::Vst::ProcessData& processData);
 	void regenerateGridNotes();
 	void handleParameterChanges(Steinberg::Vst::ProcessData& data);
 	void updateSequencer(Steinberg::Vst::ProcessData& data);

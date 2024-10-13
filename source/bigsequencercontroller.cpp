@@ -28,6 +28,12 @@ tresult PLUGIN_API BigSequencerController::initialize (FUnknown* context)
 	}
 
 	addParameters();
+
+	// Generate default grid
+	RandomNoteDataGenerator randomNoteGenerator;
+	NoteData* noteData = randomNoteGenerator.generate(Sequencer::defaultWidth, Sequencer::defaultHeight, NoteDataGenerator::defaultPitch, NoteDataGenerator::defaultScale, NoteDataGenerator::defaultMinNote, NoteDataGenerator::defaultMaxNote);
+	sequencer.setNotes(Sequencer::defaultWidth, Sequencer::defaultHeight, noteData);
+
 	return result;
 }
 
@@ -217,6 +223,9 @@ void BigSequencerController::addParameters()
 	parameters.addParameter(maxNoteParameter);
 
 	parameters.addParameter(STR16("Fill Chance"), nullptr, 0, NoteDataGenerator::defaultFillChance, 0, kParamFillChanceId);
+	Vst::RangeParameter* seedParameter = new Vst::RangeParameter(STR16("Seed"), kParamSeedId, nullptr, 0, INT32_MAX, 0, INT32_MAX - 1, 0);
+	parameters.addParameter(seedParameter);
+	parameters.addParameter(STR16("Use Random Seed"), nullptr, 1, true, 0, kParamUseRandomSeedId);
 
 	parameters.addParameter(STR16("Cursor Tab"), nullptr, 0, 0, 0, kParamCursorTab);
 }
@@ -224,6 +233,7 @@ void BigSequencerController::addParameters()
 void PLUGIN_API BigSequencerController::editorAttached(Steinberg::Vst::EditorView* view) {
 	Steinberg::Vst::EditControllerEx1::editorAttached(view);
 	viewAvailable = true;
+	this->editor->setSequencerViewInvalid();
 }
 
 void PLUGIN_API BigSequencerController::editorRemoved(Steinberg::Vst::EditorView* view) {

@@ -10,7 +10,7 @@ namespace vargason::bigsequencer {
 	const std::vector<int> phrygianIntegers = { 0, 1, 3, 5, 7, 8, 10 };
 	const std::vector<int> lydianIntegers = { 0, 2, 4, 6, 7, 9, 11 };
 	const std::vector<int> mixolydianIntegers = { 0, 2, 4, 5, 7, 9, 10 };
-	const std::vector<int> minorIntegers = { 0, 2, 3, 5, 7, 8, 10 };  // natural minor scale
+	const std::vector<int> minorIntegers = { 0, 2, 3, 5, 7, 8, 10 };
 	const std::vector<int> locrianIntegers = { 0, 1, 3, 5, 6, 8, 10 };
 	const std::vector<int> bluesIntegers = { 0, 3, 5, 6, 7, 10 };
 	const std::vector<int> augmentedIntegers = { 0, 3, 4, 7, 8, 11 };
