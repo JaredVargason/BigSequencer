@@ -57,7 +57,8 @@ protected:
 	vargason::bigsequencer::RandomNoteDataGenerator randomNoteGenerator;
 	
 	std::random_device randomDevice;
-	std::mt19937 cursorProbabilityRnd;
+	std::mt19937 rnd;
+	std::uniform_int_distribution<> seedUniformDistribution;
 	std::uniform_real_distribution<double> cursorProbabilityDis;
 
 	bool wasPreviouslyPlaying = false;  // whether the host was playing in the last frame

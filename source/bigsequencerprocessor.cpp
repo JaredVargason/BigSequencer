@@ -18,7 +18,7 @@ namespace vargason::bigsequencer {
 	//------------------------------------------------------------------------
 	// BigSequencerProcessor
 	//------------------------------------------------------------------------
-	BigSequencerProcessor::BigSequencerProcessor(): randomDevice(std::random_device()), cursorProbabilityRnd(randomDevice()), cursorProbabilityDis(0.0, 1.0), sequencer()
+	BigSequencerProcessor::BigSequencerProcessor(): randomDevice(std::random_device()), rnd(randomDevice()), cursorProbabilityDis(0.0, 1.0), seedUniformDistribution(0, INT32_MAX), sequencer()
 	{
 		//--- set the wanted controller for our processor
 		setControllerClass(kBigSequencerControllerUID);
@@ -88,7 +88,7 @@ namespace vargason::bigsequencer {
 					cursor.position = retrigger ? 0 : cursor.position;
 
 					sendCursorUpdate(i, cursor);
-					if (cursor.active && cursorProbabilityDis(cursorProbabilityRnd) < cursor.probability) {
+					if (cursor.active && cursorProbabilityDis(rnd) < cursor.probability) {
 						NoteData noteData = sequencer.getNote(cursor.position);
 						if (noteData.active) {
 							cursor.notePlaying = true;
@@ -375,7 +375,7 @@ namespace vargason::bigsequencer {
 		if (quarterNotes >= cursor.lastNoteTime + numericInterval) {
 			if (cursor.active) {
 				NoteData noteData = sequencer.getNote(cursor.position);
-				if (noteData.active && cursorProbabilityDis(cursorProbabilityRnd) < cursor.probability) {
+				if (noteData.active && cursorProbabilityDis(rnd) < cursor.probability) {
 					uint8_t realPitch = noteData.pitch + cursor.pitchOffset;
 					sendMidiNoteOn(data.outputEvents, realPitch, cursor.velocity);
 					cursor.notePlaying = true;
@@ -600,7 +600,7 @@ namespace vargason::bigsequencer {
 
 	void BigSequencerProcessor::updateSeed(Vst::ProcessData& data) {
 		if (useRandomSeed) {
-			int seed = randomDevice();
+			int seed = seedUniformDistribution(rnd);
 			randomNoteGenerator.seed = seed;
 			Steinberg::Vst::IParameterChanges* outputParamChanges = data.outputParameterChanges;
 			int numPoints;
