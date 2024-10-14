@@ -512,6 +512,36 @@ namespace vargason::bigsequencer {
 			return kResultFalse;
 		}
 
+		uint32_t seed;
+		uint8_t scale;
+		uint8_t rootNote;
+		uint8_t minNote;
+		uint8_t maxNote;
+		float fillChance;
+
+		if (!streamer.readInt32u(seed)) {
+			return kResultFalse;
+		}
+
+		if (!streamer.readInt8u(scale)) {
+			return kResultFalse;
+		}
+
+		if (!streamer.readInt8u(rootNote)) {
+			return kResultFalse;
+		}
+
+		if (!streamer.readInt8u(minNote)) {
+			return kResultFalse;
+		}
+
+		if (!streamer.readInt8u(maxNote)) {
+			return kResultFalse;
+		}
+
+		if (!streamer.readFloat(fillChance)) {
+			return kResultFalse;
+		}
 
 		// copy over all data on read success
 		for (int i = 0; i < sequencer.maxNumCursors; i++) {
@@ -524,6 +554,13 @@ namespace vargason::bigsequencer {
 			cursor.probability = cursors[i].probability;
 		}
 		sequencer.setNotes(width, height, noteDatas);
+
+		randomNoteGenerator.seed = seed;
+		this->scale = (Scale)scale;
+		this->rootNote = (Pitch)rootNote;
+		this->minNote = minNote;
+		this->maxNote = maxNote;
+		randomNoteGenerator.fillChance = fillChance;
 
 		return kResultOk;
 	}
@@ -560,6 +597,7 @@ namespace vargason::bigsequencer {
 		}
 
 		// Write random generator
+		streamer.writeInt32u(randomNoteGenerator.seed);
 		streamer.writeInt8u(scale);
 		streamer.writeInt8u(rootNote);
 		streamer.writeInt8u(minNote);

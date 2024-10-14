@@ -43,11 +43,9 @@ namespace vargason::bigsequencer {
 
 		float fillChance;
 		int seed;
-		bool useRandomSeed;
 
 		RandomNoteDataGenerator(float fillChance = .5f) {
 			seed = 0;
-			useRandomSeed = true;
 			this->fillChance = fillChance;
 		}
 
