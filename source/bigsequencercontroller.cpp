@@ -4,6 +4,7 @@
 
 #include "bigsequencercontroller.h"
 #include "bigsequencercids.h"
+#include "base/source/fstreamer.h"
 #include "vstgui/plugin-bindings/vst3editor.h"
 #include "plugids.h"
 #include "scales.h"
@@ -28,6 +29,12 @@ tresult PLUGIN_API BigSequencerController::initialize (FUnknown* context)
 	}
 
 	addParameters();
+
+	// Generate default grid
+	RandomNoteDataGenerator randomNoteGenerator;
+	NoteData* noteData = randomNoteGenerator.generate(Sequencer::defaultWidth, Sequencer::defaultHeight, NoteDataGenerator::defaultPitch, NoteDataGenerator::defaultScale, NoteDataGenerator::defaultMinNote, NoteDataGenerator::defaultMaxNote);
+	sequencer.setNotes(Sequencer::defaultWidth, Sequencer::defaultHeight, noteData);
+
 	return result;
 }
 
@@ -45,6 +52,176 @@ tresult PLUGIN_API BigSequencerController::setComponentState (IBStream* state)
 	// Here you get the state of the component (Processor part)
 	if (!state)
 		return kResultFalse;
+
+	return kResultOk;
+
+	IBStreamer streamer(state, kLittleEndian);
+
+	// Read sequencer deets
+	uint8_t width = 0;
+	if (!streamer.readInt8u(width)) {
+		return kResultFalse;
+	}
+	uint8_t height = 0;
+	if (!streamer.readInt8u(height)) {
+		return kResultFalse;
+	}
+
+	NoteData* noteDatas = new NoteData[width * height];
+	bool failure = false;
+	for (int y = 0; y < height; y++) {
+		for (int x = 0; x < width; x++) {
+
+			bool active = false;
+			char pitch = 0;
+
+			if (!streamer.readBool(active)) {
+				failure = true;
+				break;
+			}
+			if (!streamer.readInt8(pitch)) {
+				failure = true;
+				break;
+			}
+
+			noteDatas[y * width + x].active = active;
+			noteDatas[y * width + x].pitch = pitch;
+		}
+		if (failure) {
+			break;
+		}
+	}
+
+	if (failure) {
+		delete[] noteDatas;
+		return kResultFalse;
+	}
+
+	// Write cursors
+	Cursor cursors[sequencer.maxNumCursors];
+	for (int i = 0; i < sequencer.maxNumCursors; i++) {
+		Cursor cursor;
+		if (!streamer.readBool(cursor.active)) {
+			failure = true;
+			break;
+		}
+
+		Steinberg::uint8 interval;
+		if (!streamer.readInt8u(interval)) {
+			failure = true;
+			break;
+		}
+		cursor.interval = (Interval)interval;
+
+		Steinberg::int8 pitchOffset;
+		if (!streamer.readInt8(pitchOffset)) {
+			failure = true;
+			break;
+		}
+		cursor.pitchOffset = pitchOffset;
+
+		float noteLength;
+		if (!streamer.readFloat(noteLength)) {
+			failure = true;
+			break;
+		}
+		cursor.setNoteLength(noteLength);
+
+		if (!streamer.readFloat(cursor.velocity)) {
+			failure = true;
+			break;
+		}
+
+		if (!streamer.readFloat(cursor.probability)) {
+			failure = true;
+			break;
+		}
+	}
+
+	if (failure) {
+		return kResultFalse;
+	}
+
+	uint32_t seed;
+	uint8_t scale;
+	uint8_t rootNote;
+	uint8_t minNote;
+	uint8_t maxNote;
+	float fillChance;
+
+	if (!streamer.readInt32u(seed)) {
+		return kResultFalse;
+	}
+
+	if (!streamer.readInt8u(scale)) {
+		return kResultFalse;
+	}
+
+	if (!streamer.readInt8u(rootNote)) {
+		return kResultFalse;
+	}
+
+	if (!streamer.readInt8u(minNote)) {
+		return kResultFalse;
+	}
+
+	if (!streamer.readInt8u(maxNote)) {
+		return kResultFalse;
+	}
+
+	if (!streamer.readFloat(fillChance)) {
+		return kResultFalse;
+	}
+
+	// copy over all data on read success
+	for (int i = 0; i < sequencer.maxNumCursors; i++) {
+		Cursor& cursor = sequencer.getCursor(i);
+		cursor.active = cursors[i].active;
+		cursor.interval = cursors[i].interval;
+		cursor.pitchOffset = cursors[i].pitchOffset;
+		cursor.setNoteLength(cursors[i].getNoteLength());
+		cursor.velocity = cursors[i].velocity;
+		cursor.probability = cursors[i].probability;
+	}
+	sequencer.setNotes(width, height, noteDatas);
+
+	setParamNormalized(kParamSequencerWidthId, (float)width / Sequencer::maxWidth);
+	setParamNormalized(kParamSequencerHeightId, (float)height / Sequencer::maxHeight);
+
+	setParamNormalized(kParamCursor1ActiveId, cursors[0].active);
+	setParamNormalized(kParamCursor1NoteIntervalId, (Interval)((float)cursors[0].interval / (totalIntervals - 1)));
+	setParamNormalized(kParamCursor1PitchOffsetId, (Pitch)((float)cursors[0].pitchOffset / (totalPitches - 1)));
+	setParamNormalized(kParamCursor1NoteLengthId, cursors[0].getNoteLength());
+	setParamNormalized(kParamCursor1VelocityId, cursors[0].velocity);
+	setParamNormalized(kParamCursor1ProbabilityId, cursors[0].probability);
+
+	setParamNormalized(kParamCursor2ActiveId, cursors[1].active);
+	setParamNormalized(kParamCursor2NoteIntervalId, (Interval)((float)cursors[1].interval / (totalIntervals - 1)));
+	setParamNormalized(kParamCursor2PitchOffsetId, (Pitch)((float)cursors[1].pitchOffset / (totalPitches - 1)));
+	setParamNormalized(kParamCursor2NoteLengthId, cursors[1].getNoteLength());
+	setParamNormalized(kParamCursor2VelocityId, cursors[1].velocity);
+	setParamNormalized(kParamCursor2ProbabilityId, cursors[1].probability);
+
+	setParamNormalized(kParamCursor3ActiveId, cursors[2].active);
+	setParamNormalized(kParamCursor3NoteIntervalId, (Interval)((float)cursors[2].interval / (totalIntervals - 1)));
+	setParamNormalized(kParamCursor3PitchOffsetId, (Pitch)((float)cursors[2].pitchOffset / (totalPitches - 1)));
+	setParamNormalized(kParamCursor3NoteLengthId, cursors[2].getNoteLength());
+	setParamNormalized(kParamCursor3VelocityId, cursors[2].velocity);
+	setParamNormalized(kParamCursor3ProbabilityId, cursors[2].probability);
+
+	setParamNormalized(kParamCursor4ActiveId, cursors[3].active);
+	setParamNormalized(kParamCursor4NoteIntervalId, (Interval)((float)cursors[3].interval / (totalIntervals - 1)));
+	setParamNormalized(kParamCursor4PitchOffsetId, (Pitch)((float)cursors[3].pitchOffset / (totalPitches - 1)));
+	setParamNormalized(kParamCursor4NoteLengthId, cursors[3].getNoteLength());
+	setParamNormalized(kParamCursor4VelocityId, cursors[3].velocity);
+	setParamNormalized(kParamCursor4ProbabilityId, cursors[3].probability);
+
+	setParamNormalized(kParamSeedId, (float)seed / INT32_MAX);
+	setParamNormalized(kParamScaleId, scale / (float)(totalScales - 1));
+	setParamNormalized(kParamRootNoteId, rootNote / (float)(totalPitches - 1));
+	setParamNormalized(kParamMinNoteId, minNote / (float)(NoteDataGenerator::noteUpperBound - NoteDataGenerator::noteLowerBound));
+	setParamNormalized(kParamMaxNoteId, maxNote / (float)(NoteDataGenerator::noteUpperBound - NoteDataGenerator::noteLowerBound));
+	setParamNormalized(kParamFillChanceId, fillChance);
 
 	return kResultOk;
 }
@@ -217,6 +394,9 @@ void BigSequencerController::addParameters()
 	parameters.addParameter(maxNoteParameter);
 
 	parameters.addParameter(STR16("Fill Chance"), nullptr, 0, NoteDataGenerator::defaultFillChance, 0, kParamFillChanceId);
+	Vst::RangeParameter* seedParameter = new Vst::RangeParameter(STR16("Seed"), kParamSeedId, nullptr, 0, INT32_MAX, 0, INT32_MAX - 1, 0);
+	parameters.addParameter(seedParameter);
+	parameters.addParameter(STR16("Use Random Seed"), nullptr, 1, true, 0, kParamUseRandomSeedId);
 
 	parameters.addParameter(STR16("Cursor Tab"), nullptr, 0, 0, 0, kParamCursorTab);
 }
@@ -224,6 +404,7 @@ void BigSequencerController::addParameters()
 void PLUGIN_API BigSequencerController::editorAttached(Steinberg::Vst::EditorView* view) {
 	Steinberg::Vst::EditControllerEx1::editorAttached(view);
 	viewAvailable = true;
+	this->editor->setSequencerViewInvalid();
 }
 
 void PLUGIN_API BigSequencerController::editorRemoved(Steinberg::Vst::EditorView* view) {

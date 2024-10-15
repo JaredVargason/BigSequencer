@@ -18,7 +18,7 @@ namespace vargason::bigsequencer {
 	//------------------------------------------------------------------------
 	// BigSequencerProcessor
 	//------------------------------------------------------------------------
-	BigSequencerProcessor::BigSequencerProcessor(): rnd(std::random_device()()), dis(0.0, 1.0), sequencer()
+	BigSequencerProcessor::BigSequencerProcessor(): randomDevice(std::random_device()), rnd(randomDevice()), cursorProbabilityDis(0.0, 1.0), seedUniformDistribution(0, INT32_MAX), sequencer()
 	{
 		//--- set the wanted controller for our processor
 		setControllerClass(kBigSequencerControllerUID);
@@ -41,6 +41,9 @@ namespace vargason::bigsequencer {
 			return result;
 		}
 		addEventOutput(STR16("Event Out"), 1);
+
+		regenerateGridNotes();
+
 		return kResultOk;
 	}
 
@@ -85,7 +88,7 @@ namespace vargason::bigsequencer {
 					cursor.position = retrigger ? 0 : cursor.position;
 
 					sendCursorUpdate(i, cursor);
-					if (cursor.active && dis(rnd) < cursor.probability) {
+					if (cursor.active && cursorProbabilityDis(rnd) < cursor.probability) {
 						NoteData noteData = sequencer.getNote(cursor.position);
 						if (noteData.active) {
 							cursor.notePlaying = true;
@@ -135,6 +138,7 @@ namespace vargason::bigsequencer {
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							int width = 1 + value * sequencer.maxWidth;
 							sequencer.setSize(width, sequencer.getHeight());  // cursor could be out of bounds if we do this wrong
+							updateSeed(data);
 							regenerateGridNotes();
 							sendSequencerUpdate();
 						}
@@ -143,6 +147,7 @@ namespace vargason::bigsequencer {
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							int height = 1 + value * sequencer.maxHeight;
 							sequencer.setSize(sequencer.getWidth(), height);
+							updateSeed(data);
 							regenerateGridNotes();
 							sendSequencerUpdate();
 						}
@@ -297,6 +302,7 @@ namespace vargason::bigsequencer {
 					case SequencerParams::kParamScaleId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							scale = (Scale)((totalScales - 1) * value);
+							updateSeed(data);
 							regenerateGridNotes();
 							sendSequencerUpdate();
 						}
@@ -304,6 +310,7 @@ namespace vargason::bigsequencer {
 					case SequencerParams::kParamRootNoteId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							rootNote = (Pitch)((totalPitches - 1) * value);
+							updateSeed(data);
 							regenerateGridNotes();
 							sendSequencerUpdate();
 						}
@@ -311,6 +318,7 @@ namespace vargason::bigsequencer {
 					case SequencerParams::kParamMinNoteId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							minNote = NoteDataGenerator::noteLowerBound + (NoteDataGenerator::noteUpperBound - NoteDataGenerator::noteLowerBound) * value;
+							updateSeed(data);
 							regenerateGridNotes();
 							sendSequencerUpdate();
 						}
@@ -318,6 +326,7 @@ namespace vargason::bigsequencer {
 					case SequencerParams::kParamMaxNoteId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							maxNote = NoteDataGenerator::noteLowerBound + (NoteDataGenerator::noteUpperBound - NoteDataGenerator::noteLowerBound) * value;
+							updateSeed(data);
 							regenerateGridNotes();
 							sendSequencerUpdate();
 						}
@@ -325,8 +334,21 @@ namespace vargason::bigsequencer {
 					case SequencerParams::kParamFillChanceId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							randomNoteGenerator.fillChance = value;
+							updateSeed(data);
 							regenerateGridNotes();
 							sendSequencerUpdate();
+						}
+						break;
+					case SequencerParams::kParamSeedId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							randomNoteGenerator.seed = value * (INT32_MAX);
+							regenerateGridNotes();
+							sendSequencerUpdate();
+						}
+						break;
+					case SequencerParams::kParamUseRandomSeedId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							useRandomSeed = value;
 						}
 						break;
 					}
@@ -353,7 +375,7 @@ namespace vargason::bigsequencer {
 		if (quarterNotes >= cursor.lastNoteTime + numericInterval) {
 			if (cursor.active) {
 				NoteData noteData = sequencer.getNote(cursor.position);
-				if (noteData.active && dis(rnd) < cursor.probability) {
+				if (noteData.active && cursorProbabilityDis(rnd) < cursor.probability) {
 					uint8_t realPitch = noteData.pitch + cursor.pitchOffset;
 					sendMidiNoteOn(data.outputEvents, realPitch, cursor.velocity);
 					cursor.notePlaying = true;
@@ -402,6 +424,9 @@ namespace vargason::bigsequencer {
 		if (!state) {
 			return kResultFalse;
 		}
+
+		return kResultOk;
+
 		// called when we load a preset, the model has to be reloaded
 		IBStreamer streamer (state, kLittleEndian);
 
@@ -424,11 +449,11 @@ namespace vargason::bigsequencer {
 				char pitch = 0;
 
 				if (!streamer.readBool(active)) {
-					failure = false;
+					failure = true;
 					break;
 				}
 				if (!streamer.readInt8(pitch)) {
-					 failure = false;
+					 failure = true;
 					 break;
 				}
 
@@ -446,30 +471,42 @@ namespace vargason::bigsequencer {
 		}
 
 		// Write cursors
-		std::vector<Cursor> cursors;
+		Cursor cursors[4];
 		for (int i = 0; i < sequencer.maxNumCursors; i++) {
 			Cursor cursor;
 			if (!streamer.readBool(cursor.active)) {
-				failure = false;
+				failure = true;
 				break;
 			}
 
 			Steinberg::uint8 interval;
 			if (!streamer.readInt8u(interval)) {
-				failure = false;
+				failure = true;
 				break;
 			}
 			cursor.interval = (Interval)interval;
 
 			Steinberg::int8 pitchOffset;
 			if (!streamer.readInt8(pitchOffset)) {
-				failure = false;
+				failure = true;
 				break;
 			}
 			cursor.pitchOffset = pitchOffset;
 
+			float noteLength;
+			if (!streamer.readFloat(noteLength)) {
+				failure = true;
+				break;
+			}
+			cursor.setNoteLength(noteLength);
+
 			if (!streamer.readFloat(cursor.velocity)) {
-				failure = false;
+				failure = true;
+				break;
+			}
+
+			if (!streamer.readFloat(cursor.probability)) {
+				failure = true;
 				break;
 			}
 		}
@@ -478,6 +515,36 @@ namespace vargason::bigsequencer {
 			return kResultFalse;
 		}
 
+		uint32_t seed;
+		uint8_t scale;
+		uint8_t rootNote;
+		uint8_t minNote;
+		uint8_t maxNote;
+		float fillChance;
+
+		if (!streamer.readInt32u(seed)) {
+			return kResultFalse;
+		}
+
+		if (!streamer.readInt8u(scale)) {
+			return kResultFalse;
+		}
+
+		if (!streamer.readInt8u(rootNote)) {
+			return kResultFalse;
+		}
+
+		if (!streamer.readInt8u(minNote)) {
+			return kResultFalse;
+		}
+
+		if (!streamer.readInt8u(maxNote)) {
+			return kResultFalse;
+		}
+
+		if (!streamer.readFloat(fillChance)) {
+			return kResultFalse;
+		}
 
 		// copy over all data on read success
 		for (int i = 0; i < sequencer.maxNumCursors; i++) {
@@ -485,9 +552,18 @@ namespace vargason::bigsequencer {
 			cursor.active = cursors[i].active;
 			cursor.interval = cursors[i].interval;
 			cursor.pitchOffset = cursors[i].pitchOffset;
+			cursor.setNoteLength(cursors[i].getNoteLength());
 			cursor.velocity = cursors[i].velocity;
+			cursor.probability = cursors[i].probability;
 		}
 		sequencer.setNotes(width, height, noteDatas);
+
+		randomNoteGenerator.seed = seed;
+		this->scale = (Scale)scale;
+		this->rootNote = (Pitch)rootNote;
+		this->minNote = minNote;
+		this->maxNote = maxNote;
+		randomNoteGenerator.fillChance = fillChance;
 
 		return kResultOk;
 	}
@@ -518,10 +594,13 @@ namespace vargason::bigsequencer {
 			streamer.writeBool(cursor.active);
 			streamer.writeInt8u(cursor.interval);
 			streamer.writeInt8(cursor.pitchOffset);
+			streamer.writeFloat(cursor.getNoteLength());
 			streamer.writeFloat(cursor.velocity);
+			streamer.writeFloat(cursor.probability);
 		}
 
 		// Write random generator
+		streamer.writeInt32u(randomNoteGenerator.seed);
 		streamer.writeInt8u(scale);
 		streamer.writeInt8u(rootNote);
 		streamer.writeInt8u(minNote);
@@ -557,6 +636,22 @@ namespace vargason::bigsequencer {
 			midiEvent.noteOff.velocity = 0;
 			midiEvent.noteOff.noteId = pitch;
 			eventList->addEvent(midiEvent);
+		}
+	}
+
+	void BigSequencerProcessor::updateSeed(Vst::ProcessData& data) {
+		if (useRandomSeed) {
+			int seed = seedUniformDistribution(rnd);
+			randomNoteGenerator.seed = seed;
+			Steinberg::Vst::IParameterChanges* outputParamChanges = data.outputParameterChanges;
+			int numPoints;
+			if (outputParamChanges) {
+				Steinberg::Vst::IParamValueQueue* paramQueue = outputParamChanges->addParameterData(kParamSeedId, numPoints);
+				if (paramQueue) {
+					int32 sampleOffset = 0;
+					paramQueue->addPoint(sampleOffset, (float)seed / (INT32_MAX), numPoints);
+				}
+			}
 		}
 	}
 

@@ -3,12 +3,12 @@
 namespace vargason::bigsequencer {
 	SequencerView::SequencerView(const VSTGUI::CRect& size, Sequencer& sequencer) : VSTGUI::COpenGLView(size) {
 		this->sequencer = &sequencer;
-		const float lightnessModifier = 0.2f;
-		const float baseNoteLightnessModifier = 0.10f;
+		const float lightnessModifier = 0.10f;
+		const float baseNoteLightness = 0.20f;
 		for (int i = 0; i < 71; i++) {
 			Color baseNoteColor = noteColors[i % 12];
 			HSLColor color = rgbToHsl(baseNoteColor);
-			float adjustedLightnessModifier = baseNoteLightnessModifier + (i / 12) * lightnessModifier;
+			float adjustedLightnessModifier = baseNoteLightness + (i / 12) * lightnessModifier;
 			color.l = adjustedLightnessModifier;
 			allColors[i] = hslToRgb(color);
 		}

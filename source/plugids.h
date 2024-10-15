@@ -36,12 +36,13 @@ namespace vargason::bigsequencer {
 		kParamCursor4VelocityId,
 		kParamCursor4ProbabilityId,
 
-		// "fake" parameters
 		kParamScaleId,
 		kParamRootNoteId,
 		kParamMinNoteId,
 		kParamMaxNoteId,
 		kParamFillChanceId,
+		kParamSeedId,
+		kParamUseRandomSeedId,
 
 		kParamCursorTab
 	};

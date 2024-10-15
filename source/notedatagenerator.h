@@ -42,13 +42,16 @@ namespace vargason::bigsequencer {
 	public:
 
 		float fillChance;
-		std::mt19937 rnd;
+		int seed;
 
-		RandomNoteDataGenerator(float fillChance = .5f): rnd((std::random_device())()) {
+		RandomNoteDataGenerator(float fillChance = .5f) {
+			seed = 0;
 			this->fillChance = fillChance;
 		}
 
 		NoteData* generateNoteData(int width, int height, std::vector<int> &availableNotes) {
+			std::mt19937 rnd(seed);
+
 			NoteData* noteDatas = new NoteData[width * height];
 			int numAvailableNotes = (int)availableNotes.size();
 			std::uniform_real_distribution<> uniform_real(0.0, 1.0);
