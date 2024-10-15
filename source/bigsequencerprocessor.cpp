@@ -424,6 +424,9 @@ namespace vargason::bigsequencer {
 		if (!state) {
 			return kResultFalse;
 		}
+
+		return kResultOk;
+
 		// called when we load a preset, the model has to be reloaded
 		IBStreamer streamer (state, kLittleEndian);
 
@@ -468,7 +471,7 @@ namespace vargason::bigsequencer {
 		}
 
 		// Write cursors
-		std::vector<Cursor> cursors;
+		Cursor cursors[4];
 		for (int i = 0; i < sequencer.maxNumCursors; i++) {
 			Cursor cursor;
 			if (!streamer.readBool(cursor.active)) {
