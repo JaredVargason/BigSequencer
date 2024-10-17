@@ -184,8 +184,8 @@ tresult PLUGIN_API BigSequencerController::setComponentState (IBStream* state)
 	}
 	sequencer.setNotes(width, height, noteDatas);
 
-	setParamNormalized(kParamSequencerWidthId, (float)width / Sequencer::maxWidth);
-	setParamNormalized(kParamSequencerHeightId, (float)height / Sequencer::maxHeight);
+	setParamNormalized(kParamSequencerWidthId, (float)(width - Sequencer::minWidth) / (Sequencer::maxWidth - Sequencer::minWidth));
+	setParamNormalized(kParamSequencerHeightId, (float)(height - Sequencer::minHeight) / (Sequencer::maxHeight - Sequencer::minHeight));
 
 	setParamNormalized(kParamCursor1ActiveId, cursors[0].active);
 	setParamNormalized(kParamCursor1NoteIntervalId, (float)cursors[0].interval / (totalIntervals - 1));
@@ -221,6 +221,10 @@ tresult PLUGIN_API BigSequencerController::setComponentState (IBStream* state)
 	setParamNormalized(kParamMinNoteId, (minNote - NoteDataGenerator::noteLowerBound) / (float)(NoteDataGenerator::noteUpperBound - NoteDataGenerator::noteLowerBound));
 	setParamNormalized(kParamMaxNoteId, (maxNote - NoteDataGenerator::noteLowerBound) / (float)(NoteDataGenerator::noteUpperBound - NoteDataGenerator::noteLowerBound));
 	setParamNormalized(kParamFillChanceId, fillChance);
+
+	if (viewAvailable) {
+		this->editor->setSequencerViewInvalid();
+	}
 
 	return kResultOk;
 }

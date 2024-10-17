@@ -471,7 +471,7 @@ namespace vargason::bigsequencer {
 		// Write cursors
 		Cursor cursors[4];
 		for (int i = 0; i < sequencer.maxNumCursors; i++) {
-			Cursor cursor;
+			Cursor& cursor = cursors[i];
 			if (!streamer.readBool(cursor.active)) {
 				failure = true;
 				break;
