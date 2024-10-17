@@ -161,8 +161,9 @@ namespace vargason::bigsequencer {
 						// Cursor 1
 					case SequencerParams::kParamCursor1ActiveId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer.getCursor(0).active = value;
-							sendCursorActiveUpdate(0, value);
+							Cursor& cursor = sequencer.getCursor(0);
+							cursor.active = value;
+							sendCursorActiveUpdate(0, value, cursor.position);
 						}
 						break;
 					case SequencerParams::kParamCursor1NoteLengthId:
@@ -196,8 +197,9 @@ namespace vargason::bigsequencer {
 						// Cursor 2
 					case SequencerParams::kParamCursor2ActiveId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer.getCursor(1).active = value;
-							sendCursorActiveUpdate(1, value);
+							Cursor& cursor = sequencer.getCursor(1);
+							cursor.active = value;
+							sendCursorActiveUpdate(1, value, cursor.position);
 						}
 						break;
 					case SequencerParams::kParamCursor2NoteLengthId:
@@ -231,8 +233,9 @@ namespace vargason::bigsequencer {
 						// Cursor 3
 					case SequencerParams::kParamCursor3ActiveId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer.getCursor(2).active = value;
-							sendCursorActiveUpdate(2, value);
+							Cursor& cursor = sequencer.getCursor(2);
+							cursor.active = value;
+							sendCursorActiveUpdate(2, value, cursor.position);
 						}
 						break;
 					case SequencerParams::kParamCursor3NoteLengthId:
@@ -266,8 +269,9 @@ namespace vargason::bigsequencer {
 						// Cursor 4
 					case SequencerParams::kParamCursor4ActiveId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer.getCursor(3).active = value;
-							sendCursorActiveUpdate(3, value);
+							Cursor& cursor = sequencer.getCursor(3);
+							cursor.active = value;
+							sendCursorActiveUpdate(3, value, cursor.position);
 						}
 						break;
 					case SequencerParams::kParamCursor4NoteLengthId:
@@ -685,7 +689,7 @@ namespace vargason::bigsequencer {
 		}
 	}
 
-	void BigSequencerProcessor::sendCursorActiveUpdate(int index, bool val) {
+	void BigSequencerProcessor::sendCursorActiveUpdate(int index, bool val, int position) {
 		Vst::IMessage* message = allocateMessage();
 		if (!message) {
 			return;
@@ -695,6 +699,7 @@ namespace vargason::bigsequencer {
 		if (attr) {
 			attr->setInt("index", index);
 			attr->setInt("active", val);
+			attr->setInt("position", position);
 		}
 		sendMessage(message);
 	}

@@ -453,10 +453,13 @@ tresult PLUGIN_API BigSequencerController::notify(Steinberg::Vst::IMessage* mess
 		this->editor->setSequencerViewInvalid();
 	}
 	else if (mID == "CursorActiveMessage") {
-		Steinberg::int64 cursorIndex, cursorActive;
+		Steinberg::int64 cursorIndex, cursorActive, cursorPosition;
 		message->getAttributes()->getInt("index", cursorIndex);
 		message->getAttributes()->getInt("active", cursorActive);
-		sequencer.getCursor(cursorIndex).active = cursorActive;
+		message->getAttributes()->getInt("position", cursorPosition);
+		Cursor& cursor = sequencer.getCursor(cursorIndex);
+		cursor.active = cursorActive;
+		cursor.position = cursorPosition;
 		this->editor->setSequencerViewInvalid();
 	}
 	message->release();
