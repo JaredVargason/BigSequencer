@@ -64,6 +64,7 @@ smtg_target_add_plugin_snapshots (BigSequencer
     RESOURCES
         resource/28B960F2B70D5AE2BD663D5EEBAE6B26_snapshot.png
         resource/28B960F2B70D5AE2BD663D5EEBAE6B26_snapshot_2.0x.png
+        resource/bigsequencerlogo.png
 )
 
 target_link_libraries(BigSequencer

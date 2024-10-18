@@ -3,11 +3,11 @@
 		"version": "1",
 		"bitmaps": {
 			"28B960F2B70D5AE2BD663D5EEBAE6B26_snapshot_2.0x": {
-				"path": "C:\\Users\\jared\\Projects\\BigSequencer\\resource\\28B960F2B70D5AE2BD663D5EEBAE6B26_snapshot_2.0x.png",
+				"path": "Snapshots/28B960F2B70D5AE2BD663D5EEBAE6B26_snapshot_2.0x.png",
 				"scale-factor": "2"
 			},
 			"bigsequencerlogo": {
-				"path": "C:\\Users\\jared\\Projects\\BigSequencer\\resource\\bigsequencerlogo.png"
+				"path": "Snapshots/bigsequencerlogo.png"
 			}
 		},
 		"fonts": {},
@@ -75,7 +75,7 @@
 		"custom": {
 			"FocusDrawing": {},
 			"VST3Editor": {
-				"Path": "C:\\Users\\jared\\Projects\\BigSequencer\\resource\\bigsequencereditor.uidesc"
+				"Path": "bigsequencereditor.uidesc"
 			},
 			"UIGridController": {
 				"Grids": "1x 1,5x 5,10x 10,12x 12,15x 15",
