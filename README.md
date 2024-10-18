@@ -47,4 +47,5 @@ cmake ..
 cmake --build .
 ```
 
-On build success, you will find the result in the `build/VST3/Debug` folder.
+## Support Me
+If you like my work, consider supporting me at [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/ncp/payment/UBXNLMZ39X6G6)

@@ -15,7 +15,7 @@ namespace vargason::bigsequencer {
 		static const uint8_t noteUpperBound = 95;
 		static const uint8_t defaultMinNote = 60;
 		static const uint8_t defaultMaxNote = 71;
-		static constexpr float defaultFillChance = 0.5f;
+		static constexpr float defaultFillChance = 0.75f;
 		
 		NoteData* generate(int width, int height, Pitch rootNote, Scale scale, uint8_t noteMin, uint8_t noteMax) {
 			// get all available notes to pass to the generate function
@@ -44,7 +44,7 @@ namespace vargason::bigsequencer {
 		float fillChance;
 		int seed;
 
-		RandomNoteDataGenerator(float fillChance = .5f) {
+		RandomNoteDataGenerator(float fillChance = defaultFillChance) {
 			seed = 0;
 			this->fillChance = fillChance;
 		}

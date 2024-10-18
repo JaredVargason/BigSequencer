@@ -121,7 +121,7 @@ namespace vargason::bigsequencer {
 		true,
 		Interval::halfNote,
 		-12,
-		0.6f,
+		0.5f,
 		0.6f,
 		1.0f
 	},
@@ -137,7 +137,7 @@ namespace vargason::bigsequencer {
 		false,
 		Interval::wholeNote,
 		-24,
-		0.4f,
+		0.6f,
 		0.6f,
 		1.0f
 	}
