@@ -48,5 +48,6 @@ cmake --build .
 ```
 
 ## Support Me
-If you like my work, consider supporting me at
+If you like my work, consider supporting me:
+
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/ncp/payment/UBXNLMZ39X6G6)
