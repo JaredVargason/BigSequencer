@@ -40,8 +40,9 @@ namespace vargason::bigsequencer {
 		{
 			return result;
 		}
+		addEventInput(STR16("Event Input"), 1);
 		addEventOutput(STR16("Event Out"), 1);
-
+		addAudioOutput(STR16("Stereo Output"), Vst::SpeakerArr::kStereo);
 		regenerateGridNotes();
 
 		return kResultOk;
@@ -77,15 +78,13 @@ namespace vargason::bigsequencer {
 		// handle host being start & stopped
 		bool playing = data.processContext->state & data.processContext->kPlaying;
 		if (playing && !wasPreviouslyPlaying) {  // started from paused or stopped state.
-			if (data.processContext->projectTimeMusic == data.processContext->cycleStartMusic) {  // started from stopped state
+			if (retrigger) {
+				startMusicTime = 0;
 				for (int i = 0; i < sequencer.maxNumCursors; i++) {
 					Cursor& cursor = sequencer.getCursor(i);
 
-					if (retrigger) {
-						cursor.position = 0;
-						cursor.lastNoteTime = 0;
-					}
-					cursor.position = retrigger ? 0 : cursor.position;
+					cursor.position = 0;
+					cursor.lastNoteTime = 0;
 
 					sendCursorUpdate(i, cursor);
 					if (cursor.active && cursorProbabilityDis(rnd) < cursor.probability) {
@@ -100,6 +99,14 @@ namespace vargason::bigsequencer {
 					}
 				}
 			}
+			else if (data.processContext->projectTimeMusic == 0) {
+				for (int i = 0; i < sequencer.maxNumCursors; i++) {
+					Cursor& cursor = sequencer.getCursor(i);
+					int numDivisions = (cursor.lastNoteTime / cursor.numericInterval());
+					double remainder = cursor.lastNoteTime - (numDivisions * cursor.numericInterval());
+					cursor.lastNoteTime = 0 - (cursor.numericInterval() - remainder);
+				}
+			}
 		}
 		else if (!playing && wasPreviouslyPlaying) {  // we stopped or paused playback
 			for (int i = 0; i < sequencer.maxNumCursors; i++) {
@@ -112,13 +119,11 @@ namespace vargason::bigsequencer {
 			}
 		}
 
-		wasPreviouslyPlaying = playing;
-
 		if (playing) {
 			updateSequencer(data);
 		}
-
 		lastProjectMusicTime = data.processContext->projectTimeMusic;
+		wasPreviouslyPlaying = playing;
 
 		return kResultOk;
 	}
@@ -362,12 +367,10 @@ namespace vargason::bigsequencer {
 	}
 
 	void BigSequencerProcessor::updateSequencer(Vst::ProcessData& data) {
-		double cycleLength = data.processContext->cycleEndMusic - data.processContext->cycleStartMusic;
-
 		for (int cursorIndex = 0; cursorIndex < sequencer.maxNumCursors; cursorIndex++) {
 			Cursor& cursor = sequencer.getCursor(cursorIndex);
 			if (lastProjectMusicTime > data.processContext->projectTimeMusic) {  // the measure/song ended and we are back at 0
-				cursor.lastNoteTime -= cycleLength;
+				cursor.lastNoteTime -= (lastProjectMusicTime - startMusicTime);
 			}
 			updateCursor(data, cursorIndex, cursor);
 		}
