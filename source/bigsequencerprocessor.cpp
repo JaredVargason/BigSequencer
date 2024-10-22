@@ -79,12 +79,12 @@ namespace vargason::bigsequencer {
 		bool playing = data.processContext->state & data.processContext->kPlaying;
 		if (playing && !wasPreviouslyPlaying) {  // started from paused or stopped state.
 			if (retrigger) {
-				startMusicTime = 0;
+				lastProjectMusicTime = startMusicTime = data.processContext->projectTimeMusic;
 				for (int i = 0; i < sequencer.maxNumCursors; i++) {
 					Cursor& cursor = sequencer.getCursor(i);
 
 					cursor.position = 0;
-					cursor.lastNoteTime = 0;
+					cursor.lastNoteTime = startMusicTime;
 
 					sendCursorUpdate(i, cursor);
 					if (cursor.active && cursorProbabilityDis(rnd) < cursor.probability) {
@@ -99,16 +99,19 @@ namespace vargason::bigsequencer {
 					}
 				}
 			}
-			else if (data.processContext->projectTimeMusic == 0) {
+			else {
+				if (stopMusicTime == 0) {
+					stopMusicTime = data.processContext->projectTimeMusic;
+				}
+				lastProjectMusicTime = startMusicTime = data.processContext->projectTimeMusic;
 				for (int i = 0; i < sequencer.maxNumCursors; i++) {
 					Cursor& cursor = sequencer.getCursor(i);
-					int numDivisions = (cursor.lastNoteTime / cursor.numericInterval());
-					double remainder = cursor.lastNoteTime - (numDivisions * cursor.numericInterval());
-					cursor.lastNoteTime = 0 - (cursor.numericInterval() - remainder);
+					cursor.lastNoteTime = startMusicTime - (cursor.numericInterval() - (stopMusicTime - cursor.lastNoteTime));
 				}
 			}
 		}
 		else if (!playing && wasPreviouslyPlaying) {  // we stopped or paused playback
+			stopMusicTime = lastProjectMusicTime;
 			for (int i = 0; i < sequencer.maxNumCursors; i++) {
 				Cursor& cursor = sequencer.getCursor(i);
 				if (cursor.notePlaying) {
@@ -370,6 +373,9 @@ namespace vargason::bigsequencer {
 		for (int cursorIndex = 0; cursorIndex < sequencer.maxNumCursors; cursorIndex++) {
 			Cursor& cursor = sequencer.getCursor(cursorIndex);
 			if (lastProjectMusicTime > data.processContext->projectTimeMusic) {  // the measure/song ended and we are back at 0
+				if (data.processContext->projectTimeMusic < startMusicTime) {
+					startMusicTime = data.processContext->projectTimeMusic;
+				}
 				cursor.lastNoteTime -= (lastProjectMusicTime - startMusicTime);
 			}
 			updateCursor(data, cursorIndex, cursor);

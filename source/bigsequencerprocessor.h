@@ -22,8 +22,8 @@ public:
 	~BigSequencerProcessor () SMTG_OVERRIDE;
 
     // Create function
-	static Steinberg::FUnknown* createInstance (void* /*context*/) 
-	{ 
+	static Steinberg::FUnknown* createInstance (void* /*context*/)
+	{
 		return (Steinberg::Vst::IAudioProcessor*)new BigSequencerProcessor;
 	}
 
@@ -65,6 +65,7 @@ protected:
 	bool wasPreviouslyPlaying = false;  // whether the host was playing in the last frame
 
 	double startMusicTime = 0;
+	double stopMusicTime = 0;
 
 	double lastProjectMusicTime = 0;  // music time of the last frame
 	bool retrigger = true;  // whether the sequencer starts from 0 when playback is restarted
