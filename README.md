@@ -16,8 +16,12 @@ It has multiple **cursors** that iterate along the grid. Each cursor has multipl
 Use the **retrigger** parameter to make the sequencer restart at the beginning on playback.
 
 ## Usage
+On Windows, move the VST folder to your VST plug-in location. The default is usually `C:\Program Files\Common Files\VST3`.
+
 Generally, once you have the VST installed and opened in your DAW of choice, set the plugin's MIDI output channel to match an instrument's input channel.
+
 Turn cursors on and off to have more "hands" playing notes at a time.
+
 Changing the width, height, min note, max note, root note, scale, or fill chance will regenerate the note grid.
 
 ### Usage in FLStudio
