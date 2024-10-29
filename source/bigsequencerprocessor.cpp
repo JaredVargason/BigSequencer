@@ -42,6 +42,7 @@ namespace vargason::bigsequencer {
 		}
 		addEventInput(STR16("Event Input"), 1);
 		addEventOutput(STR16("Event Out"), 1);
+		addAudioInput(STR16("Stereo Input"), Vst::SpeakerArr::kStereo);
 		addAudioOutput(STR16("Stereo Output"), Vst::SpeakerArr::kStereo);
 		regenerateGridNotes();
 
