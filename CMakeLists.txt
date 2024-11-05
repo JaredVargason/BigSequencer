@@ -14,7 +14,7 @@ project(BigSequencer
     # This is your plug-in version number. Change it here only.
     # Version number symbols usable in C++ can be found in
     # source/version.h and ${PROJECT_BINARY_DIR}/projectversion.h.
-    VERSION 1.0.0.0 
+    VERSION 0.1.2.0
     DESCRIPTION "BigSequencer VST 3 Plug-in"
 )
 
