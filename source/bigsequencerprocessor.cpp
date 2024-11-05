@@ -6,6 +6,7 @@
 #include "bigsequencercids.h"
 #include "plugids.h"
 #include "scales.h"
+#include "util.h"
 
 #include "base/source/fstreamer.h"
 #include "pluginterfaces/vst/ivstparameterchanges.h"
@@ -145,7 +146,7 @@ namespace vargason::bigsequencer {
 					switch (paramQueue->getParameterId()) {
 					case SequencerParams::kParamSequencerWidthId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							int width = 1 + value * sequencer.maxWidth;
+							uint8_t width = lerp(sequencer.minWidth, sequencer.maxWidth, value);
 							sequencer.setSize(width, sequencer.getHeight());  // cursor could be out of bounds if we do this wrong
 							updateSeed(data);
 							regenerateGridNotes();
@@ -154,7 +155,7 @@ namespace vargason::bigsequencer {
 						break;
 					case SequencerParams::kParamSequencerHeightId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							int height = 1 + value * sequencer.maxHeight;
+							uint8_t height = lerp(sequencer.minHeight, sequencer.maxHeight, value);
 							sequencer.setSize(sequencer.getWidth(), height);
 							updateSeed(data);
 							regenerateGridNotes();
@@ -182,13 +183,13 @@ namespace vargason::bigsequencer {
 						break;
 					case SequencerParams::kParamCursor1NoteIntervalId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer.getCursor(0).interval = (Interval)(Interval::thirtySecondNote + (Interval::doubleWholeNote - Interval::thirtySecondNote) * value);
+							sequencer.getCursor(0).interval = (Interval)lerp(Interval::thirtySecondNote, Interval::doubleWholeNote, value);
 						}
 						break;
 					case SequencerParams::kParamCursor1PitchOffsetId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							Cursor& cursor = sequencer.getCursor(0);
-							cursor.pitchOffset = cursor.pitchMin + (cursor.pitchMax - cursor.pitchMin) * value;
+							cursor.pitchOffset = lerp(cursor.pitchMin, cursor.pitchMax, value);
 						}
 						break;
 					case SequencerParams::kParamCursor1VelocityId:
@@ -218,13 +219,13 @@ namespace vargason::bigsequencer {
 						break;
 					case SequencerParams::kParamCursor2NoteIntervalId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer.getCursor(1).interval = (Interval)(Interval::thirtySecondNote + (Interval::doubleWholeNote - Interval::thirtySecondNote) * value);
+							sequencer.getCursor(1).interval = (Interval)lerp(Interval::thirtySecondNote, Interval::doubleWholeNote, value);
 						}
 						break;
 					case SequencerParams::kParamCursor2PitchOffsetId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							Cursor& cursor = sequencer.getCursor(1);
-							cursor.pitchOffset = cursor.pitchMin + (cursor.pitchMax - cursor.pitchMin) * value;
+							cursor.pitchOffset = lerp(cursor.pitchMin, cursor.pitchMax, value);
 						}
 						break;
 					case SequencerParams::kParamCursor2VelocityId:
@@ -254,13 +255,13 @@ namespace vargason::bigsequencer {
 						break;
 					case SequencerParams::kParamCursor3NoteIntervalId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer.getCursor(2).interval = (Interval)(Interval::thirtySecondNote + (Interval::doubleWholeNote - Interval::thirtySecondNote) * value);
+							sequencer.getCursor(2).interval = (Interval)lerp(Interval::thirtySecondNote, Interval::doubleWholeNote, value);
 						}
 						break;
 					case SequencerParams::kParamCursor3PitchOffsetId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							Cursor& cursor = sequencer.getCursor(2);
-							cursor.pitchOffset = cursor.pitchMin + (cursor.pitchMax - cursor.pitchMin) * value;
+							cursor.pitchOffset = lerp(cursor.pitchMin, cursor.pitchMax, value);
 						}
 						break;
 					case SequencerParams::kParamCursor3VelocityId:
@@ -290,13 +291,13 @@ namespace vargason::bigsequencer {
 						break;
 					case SequencerParams::kParamCursor4NoteIntervalId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer.getCursor(3).interval = (Interval)(Interval::thirtySecondNote + (Interval::doubleWholeNote - Interval::thirtySecondNote) * value);
+							sequencer.getCursor(3).interval = (Interval)lerp(Interval::thirtySecondNote, Interval::doubleWholeNote, value);
 						}
 						break;
 					case SequencerParams::kParamCursor4PitchOffsetId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							Cursor& cursor = sequencer.getCursor(3);
-							cursor.pitchOffset = cursor.pitchMin + (cursor.pitchMax - cursor.pitchMin) * value;
+							cursor.pitchOffset = lerp(cursor.pitchMin, cursor.pitchMax, value);
 						}
 						break;
 					case SequencerParams::kParamCursor4VelocityId:
@@ -330,7 +331,7 @@ namespace vargason::bigsequencer {
 						break;
 					case SequencerParams::kParamMinNoteId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							minNote = NoteDataGenerator::noteLowerBound + (NoteDataGenerator::noteUpperBound - NoteDataGenerator::noteLowerBound) * value;
+							minNote = lerp(NoteDataGenerator::noteLowerBound, NoteDataGenerator::noteUpperBound, value);
 							updateSeed(data);
 							regenerateGridNotes();
 							sendSequencerUpdate();
@@ -338,7 +339,7 @@ namespace vargason::bigsequencer {
 						break;
 					case SequencerParams::kParamMaxNoteId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							maxNote = NoteDataGenerator::noteLowerBound + (NoteDataGenerator::noteUpperBound - NoteDataGenerator::noteLowerBound) * value;
+							maxNote = lerp(NoteDataGenerator::noteLowerBound, NoteDataGenerator::noteUpperBound, value);
 							updateSeed(data);
 							regenerateGridNotes();
 							sendSequencerUpdate();

@@ -30,8 +30,14 @@ namespace vargason::bigsequencer {
 
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
+		float sqrWidth;
+		if (sequencer->getWidth() > sequencer->getHeight()) {
+			sqrWidth = viewSize.getWidth() / sequencer->getWidth();
+		}
+		else {
+			sqrWidth = viewSize.getHeight() / sequencer->getHeight();
+		}
 
-		float sqrWidth = viewSize.getWidth() / sequencer->getWidth();
 		glBegin(GL_TRIANGLES);
 		for (int y = 0; y < sequencer->getHeight(); y++) {
 			for (int x = 0; x < sequencer->getWidth(); x++) {

@@ -26,6 +26,7 @@ smtg_enable_vst3_sdk()
 smtg_add_vst3plugin(BigSequencer
     source/version.h
     source/plugids.h
+    source/util.h
     source/scales.h
     source/scales.cpp
     source/sequencer.h
