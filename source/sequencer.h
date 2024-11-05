@@ -27,8 +27,8 @@ namespace vargason::bigsequencer {
 		uint8_t currentlyPlayingNote = 60;
 		double lastNoteTime = 0;
 
-		static const int pitchMin = -24;
-		static const int pitchMax = 24;
+		static const int8_t pitchMin = -24;
+		static const int8_t pitchMax = 24;
 
 		const double* numericIntervals = new double[7] {
 			0.125,

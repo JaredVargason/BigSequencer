@@ -6,6 +6,7 @@
 #include "bigsequencercids.h"
 #include "base/source/fstreamer.h"
 #include "vstgui/plugin-bindings/vst3editor.h"
+#include "util.h"
 #include "plugids.h"
 #include "scales.h"
 #include "notedatagenerator.h"
@@ -184,42 +185,42 @@ tresult PLUGIN_API BigSequencerController::setComponentState (IBStream* state)
 	}
 	sequencer.setNotes(width, height, noteDatas);
 
-	setParamNormalized(kParamSequencerWidthId, (float)(width - Sequencer::minWidth) / (Sequencer::maxWidth - Sequencer::minWidth));
-	setParamNormalized(kParamSequencerHeightId, (float)(height - Sequencer::minHeight) / (Sequencer::maxHeight - Sequencer::minHeight));
+	setParamNormalized(kParamSequencerWidthId, ilerp<uint8_t>(Sequencer::minWidth, Sequencer::maxWidth, width));
+	setParamNormalized(kParamSequencerHeightId, ilerp<uint8_t>(Sequencer::minHeight, Sequencer::maxHeight, height));
 
 	setParamNormalized(kParamCursor1ActiveId, cursors[0].active);
-	setParamNormalized(kParamCursor1NoteIntervalId, (float)cursors[0].interval / (totalIntervals - 1));
-	setParamNormalized(kParamCursor1PitchOffsetId, (float)(cursors[0].pitchOffset - Cursor::pitchMin) / (Cursor::pitchMax - Cursor::pitchMin));
+	setParamNormalized(kParamCursor1NoteIntervalId, ilerp<uint8_t>(0, totalIntervals - 1, cursors[0].interval));
+	setParamNormalized(kParamCursor1PitchOffsetId, ilerp(Cursor::pitchMin, Cursor::pitchMax, cursors[0].pitchOffset));
 	setParamNormalized(kParamCursor1NoteLengthId, cursors[0].getNoteLength());
 	setParamNormalized(kParamCursor1VelocityId, cursors[0].velocity);
 	setParamNormalized(kParamCursor1ProbabilityId, cursors[0].probability);
 
 	setParamNormalized(kParamCursor2ActiveId, cursors[1].active);
-	setParamNormalized(kParamCursor2NoteIntervalId, (float)cursors[1].interval / (totalIntervals - 1));
-	setParamNormalized(kParamCursor2PitchOffsetId, (float)(cursors[1].pitchOffset - Cursor::pitchMin) / (Cursor::pitchMax - Cursor::pitchMin));
+	setParamNormalized(kParamCursor2NoteIntervalId, ilerp<uint8_t>(0, totalIntervals - 1, cursors[1].interval));
+	setParamNormalized(kParamCursor2PitchOffsetId, ilerp(Cursor::pitchMin, Cursor::pitchMax, cursors[1].pitchOffset));
 	setParamNormalized(kParamCursor2NoteLengthId, cursors[1].getNoteLength());
 	setParamNormalized(kParamCursor2VelocityId, cursors[1].velocity);
 	setParamNormalized(kParamCursor2ProbabilityId, cursors[1].probability);
 
 	setParamNormalized(kParamCursor3ActiveId, cursors[2].active);
-	setParamNormalized(kParamCursor3NoteIntervalId, (float)cursors[2].interval / (totalIntervals - 1));
-	setParamNormalized(kParamCursor3PitchOffsetId, (float)(cursors[2].pitchOffset - Cursor::pitchMin) / (Cursor::pitchMax - Cursor::pitchMin));
+	setParamNormalized(kParamCursor3NoteIntervalId, ilerp<uint8_t>(0, totalIntervals - 1, cursors[2].interval));
+	setParamNormalized(kParamCursor3PitchOffsetId, ilerp(Cursor::pitchMin, Cursor::pitchMax, cursors[2].pitchOffset));
 	setParamNormalized(kParamCursor3NoteLengthId, cursors[2].getNoteLength());
 	setParamNormalized(kParamCursor3VelocityId, cursors[2].velocity);
 	setParamNormalized(kParamCursor3ProbabilityId, cursors[2].probability);
 
 	setParamNormalized(kParamCursor4ActiveId, cursors[3].active);
-	setParamNormalized(kParamCursor4NoteIntervalId, (float)cursors[3].interval / (totalIntervals - 1));
-	setParamNormalized(kParamCursor4PitchOffsetId, (float)(cursors[3].pitchOffset - Cursor::pitchMin) / (Cursor::pitchMax - Cursor::pitchMin));
+	setParamNormalized(kParamCursor4NoteIntervalId, ilerp<uint8_t>(0, totalIntervals - 1, cursors[3].interval));
+	setParamNormalized(kParamCursor4PitchOffsetId, ilerp(Cursor::pitchMin, Cursor::pitchMax, cursors[3].pitchOffset));
 	setParamNormalized(kParamCursor4NoteLengthId, cursors[3].getNoteLength());
 	setParamNormalized(kParamCursor4VelocityId, cursors[3].velocity);
 	setParamNormalized(kParamCursor4ProbabilityId, cursors[3].probability);
 
-	setParamNormalized(kParamSeedId, (float)seed / INT32_MAX);
-	setParamNormalized(kParamScaleId, scale / (float)(totalScales - 1));
-	setParamNormalized(kParamRootNoteId, rootNote / (float)(totalPitches - 1));
-	setParamNormalized(kParamMinNoteId, (minNote - NoteDataGenerator::noteLowerBound) / (float)(NoteDataGenerator::noteUpperBound - NoteDataGenerator::noteLowerBound));
-	setParamNormalized(kParamMaxNoteId, (maxNote - NoteDataGenerator::noteLowerBound) / (float)(NoteDataGenerator::noteUpperBound - NoteDataGenerator::noteLowerBound));
+	setParamNormalized(kParamSeedId, (double)seed / INT32_MAX);
+	setParamNormalized(kParamScaleId, scale / (double)(totalScales - 1));
+	setParamNormalized(kParamRootNoteId, rootNote / (double)(totalPitches - 1));
+	setParamNormalized(kParamMinNoteId, ilerp<uint8_t>(NoteDataGenerator::noteLowerBound, NoteDataGenerator::noteUpperBound, minNote));
+	setParamNormalized(kParamMaxNoteId, ilerp<uint8_t>(NoteDataGenerator::noteLowerBound, NoteDataGenerator::noteUpperBound, maxNote));
 	setParamNormalized(kParamFillChanceId, fillChance);
 
 	if (viewAvailable) {

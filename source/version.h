@@ -16,5 +16,5 @@
 #define stringFileDescription	"BigSequencer VST3"
 #endif
 #define stringCompanyName		"Vargason\0"
-#define stringLegalCopyright	"Copyright(c) 2024 Vargason."
+#define stringLegalCopyright	"Copyright(c) 2024 Jared Vargason."
 #define stringLegalTrademarks	"VST is a trademark of Steinberg Media Technologies GmbH"
