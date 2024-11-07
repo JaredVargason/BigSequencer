@@ -204,6 +204,11 @@ namespace vargason::bigsequencer {
 							cursor.probability = value;
 						}
 						break;
+					case SequencerParams::kParamCursor1StartPositionId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							sequencer.getCursor(0).startPosition = lerp<uint16_t>(0, sequencer.getWidth() * sequencer.getHeight(), value);
+						}
+						break;
 						// Cursor 2
 					case SequencerParams::kParamCursor2ActiveId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
@@ -238,6 +243,11 @@ namespace vargason::bigsequencer {
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							Cursor& cursor = sequencer.getCursor(1);
 							cursor.probability = value;
+						}
+						break;
+					case SequencerParams::kParamCursor2StartPositionId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							sequencer.getCursor(1).startPosition = lerp<uint16_t>(0, sequencer.getWidth() * sequencer.getHeight(), value);
 						}
 						break;
 						// Cursor 3
@@ -276,6 +286,11 @@ namespace vargason::bigsequencer {
 							cursor.probability = value;
 						}
 						break;
+					case SequencerParams::kParamCursor3StartPositionId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							sequencer.getCursor(2).startPosition = lerp<uint16_t>(0, sequencer.getWidth() * sequencer.getHeight(), value);
+						}
+						break;
 						// Cursor 4
 					case SequencerParams::kParamCursor4ActiveId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
@@ -310,6 +325,11 @@ namespace vargason::bigsequencer {
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							Cursor& cursor = sequencer.getCursor(3);
 							cursor.probability = value;
+						}
+						break;
+					case SequencerParams::kParamCursor4StartPositionId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							sequencer.getCursor(3).startPosition = lerp<uint16_t>(0, sequencer.getWidth() * sequencer.getHeight(), value);
 						}
 						break;
 						// "fake" parameters
