@@ -291,7 +291,7 @@ void BigSequencerController::addParameters()
 	parameters.addParameter(STR16("Cursor 1 Velocity"), nullptr, 0, defaultCursors[0].velocity, Vst::ParameterInfo::kCanAutomate, kParamCursor1VelocityId);
 	parameters.addParameter(STR16("Cursor 1 Probability"), nullptr, 0, defaultCursors[0].probability, Vst::ParameterInfo::kCanAutomate, kParamCursor1ProbabilityId);
 
-	Vst::RangeParameter* cursor1StartPosition = new Vst::RangeParameter(STR16("Cursor 1 Start Position"), kParamCursor1StartPositionId, nullptr, 0, Sequencer::minWidth * Sequencer::minHeight - 1, 0, Sequencer::minWidth * Sequencer::minHeight - 2);
+	Vst::RangeParameter* cursor1StartPosition = new Vst::RangeParameter(STR16("Cursor 1 Start Position"), kParamCursor1StartPositionId, nullptr, 0, Sequencer::maxWidth * Sequencer::maxHeight - 1, 0, Sequencer::maxWidth * Sequencer::maxHeight - 2);
 	parameters.addParameter(cursor1StartPosition);
 
 	// Cursor 2
@@ -315,7 +315,7 @@ void BigSequencerController::addParameters()
 	parameters.addParameter(STR16("Cursor 2 Velocity"), nullptr, 0, defaultCursors[1].velocity, Vst::ParameterInfo::kCanAutomate, kParamCursor2VelocityId);
 	parameters.addParameter(STR16("Cursor 2 Probability"), nullptr, 0, defaultCursors[1].probability, Vst::ParameterInfo::kCanAutomate, kParamCursor2ProbabilityId);
 
-	Vst::RangeParameter* cursor2StartPosition = new Vst::RangeParameter(STR16("Cursor 2 Start Position"), kParamCursor2StartPositionId, nullptr, 0, Sequencer::minWidth * Sequencer::minHeight - 1, 0, Sequencer::minWidth * Sequencer::minHeight - 2);
+	Vst::RangeParameter* cursor2StartPosition = new Vst::RangeParameter(STR16("Cursor 2 Start Position"), kParamCursor2StartPositionId, nullptr, 0, Sequencer::maxWidth * Sequencer::maxHeight - 1, 0, Sequencer::maxWidth * Sequencer::maxHeight - 2);
 	parameters.addParameter(cursor2StartPosition);
 
 	// Cursor 3, inactive by default
@@ -339,7 +339,7 @@ void BigSequencerController::addParameters()
 	parameters.addParameter(STR16("Cursor 3 Velocity"), nullptr, 0, defaultCursors[2].velocity, Vst::ParameterInfo::kCanAutomate, kParamCursor3VelocityId);
 	parameters.addParameter(STR16("Cursor 3 Probability"), nullptr, 0, defaultCursors[2].probability, Vst::ParameterInfo::kCanAutomate, kParamCursor3ProbabilityId);
 
-	Vst::RangeParameter* cursor3StartPosition = new Vst::RangeParameter(STR16("Cursor 3 Start Position"), kParamCursor3StartPositionId, nullptr, 0, Sequencer::minWidth * Sequencer::minHeight - 1, 0, Sequencer::minWidth * Sequencer::minHeight - 2);
+	Vst::RangeParameter* cursor3StartPosition = new Vst::RangeParameter(STR16("Cursor 3 Start Position"), kParamCursor3StartPositionId, nullptr, 0, Sequencer::maxWidth * Sequencer::maxHeight - 1, 0, Sequencer::maxWidth * Sequencer::maxHeight - 2);
 	parameters.addParameter(cursor3StartPosition);
 
 	// Cursor 4, inactive by default
@@ -363,7 +363,7 @@ void BigSequencerController::addParameters()
 	parameters.addParameter(STR16("Cursor 4 Velocity"), nullptr, 0, defaultCursors[3].velocity, Vst::ParameterInfo::kCanAutomate, kParamCursor4VelocityId);
 	parameters.addParameter(STR16("Cursor 4 Probability"), nullptr, 0, defaultCursors[3].probability, Vst::ParameterInfo::kCanAutomate, kParamCursor4ProbabilityId);
 
-	Vst::RangeParameter* cursor4StartPosition = new Vst::RangeParameter(STR16("Cursor 4 Start Position"), kParamCursor4StartPositionId, nullptr, 0, Sequencer::minWidth * Sequencer::minHeight - 1, 0, Sequencer::minWidth * Sequencer::minHeight - 2);
+	Vst::RangeParameter* cursor4StartPosition = new Vst::RangeParameter(STR16("Cursor 4 Start Position"), kParamCursor4StartPositionId, nullptr, 0, Sequencer::maxWidth * Sequencer::maxHeight - 1, 0, Sequencer::maxWidth * Sequencer::maxHeight - 2);
 	parameters.addParameter(cursor4StartPosition);
 
 	// Note generation
