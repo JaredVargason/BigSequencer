@@ -10,6 +10,7 @@ namespace vargason::bigsequencer {
 		int8_t pitchOffset = 0;
 		float velocity = 0.6f;
 		float probability = 1.0f;
+		uint16_t startPosition = 0;
 
 		Cursor() : Cursor(true, Interval::quarterNote, 0, 0.6f, 0.6f, 1.0f) {}
 

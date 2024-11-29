@@ -85,7 +85,7 @@ namespace vargason::bigsequencer {
 				for (int i = 0; i < sequencer.maxNumCursors; i++) {
 					Cursor& cursor = sequencer.getCursor(i);
 
-					cursor.position = 0;
+					cursor.position = cursor.startPosition;
 					cursor.lastNoteTime = startMusicTime;
 
 					sendCursorUpdate(i, cursor);
@@ -93,7 +93,7 @@ namespace vargason::bigsequencer {
 						NoteData noteData = sequencer.getNote(cursor.position);
 						if (noteData.active) {
 							cursor.notePlaying = true;
-							uint8_t pitch = sequencer.getNote(0).pitch + cursor.pitchOffset;
+							uint8_t pitch = sequencer.getNote(cursor.startPosition).pitch + cursor.pitchOffset;
 							cursor.currentlyPlayingNote = pitch;
 							sendMidiNoteOn(data.outputEvents, pitch, cursor.velocity);
 						}
@@ -148,6 +148,7 @@ namespace vargason::bigsequencer {
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							uint8_t width = lerp(sequencer.minWidth, sequencer.maxWidth, value);
 							sequencer.setSize(width, sequencer.getHeight());  // cursor could be out of bounds if we do this wrong
+							updateStartPositions(data);
 							updateSeed(data);
 							regenerateGridNotes();
 							sendSequencerUpdate();
@@ -157,6 +158,7 @@ namespace vargason::bigsequencer {
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							uint8_t height = lerp(sequencer.minHeight, sequencer.maxHeight, value);
 							sequencer.setSize(sequencer.getWidth(), height);
+							updateStartPositions(data);
 							updateSeed(data);
 							regenerateGridNotes();
 							sendSequencerUpdate();
@@ -204,6 +206,11 @@ namespace vargason::bigsequencer {
 							cursor.probability = value;
 						}
 						break;
+					case SequencerParams::kParamCursor1StartPositionId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							sequencer.getCursor(0).startPosition = lerp<uint16_t>(0, sequencer.totalNotes() - 1, value);
+						}
+						break;
 						// Cursor 2
 					case SequencerParams::kParamCursor2ActiveId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
@@ -238,6 +245,11 @@ namespace vargason::bigsequencer {
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							Cursor& cursor = sequencer.getCursor(1);
 							cursor.probability = value;
+						}
+						break;
+					case SequencerParams::kParamCursor2StartPositionId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							sequencer.getCursor(1).startPosition = lerp<uint16_t>(0, sequencer.totalNotes() - 1, value);
 						}
 						break;
 						// Cursor 3
@@ -276,6 +288,11 @@ namespace vargason::bigsequencer {
 							cursor.probability = value;
 						}
 						break;
+					case SequencerParams::kParamCursor3StartPositionId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							sequencer.getCursor(2).startPosition = lerp<uint16_t>(0, sequencer.totalNotes() - 1, value);
+						}
+						break;
 						// Cursor 4
 					case SequencerParams::kParamCursor4ActiveId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
@@ -310,6 +327,11 @@ namespace vargason::bigsequencer {
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							Cursor& cursor = sequencer.getCursor(3);
 							cursor.probability = value;
+						}
+						break;
+					case SequencerParams::kParamCursor4StartPositionId:
+						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
+							sequencer.getCursor(3).startPosition = lerp<uint16_t>(0, sequencer.totalNotes() - 1, value);
 						}
 						break;
 						// "fake" parameters
@@ -652,6 +674,24 @@ namespace vargason::bigsequencer {
 		}
 	}
 
+	void BigSequencerProcessor::updateStartPositions(Vst::ProcessData& data) {
+		SequencerParams cursorParams[4] = { kParamCursor1StartPositionId, kParamCursor2StartPositionId, kParamCursor3StartPositionId, kParamCursor4StartPositionId };
+		Steinberg::Vst::IParameterChanges* outputParamChanges = data.outputParameterChanges;
+		int numPoints;
+		int32 sampleOffset = 0;
+		for (int i = 0; i < 4; i++) {
+			Cursor& cursor = sequencer.getCursor(0);
+			if (cursor.startPosition >= sequencer.totalNotes() - 1) {
+				cursor.startPosition = sequencer.totalNotes() - 1;
+
+				Steinberg::Vst::IParamValueQueue* paramQueue = outputParamChanges->addParameterData(cursorParams[i], numPoints);
+				if (paramQueue) {
+					paramQueue->addPoint(sampleOffset, (float)ilerp(0, Sequencer::maxWidth * Sequencer::maxHeight, sequencer.totalNotes() - 1), numPoints);
+				}
+			}
+		}
+	}
+
 	void BigSequencerProcessor::updateSeed(Vst::ProcessData& data) {
 		if (useRandomSeed) {
 			int seed = seedUniformDistribution(rnd);
@@ -662,7 +702,7 @@ namespace vargason::bigsequencer {
 				Steinberg::Vst::IParamValueQueue* paramQueue = outputParamChanges->addParameterData(kParamSeedId, numPoints);
 				if (paramQueue) {
 					int32 sampleOffset = 0;
-					paramQueue->addPoint(sampleOffset, (float)seed / (INT32_MAX), numPoints);
+					paramQueue->addPoint(sampleOffset, (float)ilerp(0, INT32_MAX, seed), numPoints);
 				}
 			}
 		}

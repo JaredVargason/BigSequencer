@@ -80,6 +80,7 @@ protected:
 	void sendMidiNoteOff(Steinberg::Vst::IEventList* eventList, uint8_t pitch);
 
 private:
+	void updateStartPositions(Steinberg::Vst::ProcessData& data);
 	void updateSeed(Steinberg::Vst::ProcessData& processData);
 	void regenerateGridNotes();
 	void handleParameterChanges(Steinberg::Vst::ProcessData& data);
