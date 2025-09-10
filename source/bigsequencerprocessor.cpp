@@ -85,7 +85,8 @@ namespace vargason::bigsequencer {
 				for (int i = 0; i < sequencer.maxNumCursors; i++) {
 					Cursor& cursor = sequencer.getCursor(i);
 
-					cursor.position = cursor.startPosition;
+					uint16_t startPosition = cursor.rule.getStartPosition(sequencer.totalNotes());
+					cursor.position = startPosition;
 					cursor.lastNoteTime = startMusicTime;
 
 					sendCursorUpdate(i, cursor);
@@ -93,11 +94,11 @@ namespace vargason::bigsequencer {
 						NoteData noteData = sequencer.getNote(cursor.position);
 						if (noteData.active) {
 							cursor.notePlaying = true;
-							uint8_t pitch = sequencer.getNote(cursor.startPosition).pitch + cursor.pitchOffset;
+							uint8_t pitch = sequencer.getNote(startPosition).pitch + cursor.pitchOffset;
 							cursor.currentlyPlayingNote = pitch;
 							sendMidiNoteOn(data.outputEvents, pitch, cursor.velocity);
 						}
-						cursor.position++;
+						cursor.position = cursor.rule.getNextPosition(cursor.position, sequencer.totalNotes());
 					}
 				}
 			}
@@ -148,7 +149,6 @@ namespace vargason::bigsequencer {
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							uint8_t width = lerp(sequencer.minWidth, sequencer.maxWidth, value);
 							sequencer.setSize(width, sequencer.getHeight());  // cursor could be out of bounds if we do this wrong
-							updateStartPositions(data);
 							updateSeed(data);
 							regenerateGridNotes();
 							sendSequencerUpdate();
@@ -158,7 +158,6 @@ namespace vargason::bigsequencer {
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
 							uint8_t height = lerp(sequencer.minHeight, sequencer.maxHeight, value);
 							sequencer.setSize(sequencer.getWidth(), height);
-							updateStartPositions(data);
 							updateSeed(data);
 							regenerateGridNotes();
 							sendSequencerUpdate();
@@ -206,9 +205,12 @@ namespace vargason::bigsequencer {
 							cursor.probability = value;
 						}
 						break;
-					case SequencerParams::kParamCursor1StartPositionId:
+					case SequencerParams::kParamCursor1TransitionRuleId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer.getCursor(0).startPosition = lerp<uint16_t>(0, sequencer.totalNotes() - 1, value);
+							uint16_t startPos = lerp<uint16_t>(0, sequencer.totalNotes() - 1, value); // lerp from max value instead and then check if it's greater than totalnotes.
+							if (startPos > sequencer.totalNotes() - 1) {
+								sequencer.getCursor(0).startPosition = sequencer.totalNotes() - 1;
+							}
 						}
 						break;
 						// Cursor 2
@@ -247,9 +249,12 @@ namespace vargason::bigsequencer {
 							cursor.probability = value;
 						}
 						break;
-					case SequencerParams::kParamCursor2StartPositionId:
+					case SequencerParams::kParamCursor2TransitionRuleId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer.getCursor(1).startPosition = lerp<uint16_t>(0, sequencer.totalNotes() - 1, value);
+							uint16_t startPos = lerp<uint16_t>(0, sequencer.totalNotes() - 1, value);
+							if (startPos > sequencer.totalNotes() - 1) {
+								sequencer.getCursor(1).startPosition = startPos;
+							}
 						}
 						break;
 						// Cursor 3
@@ -288,9 +293,12 @@ namespace vargason::bigsequencer {
 							cursor.probability = value;
 						}
 						break;
-					case SequencerParams::kParamCursor3StartPositionId:
+					case SequencerParams::kParamCursor3TransitionRuleId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer.getCursor(2).startPosition = lerp<uint16_t>(0, sequencer.totalNotes() - 1, value);
+							uint16_t startPos = lerp<uint16_t>(0, sequencer.totalNotes() - 1, value);
+							if (startPos > sequencer.totalNotes() - 1) {
+								sequencer.getCursor(2).startPosition = startPos;
+							}
 						}
 						break;
 						// Cursor 4
@@ -329,9 +337,12 @@ namespace vargason::bigsequencer {
 							cursor.probability = value;
 						}
 						break;
-					case SequencerParams::kParamCursor4StartPositionId:
+					case SequencerParams::kParamCursor4TransitionRuleId:
 						if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue) {
-							sequencer.getCursor(3).startPosition = lerp<uint16_t>(0, sequencer.totalNotes() - 1, value);
+							uint16_t startPos = lerp<uint16_t>(0, sequencer.totalNotes() - 1, value);
+							if (startPos > sequencer.totalNotes() - 1) {
+								sequencer.getCursor(3).startPosition = startPos;
+							}
 						}
 						break;
 						// "fake" parameters
@@ -420,11 +431,7 @@ namespace vargason::bigsequencer {
 				}
 				sendCursorUpdate(index, cursor);
 			}
-			int newPos = cursor.position + 1;
-			int totalNotes = sequencer.totalNotes();
-			if (newPos >= totalNotes) {
-				newPos = 0;
-			}
+			int newPos = cursor.rule.getNextPosition(cursor.position, sequencer.totalNotes());
 			cursor.position = newPos;
 			cursor.lastNoteTime += numericInterval;
 		}

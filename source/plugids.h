@@ -14,7 +14,6 @@ namespace vargason::bigsequencer {
 		kParamCursor1PitchOffsetId,
 		kParamCursor1VelocityId,
 		kParamCursor1ProbabilityId,
-		kParamCursor1StartPositionId,
 		kParamCursor1TransitionRuleId,
 
 		kParamCursor2ActiveId,
@@ -23,7 +22,6 @@ namespace vargason::bigsequencer {
 		kParamCursor2PitchOffsetId,
 		kParamCursor2VelocityId,
 		kParamCursor2ProbabilityId,
-		kParamCursor2StartPositionId,
 		kParamCursor2TransitionRuleId,
 
 		kParamCursor3ActiveId,
@@ -32,7 +30,6 @@ namespace vargason::bigsequencer {
 		kParamCursor3PitchOffsetId,
 		kParamCursor3VelocityId,
 		kParamCursor3ProbabilityId,
-		kParamCursor3StartPositionId,
 		kParamCursor3TransitionRuleId,
 
 		kParamCursor4ActiveId,
@@ -41,7 +38,6 @@ namespace vargason::bigsequencer {
 		kParamCursor4PitchOffsetId,
 		kParamCursor4VelocityId,
 		kParamCursor4ProbabilityId,
-		kParamCursor4StartPositionId,
 		kParamCursor4TransitionRuleId,
 
 		kParamScaleId,
