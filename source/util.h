@@ -18,5 +18,4 @@ namespace vargason::bigsequencer {
     double ilerp(V min, V max, V value) {
         return (double)(value - min) / (max - min);
     }
-
 }

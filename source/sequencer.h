@@ -1,6 +1,7 @@
 #pragma once
 #include <stdint.h>
 #include "scales.h"
+#include "transitionrules.h"
 
 namespace vargason::bigsequencer {
 
@@ -10,6 +11,7 @@ namespace vargason::bigsequencer {
 		int8_t pitchOffset = 0;
 		float velocity = 0.6f;
 		float probability = 1.0f;
+		TransitionRule& currentRule;
 
 		Cursor() : Cursor(true, Interval::quarterNote, 0, 0.6f, 0.6f, 1.0f) {}
 
@@ -20,6 +22,10 @@ namespace vargason::bigsequencer {
 			setNoteLength(noteLength);
 			this->velocity = velocity;
 			this->probability = probabilty;
+		}
+
+		~Cursor() {
+			delete[] rules;
 		}
 
 		int position = 0;
@@ -64,6 +70,18 @@ namespace vargason::bigsequencer {
 
 	private:
 		float noteLength = 0.4;  // between 0 and 1
+		
+		ForwardTransitionRule forwardRule;
+		BackwardTransitionRule backwardRule;
+		ForwardsBackwardsTransitionRule forwardBackwardRule;
+		RandomTransitionRule randomRule;
+
+		TransitionRule* rules[4] = {
+			&forwardRule,
+			&backwardRule,
+			&forwardBackwardRule,
+			&randomRule
+		};
 	};
 
 	struct NoteData {
